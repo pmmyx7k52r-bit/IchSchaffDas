@@ -4,6 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Ich mach' das!</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -274,7 +277,7 @@ transition: background 0.2s, transform 0.1s;
 .btn-next:hover { background: var(--gold-light); }
 .btn-next:active { transform: scale(0.98); }
 
-/* ─── MAIN 3-PANEL ─── */
+/* ─── MAIN LAYOUT ─── */
 #main {
 display: none;
 height: 100vh;
@@ -283,16 +286,19 @@ flex-direction: column;
 #main.visible { display: flex; }
 
 .panel {
-flex: 1;
-min-height: 0;
-overflow: hidden;
 position: relative;
 display: flex;
 flex-direction: column;
-padding: 0 28px;
+padding: 0 22px;
 justify-content: center;
+overflow: hidden;
 }
 .panel:not(:last-child) { border-bottom: 1px solid var(--border); }
+
+/* Habit panels: smaller — roughly 20% each */
+#panel-habit, #panel-habit2 { flex: 0 0 20%; min-height: 0; }
+/* Weight panel: takes the rest */
+#panel-weight { flex: 1; min-height: 0; }
 
 .panel::before {
 content: '';
@@ -312,7 +318,7 @@ width: 2px;
 display: flex;
 justify-content: space-between;
 align-items: center;
-margin-bottom: 8px;
+margin-bottom: 4px;
 }
 
 .panel-tag {
@@ -345,32 +351,32 @@ transition: all 0.2s;
 display: flex;
 align-items: center;
 justify-content: space-between;
-gap: 16px;
+gap: 12px;
 }
 .habit-left { flex: 1; min-width: 0; }
 .habit-name {
 font-family: 'Playfair Display', serif;
-font-size: clamp(15px, 3vw, 22px);
+font-size: clamp(13px, 2.5vw, 18px);
 font-weight: 700;
 line-height: 1.2;
 white-space: nowrap;
 overflow: hidden;
 text-overflow: ellipsis;
-margin-bottom: 4px;
+margin-bottom: 3px;
 }
 .today-badge {
-font-size: 8px;
+font-size: 7px;
 color: var(--muted);
 letter-spacing: 0.15em;
-margin-bottom: 8px;
+margin-bottom: 5px;
 }
-.log-strip { display: flex; gap: 3px; flex-wrap: wrap; }
+.log-strip { display: flex; gap: 2px; flex-wrap: wrap; }
 .log-pip {
-width: 18px; height: 18px;
-border-radius: 3px;
+width: 14px; height: 14px;
+border-radius: 2px;
 border: 1px solid var(--border);
 background: var(--card);
-font-size: 8px;
+font-size: 7px;
 display: flex; align-items: center; justify-content: center;
 }
 .log-pip.ok { background: #192a1e; border-color: var(--success); color: var(--success); }
@@ -379,32 +385,32 @@ display: flex; align-items: center; justify-content: center;
 .habit-right {
 display: flex;
 align-items: center;
-gap: 14px;
+gap: 10px;
 flex-shrink: 0;
 }
 .big-count { text-align: center; }
 .big-num {
 font-family: 'Playfair Display', serif;
-font-size: clamp(40px, 8vw, 60px);
+font-size: clamp(28px, 6vw, 44px);
 font-weight: 900;
 line-height: 1;
 transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 display: block;
 }
 .big-num.bump { transform: scale(1.2); }
-.big-label { font-size: 8px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+.big-label { font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-top: 1px; }
 
 #panel-habit .big-num { color: var(--gold); }
 #panel-habit2 .big-num { color: var(--blue); }
 
 .check-btn {
-width: 50px; height: 50px;
+width: 38px; height: 38px;
 border-radius: 50%;
 border: 2px solid var(--border);
 background: var(--card);
 cursor: pointer;
 display: flex; align-items: center; justify-content: center;
-font-size: 20px;
+font-size: 16px;
 transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 color: transparent;
 }
@@ -544,34 +550,65 @@ color: var(--success);
 .w-weekly {
 display: flex;
 align-items: center;
-gap: 10px;
+gap: 12px;
 margin-top: 6px;
-font-size: 10px;
-letter-spacing: 0.1em;
+flex-wrap: wrap;
 }
-.w-weekly-label { color: var(--muted); }
+.w-weekly-label { color: var(--muted); font-size: 9px; letter-spacing: 0.15em; flex-shrink: 0; }
 .w-weekly-val {
 font-family: 'Playfair Display', serif;
-font-size: 14px;
-font-weight: 700;
+font-size: clamp(30px, 7vw, 46px);
+font-weight: 900;
 transition: color 0.4s;
+line-height: 1;
+flex-shrink: 0;
 }
-.w-weekly-val.good { color: #6dbf8a; }
-.w-weekly-val.bad { color: #e07878; }
+.w-weekly-val.good { color: #4ee88a; text-shadow: 0 0 20px #4ee88a55; }
+.w-weekly-val.warn { color: #f0c040; text-shadow: 0 0 20px #f0c04055; }
+.w-weekly-val.bad { color: #ff6060; text-shadow: 0 0 20px #ff606055; }
 .w-weekly-val.neutral { color: var(--muted); }
 .w-weekly-note {
-font-size: 9px;
-letter-spacing: 0.1em;
-padding: 2px 7px;
-border-radius: 2px;
+font-size: 10px;
+letter-spacing: 0.08em;
+padding: 3px 9px;
+border-radius: 3px;
+font-weight: 400;
 transition: all 0.4s;
+flex-shrink: 1;
 }
-.w-weekly-note.good { background: #192a1e; border: 1px solid #6dbf8a44; color: #6dbf8a; }
-.w-weekly-note.bad { background: #2a1414; border: 1px solid #e0787844; color: #e07878; }
-.w-weekly-note.neutral { background: var(--card); border: 1px solid var(--border); color: var(--muted); }
+.w-weekly-note.good { background: #0d3320; border: 1px solid #4ee88a88; color: #4ee88a; }
+.w-weekly-note.warn { background: #2e2400; border: 1px solid #f0c04088; color: #f0c040; }
+.w-weekly-note.bad { background: #330d0d; border: 1px solid #ff606088; color: #ff6060; }
+.w-weekly-note.neutral { background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 9px; }
+
+/* Weight chart */
+.w-chart-wrap {
+flex: 1;
+min-height: 0;
+position: relative;
+margin-top: 8px;
+}
+#w-chart {
+width: 100%;
+height: 100%;
+display: block;
+}
+.chart-tooltip {
+position: absolute;
+background: #1c1a17ee;
+border: 1px solid var(--border);
+border-radius: 4px;
+padding: 4px 8px;
+font-size: 10px;
+color: var(--text);
+pointer-events: none;
+white-space: nowrap;
+display: none;
+z-index: 10;
+}
 
 @media (max-width: 420px) {
-.panel { padding: 0 16px; }
+.panel { padding: 0 14px; }
 .weight-stats { gap: 8px; }
 }
 </style>
@@ -689,6 +726,7 @@ transition: all 0.4s;
 <div class="panel-header">
 <span class="panel-tag tag-green">Gewicht</span>
 </div>
+<!-- Top row: stats + entry -->
 <div class="weight-layout">
 <div class="weight-stats">
 <div class="wstat start">
@@ -696,19 +734,14 @@ transition: all 0.4s;
 <div class="wstat-label">Start</div>
 </div>
 <div class="w-divider"></div>
-<div class="wstat current">
-<div class="wstat-val" id="w-current">—</div>
-<div class="wstat-label">Aktuell</div>
-</div>
-<div class="w-divider"></div>
-<div class="wstat diff">
-<div class="wstat-val" id="w-diff">—</div>
-<div class="wstat-label">Verloren</div>
-</div>
-<div class="w-divider"></div>
 <div class="wstat goal">
 <div class="wstat-val" id="w-goal">—</div>
 <div class="wstat-label">Ziel</div>
+</div>
+<div class="w-divider"></div>
+<div class="wstat current">
+<div class="wstat-val" id="w-current">—</div>
+<div class="wstat-label">Aktuell</div>
 </div>
 </div>
 <div class="weight-entry">
@@ -717,18 +750,23 @@ transition: all 0.4s;
 <span class="weight-unit">kg</span>
 </div>
 <button class="btn-log-weight" onclick="logWeight()">Eintragen ↵</button>
-<div class="wlog-dots" id="w-dots"></div>
 </div>
 </div>
+<!-- Status row -->
 <div class="weight-progress-bar">
 <div class="weight-progress-fill" id="w-progress" style="width:0%"></div>
 </div>
 <div class="w-weekly" id="w-weekly" style="display:none">
-<span class="w-weekly-label">Wochenziel Sa:</span>
+<span class="w-weekly-label">Diese Woche:</span>
 <span class="w-weekly-val neutral" id="w-weekly-val">—</span>
 <span class="w-weekly-note neutral" id="w-weekly-note">—</span>
 </div>
 <div class="w-forecast" id="w-forecast"></div>
+<!-- Chart -->
+<div class="w-chart-wrap">
+<canvas id="w-chart"></canvas>
+<div class="chart-tooltip" id="chart-tooltip"></div>
+</div>
 </div>
 
 </div>
@@ -779,7 +817,7 @@ if (!(t in log2)) { log2[t] = false; save(K.log2, log2); }
 renderAll();
 }
 
-function renderAll() { renderHabit(1); renderHabit(2); renderWeight(); }
+function renderAll() { renderHabit(1); renderHabit(2); renderWeight(); requestAnimationFrame(() => requestAnimationFrame(drawChart)); }
 
 function renderHabit(n) {
 const log = load(n === 1 ? K.log1 : K.log2) || {};
@@ -822,89 +860,73 @@ document.getElementById('w-goal').textContent = gw ? gw.toFixed(1) : '—';
 if (wLog.length > 0) {
 const cur = wLog[wLog.length - 1].val;
 document.getElementById('w-current').textContent = cur.toFixed(1);
-const diff = (sw || 0) - cur;
-document.getElementById('w-diff').textContent = (diff >= 0 ? '-' : '+') + Math.abs(diff).toFixed(1);
 
 if (sw && gw && sw !== gw) {
 const pct = Math.min(100, Math.max(0, ((sw - cur) / (sw - gw)) * 100));
 document.getElementById('w-progress').style.width = pct + '%';
 }
 
-// ── Weekly Saturday target ──
-// Find the most recent Saturday entry as the weekly baseline
-// Saturday = day of week 6
+// ── Weekly development ──
+// Use last Saturday as baseline if available, otherwise use the most recent entry from before today
 const sortedLog = [...wLog].sort((a, b) => a.date.localeCompare(b.date));
+
+// Find last Saturday entry
 const satEntries = sortedLog.filter(e => new Date(e.date + 'T12:00:00').getDay() === 6);
+
+// Find the weekly baseline: last Saturday, or if none, the oldest entry this week (Mon-today)
+const todayDate = new Date(); todayDate.setHours(12,0,0,0);
+const dayOfWeek = todayDate.getDay(); // 0=Sun, 1=Mon...6=Sat
+const daysToLastSat = dayOfWeek === 0 ? 1 : dayOfWeek; // days since last Saturday
+const lastSatDate = new Date(todayDate);
+lastSatDate.setDate(todayDate.getDate() - daysToLastSat);
+const lastSatStr2 = lastSatDate.toISOString().split('T')[0];
+
+// Baseline = entry on last Saturday, or first entry of the week, or first ever entry
+let baseline = null;
+const satEntry = sortedLog.find(e => e.date === lastSatStr2);
+if (satEntry) {
+baseline = satEntry;
+} else {
+// Find the most recent entry at or before last Saturday
+const before = sortedLog.filter(e => e.date <= lastSatStr2);
+baseline = before.length > 0 ? before[before.length - 1] : sortedLog[0];
+}
 
 const weeklyEl = document.getElementById('w-weekly');
 const weeklyVal = document.getElementById('w-weekly-val');
 const weeklyNote = document.getElementById('w-weekly-note');
-
-if (satEntries.length >= 1) {
 weeklyEl.style.display = 'flex';
-const lastSat = satEntries[satEntries.length - 1];
 
-// Next Saturday's target = last Saturday's weight - 0.6
-const targetWeight = lastSat.val - 0.6;
-
-// Next Saturday date
-const lastSatDate = new Date(lastSat.date + 'T12:00:00');
-const nextSatDate = new Date(lastSatDate);
-nextSatDate.setDate(lastSatDate.getDate() + 7);
+if (baseline && baseline.date !== sortedLog[sortedLog.length - 1].date) {
+const weekDiff = cur - baseline.val;
 const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const nextSatStr = nextSatDate.getDate() + '. ' + months[nextSatDate.getMonth()];
+const baseDate = new Date(baseline.date + 'T12:00:00');
+const baseDateStr = baseDate.getDate() + '. ' + months[baseDate.getMonth()];
 
-weeklyVal.textContent = targetWeight.toFixed(1) + ' kg';
+weeklyVal.textContent = (weekDiff > 0 ? '+' : '') + weekDiff.toFixed(1) + ' kg';
 
-// Compare current weight to target
-const today_dow = new Date().getDay();
-const isSaturday = today_dow === 6;
-
-if (isSaturday && satEntries.length >= 2) {
-// Today is Saturday — compare this week vs last week
-const thisSat = satEntries[satEntries.length - 1].val;
-const prevSat = satEntries[satEntries.length - 2].val;
-const weekChange = thisSat - prevSat;
-if (weekChange <= -0.6) {
+if (weekDiff <= -0.6) {
 weeklyVal.className = 'w-weekly-val good';
 weeklyNote.className = 'w-weekly-note good';
-weeklyNote.textContent = '✓ Ziel erreicht!';
-} else if (weekChange < 0) {
-weeklyVal.className = 'w-weekly-val bad';
-weeklyNote.className = 'w-weekly-note bad';
-weeklyNote.textContent = `nur ${Math.abs(weekChange).toFixed(1)} kg`;
+weeklyNote.textContent = '✓ Wochenziel erreicht!';
+} else if (weekDiff <= 0) {
+weeklyVal.className = 'w-weekly-val warn';
+weeklyNote.className = 'w-weekly-note warn';
+weeklyNote.textContent = 'noch ' + Math.abs(weekDiff + 0.6).toFixed(1) + ' kg bis Ziel';
 } else {
 weeklyVal.className = 'w-weekly-val bad';
 weeklyNote.className = 'w-weekly-note bad';
-weeklyNote.textContent = 'nicht erreicht';
+weeklyNote.textContent = 'über Wochenstart (' + baseDateStr + ')';
 }
 } else {
-// Mid-week: show what current weight needs to reach by next Saturday
-weeklyVal.textContent = targetWeight.toFixed(1) + ' kg';
-weeklyNote.textContent = nextSatStr;
-if (cur <= targetWeight) {
-weeklyVal.className = 'w-weekly-val good';
-weeklyNote.className = 'w-weekly-note good';
-} else if (cur <= targetWeight + 0.3) {
-weeklyVal.className = 'w-weekly-val neutral';
-weeklyNote.className = 'w-weekly-note neutral';
-} else {
-weeklyVal.className = 'w-weekly-val bad';
-weeklyNote.className = 'w-weekly-note bad';
-}
-}
-} else {
-// No Saturday entry yet — show what first Saturday target would be
-weeklyEl.style.display = 'flex';
-const today = new Date();
-const daysUntilSat = (6 - today.getDay() + 7) % 7 || 7;
-const nextSat = new Date(today);
-nextSat.setDate(today.getDate() + daysUntilSat);
+// Only one entry — show small goal hint, no big number yet
+const daysUntilSat = (6 - todayDate.getDay() + 7) % 7 || 7;
+const nextSat = new Date(todayDate);
+nextSat.setDate(todayDate.getDate() + daysUntilSat);
 const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const targetW = (sw || cur) - 0.6;
-weeklyVal.textContent = targetW.toFixed(1) + ' kg';
+weeklyVal.textContent = '— kg';
 weeklyVal.className = 'w-weekly-val neutral';
-weeklyNote.textContent = nextSat.getDate() + '. ' + months[nextSat.getMonth()];
+weeklyNote.textContent = 'Ziel: ' + ((sw || cur) - 0.6).toFixed(1) + ' kg bis Sa ' + nextSat.getDate() + '. ' + months[nextSat.getMonth()];
 weeklyNote.className = 'w-weekly-note neutral';
 }
 
@@ -929,6 +951,7 @@ document.getElementById('w-diff').textContent = '0.0';
 }
 
 const dots = document.getElementById('w-dots');
+if (dots) {
 dots.innerHTML = '';
 (load(K.wLog) || []).slice(-14).forEach(e => {
 const d = document.createElement('div');
@@ -937,11 +960,168 @@ d.title = fmt(e.date) + ': ' + e.val + ' kg';
 dots.appendChild(d);
 });
 }
+drawChart();
+}
+
+function drawChart() {
+const canvas = document.getElementById('w-chart');
+if (!canvas) return;
+const wLog = (load(K.wLog) || []).slice().sort((a,b) => a.date.localeCompare(b.date));
+const sw = load(K.startW), gw = load(K.goalW);
+if (!sw || !gw) return;
+
+const dpr = window.devicePixelRatio || 1;
+const rect = canvas.getBoundingClientRect();
+if (rect.width === 0) return;
+canvas.width = rect.width * dpr;
+canvas.height = rect.height * dpr;
+const ctx = canvas.getContext('2d');
+ctx.scale(dpr, dpr);
+const W = rect.width, H = rect.height;
+const pad = { top: 12, right: 16, bottom: 24, left: 36 };
+const cw = W - pad.left - pad.right;
+const ch = H - pad.top - pad.bottom;
+
+// Y range: slightly beyond start/goal
+const allVals = wLog.map(e => e.val).concat([sw, gw]);
+const minV = Math.min(...allVals) - 0.5;
+const maxV = Math.max(...allVals) + 0.5;
+const rangeV = maxV - minV;
+
+const toX = (i) => pad.left + (wLog.length <= 1 ? cw / 2 : (i / (wLog.length - 1)) * cw);
+const toY = (v) => pad.top + ch - ((v - minV) / rangeV) * ch;
+
+ctx.clearRect(0, 0, W, H);
+
+// Grid lines
+const yTicks = 4;
+ctx.strokeStyle = '#2a282422';
+ctx.lineWidth = 1;
+for (let i = 0; i <= yTicks; i++) {
+const v = minV + (rangeV / yTicks) * i;
+const y = toY(v);
+ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+ctx.fillStyle = '#6a6560';
+ctx.font = `${9 * dpr / dpr}px DM Mono, monospace`;
+ctx.textAlign = 'right';
+ctx.fillText(v.toFixed(1), pad.left - 4, y + 3);
+}
+
+// Goal line (dashed gold)
+if (gw >= minV && gw <= maxV) {
+const gy = toY(gw);
+ctx.setLineDash([4, 4]);
+ctx.strokeStyle = '#c9a84c66';
+ctx.lineWidth = 1;
+ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(W - pad.right, gy); ctx.stroke();
+ctx.setLineDash([]);
+ctx.fillStyle = '#c9a84c99';
+ctx.font = `8px DM Mono, monospace`;
+ctx.textAlign = 'left';
+ctx.fillText('Ziel', W - pad.right + 2, gy + 3);
+}
+
+// Trend line (0.6kg/week) from start
+if (wLog.length >= 1) {
+const startDate = new Date(wLog[0].date + 'T12:00:00');
+const endDate = new Date(wLog[wLog.length - 1].date + 'T12:00:00');
+const totalDays = Math.max(1, (endDate - startDate) / 86400000);
+const trendStart = sw;
+const trendEnd = sw - (totalDays / 7) * 0.6;
+
+const x0 = pad.left, x1 = toX(wLog.length - 1);
+const ty0 = toY(Math.max(minV, Math.min(maxV, trendStart)));
+const ty1 = toY(Math.max(minV, Math.min(maxV, trendEnd)));
+ctx.setLineDash([3, 5]);
+ctx.strokeStyle = '#6dbf8a44';
+ctx.lineWidth = 1.5;
+ctx.beginPath(); ctx.moveTo(x0, ty0); ctx.lineTo(x1, ty1); ctx.stroke();
+ctx.setLineDash([]);
+}
+
+if (wLog.length < 2) {
+// Single point
+if (wLog.length === 1) {
+const x = toX(0), y = toY(wLog[0].val);
+ctx.beginPath();
+ctx.arc(x, y, 4, 0, Math.PI * 2);
+ctx.fillStyle = '#6dbf8a';
+ctx.fill();
+}
+return;
+}
+
+// Area fill under curve
+const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+grad.addColorStop(0, '#6dbf8a22');
+grad.addColorStop(1, '#6dbf8a00');
+ctx.beginPath();
+ctx.moveTo(toX(0), toY(wLog[0].val));
+for (let i = 1; i < wLog.length; i++) {
+const x0 = toX(i-1), y0 = toY(wLog[i-1].val);
+const x1 = toX(i), y1 = toY(wLog[i].val);
+const cpx = (x0 + x1) / 2;
+ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
+}
+ctx.lineTo(toX(wLog.length - 1), H - pad.bottom);
+ctx.lineTo(toX(0), H - pad.bottom);
+ctx.closePath();
+ctx.fillStyle = grad;
+ctx.fill();
+
+// Main line
+ctx.beginPath();
+ctx.moveTo(toX(0), toY(wLog[0].val));
+for (let i = 1; i < wLog.length; i++) {
+const x0 = toX(i-1), y0 = toY(wLog[i-1].val);
+const x1 = toX(i), y1 = toY(wLog[i].val);
+const cpx = (x0 + x1) / 2;
+ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
+}
+ctx.strokeStyle = '#6dbf8a';
+ctx.lineWidth = 2;
+ctx.lineJoin = 'round';
+ctx.stroke();
+
+// Dots
+const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+wLog.forEach((e, i) => {
+const x = toX(i), y = toY(e.val);
+const isSat = new Date(e.date + 'T12:00:00').getDay() === 6;
+ctx.beginPath();
+ctx.arc(x, y, isSat ? 4 : 2.5, 0, Math.PI * 2);
+ctx.fillStyle = isSat ? '#c9a84c' : '#6dbf8a';
+ctx.fill();
+if (isSat) {
+ctx.strokeStyle = '#0b1610';
+ctx.lineWidth = 1.5;
+ctx.stroke();
+}
+});
+
+// X-axis date labels (sparse)
+ctx.fillStyle = '#6a6560';
+ctx.font = '8px DM Mono, monospace';
+ctx.textAlign = 'center';
+const maxLabels = Math.min(wLog.length, Math.floor(cw / 40));
+const step = Math.max(1, Math.floor(wLog.length / maxLabels));
+for (let i = 0; i < wLog.length; i += step) {
+const d = new Date(wLog[i].date + 'T12:00:00');
+const label = d.getDate() + '.' + months[d.getMonth()];
+ctx.fillText(label, toX(i), H - pad.bottom + 12);
+}
+
+// Tooltip on touch/hover
+canvas._wLog = wLog;
+canvas._toX = toX;
+canvas._toY = toY;
+canvas._months = months;
+}
 
 function logWeight() {
 const inp = document.getElementById('w-input');
 const val = parseFloat(inp.value);
-if (!val || val < 30 || val > 300) { inp.focus(); return; }
+if (isNaN(val) || val < 20 || val > 400) { inp.focus(); return; }
 const wLog = load(K.wLog) || [];
 const t = today();
 const idx = wLog.findIndex(e => e.date === t);
@@ -949,6 +1129,7 @@ if (idx >= 0) wLog[idx].val = val; else wLog.push({ date: t, val });
 save(K.wLog, wLog);
 inp.value = '';
 renderWeight();
+requestAnimationFrame(drawChart);
 }
 
 // Keyboard shortcuts
@@ -962,6 +1143,62 @@ function resetApp() {
 if (!confirm('Wirklich alles zurücksetzen?')) return;
 Object.values(K).forEach(k => localStorage.removeItem(k));
 location.reload();
+}
+
+// Chart tooltip interaction
+document.addEventListener('DOMContentLoaded', () => {
+const canvas = document.getElementById('w-chart');
+const tooltip = document.getElementById('chart-tooltip');
+if (!canvas || !tooltip) return;
+
+function handleMove(clientX, clientY) {
+if (!canvas._wLog || canvas._wLog.length < 1) return;
+const rect = canvas.getBoundingClientRect();
+const x = clientX - rect.left;
+const wLog = canvas._wLog;
+// Find nearest point
+let nearest = 0, minDist = Infinity;
+wLog.forEach((e, i) => {
+const dist = Math.abs(canvas._toX(i) - x);
+if (dist < minDist) { minDist = dist; nearest = i; }
+});
+if (minDist < 30) {
+const e = wLog[nearest];
+const months = canvas._months;
+const d = new Date(e.date + 'T12:00:00');
+const label = d.getDate() + '. ' + months[d.getMonth()] + ': ' + e.val.toFixed(1) + ' kg';
+tooltip.textContent = label;
+tooltip.style.display = 'block';
+const tx = Math.min(canvas._toX(nearest), rect.width - tooltip.offsetWidth - 4);
+tooltip.style.left = tx + 'px';
+tooltip.style.top = (canvas._toY(e.val) - 28) + 'px';
+} else {
+tooltip.style.display = 'none';
+}
+}
+canvas.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
+canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+canvas.addEventListener('touchmove', e => {
+e.preventDefault();
+handleMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+canvas.addEventListener('touchend', () => { setTimeout(() => { tooltip.style.display = 'none'; }, 1200); });
+});
+
+// Redraw chart on resize
+window.addEventListener('resize', drawChart);
+
+// Use ResizeObserver to draw chart as soon as canvas has real dimensions
+const chartCanvas = document.getElementById('w-chart');
+if (chartCanvas && window.ResizeObserver) {
+const ro = new ResizeObserver(entries => {
+for (const entry of entries) {
+if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+drawChart();
+}
+}
+});
+ro.observe(chartCanvas);
 }
 
 // Splash
