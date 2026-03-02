@@ -774,9 +774,13 @@ z-index: 10;
 <script>
 const K = { h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
 
+function realToday() {
+return new Date().toISOString().split('T')[0];
+}
+
 function today() {
 const now = new Date();
-// Before noon: still count as yesterday
+// For habits: before noon counts as yesterday
 if (now.getHours() < 12) {
 const yesterday = new Date(now);
 yesterday.setDate(now.getDate() - 1);
@@ -808,7 +812,7 @@ save(K.h1, h1); save(K.h2, h2); save(K.startW, sw); save(K.goalW, gw);
 const t = today();
 const l1 = {}; l1[t] = false; save(K.log1, l1);
 const l2 = {}; l2[t] = false; save(K.log2, l2);
-save(K.wLog, [{ date: t, val: sw }]);
+save(K.wLog, [{ date: realToday(), val: sw }]);
 showMain();
 }
 
@@ -1132,7 +1136,7 @@ const inp = document.getElementById('w-input');
 const val = parseFloat(inp.value);
 if (isNaN(val) || val < 20 || val > 400) { inp.focus(); return; }
 const wLog = load(K.wLog) || [];
-const t = today();
+const t = realToday();
 const idx = wLog.findIndex(e => e.date === t);
 if (idx >= 0) wLog[idx].val = val; else wLog.push({ date: t, val });
 save(K.wLog, wLog);
