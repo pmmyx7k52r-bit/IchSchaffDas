@@ -775,7 +775,8 @@ z-index: 10;
 const K = { h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
 
 function realToday() {
-return new Date().toISOString().split('T')[0];
+const now = new Date();
+return localDateStr(now);
 }
 
 function today() {
@@ -784,11 +785,23 @@ const now = new Date();
 if (now.getHours() < 12) {
 const yesterday = new Date(now);
 yesterday.setDate(now.getDate() - 1);
-return yesterday.toISOString().split('T')[0];
+return localDateStr(yesterday);
 }
-return now.toISOString().split('T')[0];
+return localDateStr(now);
+}
+
+function localDateStr(d) {
+const y = d.getFullYear();
+const m = String(d.getMonth() + 1).padStart(2, '0');
+const day = String(d.getDate()).padStart(2, '0');
+return `${y}-${m}-${day}`;
 }
 function fmt(d) { const [y,m,dd]=d.split('-'); return `${dd}.${m}.${y}`; }
+function parseDate(dateStr) {
+// Parse YYYY-MM-DD as local date (avoids UTC midnight timezone shift)
+const [y,m,d] = dateStr.split('-').map(Number);
+return new Date(y, m-1, d, 12, 0, 0);
+}
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function save(k,v) { localStorage.setItem(k, JSON.stringify(v)); }
 
@@ -891,7 +904,7 @@ const daysToLastSat = dayOfWeek === 6 ? 0 : dayOfWeek === 0 ? 1 : dayOfWeek + 1;
 
 const lastSatDate = new Date(nowDate);
 lastSatDate.setDate(nowDate.getDate() - daysToLastSat);
-const lastSatStr = lastSatDate.toISOString().split('T')[0];
+const lastSatStr = localDateStr(lastSatDate);
 
 // Baseline = entry on last Saturday, or nearest entry before it
 let baseline = null;
@@ -913,7 +926,7 @@ weeklyEl.style.display = 'flex';
 if (baseline && latestEntry && baseline.date !== latestEntry.date) {
 const weekDiff = latestEntry.val - baseline.val;
 const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const baseDate = new Date(baseline.date + 'T12:00:00');
+const baseDate = parseDate(baseline.date);
 const baseDateStr = baseDate.getDate() + '. ' + months[baseDate.getMonth()];
 
 weeklyVal.textContent = (weekDiff > 0 ? '+' : '') + weekDiff.toFixed(1) + ' kg';
@@ -1036,8 +1049,8 @@ ctx.fillText('Ziel', W - pad.right + 2, gy + 3);
 
 // Trend line (0.6kg/week) from start
 if (wLog.length >= 1) {
-const startDate = new Date(wLog[0].date + 'T12:00:00');
-const endDate = new Date(wLog[wLog.length - 1].date + 'T12:00:00');
+const startDate = parseDate(wLog[0].date);
+const endDate = parseDate(wLog[wLog.length-1].date);
 const totalDays = Math.max(1, (endDate - startDate) / 86400000);
 const trendStart = sw;
 const trendEnd = sw - (totalDays / 7) * 0.6;
@@ -1100,7 +1113,7 @@ ctx.stroke();
 const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 wLog.forEach((e, i) => {
 const x = toX(i), y = toY(e.val);
-const isSat = new Date(e.date + 'T12:00:00').getDay() === 6;
+const isSat = parseDate(e.date).getDay() === 6;
 ctx.beginPath();
 ctx.arc(x, y, isSat ? 4 : 2.5, 0, Math.PI * 2);
 ctx.fillStyle = isSat ? '#c9a84c' : '#6dbf8a';
@@ -1119,7 +1132,7 @@ ctx.textAlign = 'center';
 const maxLabels = Math.min(wLog.length, Math.floor(cw / 40));
 const step = Math.max(1, Math.floor(wLog.length / maxLabels));
 for (let i = 0; i < wLog.length; i += step) {
-const d = new Date(wLog[i].date + 'T12:00:00');
+const d = parseDate(wLog[i].date);
 const label = d.getDate() + '.' + months[d.getMonth()];
 ctx.fillText(label, toX(i), H - pad.bottom + 12);
 }
@@ -1178,7 +1191,7 @@ if (dist < minDist) { minDist = dist; nearest = i; }
 if (minDist < 30) {
 const e = wLog[nearest];
 const months = canvas._months;
-const d = new Date(e.date + 'T12:00:00');
+const d = parseDate(e.date);
 const label = d.getDate() + '. ' + months[d.getMonth()] + ': ' + e.val.toFixed(1) + ' kg';
 tooltip.textContent = label;
 tooltip.style.display = 'block';
