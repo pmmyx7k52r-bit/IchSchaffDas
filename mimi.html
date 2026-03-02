@@ -880,38 +880,38 @@ document.getElementById('w-progress').style.width = pct + '%';
 }
 
 // ── Weekly development ──
-// Use last Saturday as baseline if available, otherwise use the most recent entry from before today
 const sortedLog = [...wLog].sort((a, b) => a.date.localeCompare(b.date));
 
-// Find last Saturday entry
-const satEntries = sortedLog.filter(e => new Date(e.date + 'T12:00:00').getDay() === 6);
+const nowDate = new Date();
+const dayOfWeek = nowDate.getDay(); // 0=Sun, 1=Mon...6=Sat
 
-// Find the weekly baseline: last Saturday, or if none, the oldest entry this week (Mon-today)
-const todayDate = new Date(); todayDate.setHours(12,0,0,0);
-const dayOfWeek = todayDate.getDay(); // 0=Sun, 1=Mon...6=Sat
-const daysToLastSat = dayOfWeek === 0 ? 1 : dayOfWeek; // days since last Saturday
-const lastSatDate = new Date(todayDate);
-lastSatDate.setDate(todayDate.getDate() - daysToLastSat);
-const lastSatStr2 = lastSatDate.toISOString().split('T')[0];
+// Days back to last Saturday:
+// Sat=0, Sun=1, Mon=2, Tue=3, Wed=4, Thu=5, Fri=6
+const daysToLastSat = dayOfWeek === 6 ? 0 : dayOfWeek === 0 ? 1 : dayOfWeek + 1;
 
-// Baseline = entry on last Saturday, or first entry of the week, or first ever entry
+const lastSatDate = new Date(nowDate);
+lastSatDate.setDate(nowDate.getDate() - daysToLastSat);
+const lastSatStr = lastSatDate.toISOString().split('T')[0];
+
+// Baseline = entry on last Saturday, or nearest entry before it
 let baseline = null;
-const satEntry = sortedLog.find(e => e.date === lastSatStr2);
+const satEntry = sortedLog.find(e => e.date === lastSatStr);
 if (satEntry) {
 baseline = satEntry;
 } else {
-// Find the most recent entry at or before last Saturday
-const before = sortedLog.filter(e => e.date <= lastSatStr2);
+const before = sortedLog.filter(e => e.date < lastSatStr);
 baseline = before.length > 0 ? before[before.length - 1] : sortedLog[0];
 }
+
+const latestEntry = sortedLog[sortedLog.length - 1];
 
 const weeklyEl = document.getElementById('w-weekly');
 const weeklyVal = document.getElementById('w-weekly-val');
 const weeklyNote = document.getElementById('w-weekly-note');
 weeklyEl.style.display = 'flex';
 
-if (baseline && baseline.date !== sortedLog[sortedLog.length - 1].date) {
-const weekDiff = cur - baseline.val;
+if (baseline && latestEntry && baseline.date !== latestEntry.date) {
+const weekDiff = latestEntry.val - baseline.val;
 const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const baseDate = new Date(baseline.date + 'T12:00:00');
 const baseDateStr = baseDate.getDate() + '. ' + months[baseDate.getMonth()];
@@ -932,10 +932,10 @@ weeklyNote.className = 'w-weekly-note bad';
 weeklyNote.textContent = 'über Wochenstart (' + baseDateStr + ')';
 }
 } else {
-// Only one entry — show small goal hint, no big number yet
-const daysUntilSat = (6 - todayDate.getDay() + 7) % 7 || 7;
-const nextSat = new Date(todayDate);
-nextSat.setDate(todayDate.getDate() + daysUntilSat);
+// Only one entry or baseline = latest — show goal hint
+const daysUntilNextSat = daysToLastSat === 0 ? 7 : 7 - daysToLastSat;
+const nextSat = new Date(nowDate);
+nextSat.setDate(nowDate.getDate() + daysUntilNextSat);
 const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 weeklyVal.textContent = '— kg';
 weeklyVal.className = 'w-weekly-val neutral';
