@@ -399,6 +399,7 @@ display: block;
 }
 .big-num.bump { transform: scale(1.2); }
 .big-label { font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-top: 1px; }
+.record-label { font-size: 8px; color: var(--muted); margin-top: 3px; letter-spacing: 0.05em; white-space: nowrap; }
 
 #panel-habit .big-num { color: var(--gold); }
 #panel-habit2 .big-num { color: var(--blue); }
@@ -695,7 +696,8 @@ z-index: 10;
 <div class="habit-right">
 <div class="big-count">
 <span class="big-num" id="h1-count">0</span>
-<div class="big-label">Tage</div>
+<div class="big-label">Serie</div>
+<div class="record-label" id="h1-record"></div>
 </div>
 <button class="check-btn" id="h1-check" onclick="toggleHabit(1)">✓</button>
 </div>
@@ -715,7 +717,8 @@ z-index: 10;
 <div class="habit-right">
 <div class="big-count">
 <span class="big-num" id="h2-count">0</span>
-<div class="big-label">Tage</div>
+<div class="big-label">Serie</div>
+<div class="record-label" id="h2-record"></div>
 </div>
 <button class="check-btn" id="h2-check" onclick="toggleHabit(2)">✓</button>
 </div>
@@ -850,8 +853,34 @@ const log = load(n === 1 ? K.log1 : K.log2) || {};
 const t = today();
 const done = log[t] === true;
 document.getElementById(`h${n}-check`).classList.toggle('done', done);
+
 const days = Object.keys(log).sort();
-document.getElementById(`h${n}-count`).textContent = days.filter(d => log[d] === true).length;
+
+// Current streak: count backwards from today, break on any false/missing
+let streak = 0;
+for (let i = days.length - 1; i >= 0; i--) {
+if (log[days[i]] === true) streak++;
+else break;
+}
+
+// Best streak ever
+let best = 0, cur = 0;
+days.forEach(d => {
+if (log[d] === true) { cur++; best = Math.max(best, cur); }
+else cur = 0;
+});
+
+document.getElementById(`h${n}-count`).textContent = streak;
+
+const recEl = document.getElementById(`h${n}-record`);
+if (best > streak && best > 0) {
+recEl.textContent = '🏆 Rekord: ' + best;
+} else if (best > 0 && best === streak && streak > 1) {
+recEl.textContent = '🏆 Neuer Rekord!';
+} else {
+recEl.textContent = '';
+}
+
 const strip = document.getElementById(`h${n}-log`);
 strip.innerHTML = '';
 days.slice(-22).forEach(d => {
