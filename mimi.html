@@ -13,17 +13,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
---bg: #0f0e0c;
---panel: #141311;
---card: #1c1a17;
---border: #2a2824;
---gold: #c9a84c;
---gold-light: #e8c97a;
---text: #f0ebe0;
---muted: #6a6560;
---success: #6dbf8a;
---blue: #6aabcf;
---blue-light: #9dcde8;
+--bg: #1a1916;
+--panel: #1e1c19;
+--card: #28251f;
+--border: #3a3630;
+--gold: #d4a84c;
+--gold-light: #ecd080;
+--text: #f5f0e8;
+--muted: #9a9088;
+--success: #5dd68a;
+--blue: #7abbdf;
+--blue-light: #aad4ee;
 }
 
 - { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,9 +181,9 @@ width: 2px;
 #panel-habit2::before { background: linear-gradient(180deg, transparent, var(–blue), transparent); }
 #panel-weight::before { background: linear-gradient(180deg, transparent, var(–success), transparent); }
 
-#panel-habit { background: linear-gradient(135deg, #141210 0%, #111009 100%); }
-#panel-habit2 { background: linear-gradient(135deg, #0e1218 0%, #0b0f16 100%); }
-#panel-weight { background: linear-gradient(135deg, #0b1610 0%, #091210 100%); }
+#panel-habit { background: linear-gradient(135deg, #221f18 0%, #1d1b15 100%); }
+#panel-habit2 { background: linear-gradient(135deg, #181e26 0%, #141820 100%); }
+#panel-weight { background: linear-gradient(135deg, #162018 0%, #121c15 100%); }
 
 .panel-header {
 display: flex;
@@ -199,9 +199,9 @@ text-transform: uppercase;
 padding: 3px 8px;
 border-radius: 2px;
 }
-.tag-gold { color: var(–gold); border: 1px solid #3a2f15; background: #1a1508; }
-.tag-blue { color: var(–blue); border: 1px solid #153040; background: #0c1820; }
-.tag-green { color: var(–success); border: 1px solid #153025; background: #0c1810; }
+.tag-gold { color: var(–gold); border: 1px solid #4a3a18; background: #2a2010; }
+.tag-blue { color: var(–blue); border: 1px solid #1e3f55; background: #152535; }
+.tag-green { color: var(–success); border: 1px solid #1e4030; background: #122518; }
 
 .reset-btn {
 background: none;
@@ -448,9 +448,9 @@ font-weight: 400;
 transition: all 0.4s;
 flex-shrink: 1;
 }
-.w-weekly-note.good { background: #0d3320; border: 1px solid #4ee88a88; color: #4ee88a; }
-.w-weekly-note.warn { background: #2e2400; border: 1px solid #f0c04088; color: #f0c040; }
-.w-weekly-note.bad { background: #330d0d; border: 1px solid #ff606088; color: #ff6060; }
+.w-weekly-note.good { background: #143d28; border: 1px solid #5dd68a; color: #5dd68a; }
+.w-weekly-note.warn { background: #3a2e00; border: 1px solid #f0c040; color: #f0c040; }
+.w-weekly-note.bad { background: #401515; border: 1px solid #ff6060; color: #ff6060; }
 .w-weekly-note.neutral { background: var(–card); border: 1px solid var(–border); color: var(–muted); font-size: 9px; }
 
 /* Weight chart */
