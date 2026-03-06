@@ -13,6 +13,8 @@
 <meta name="apple-mobile-web-app-title" content="Ich mach das">
 <meta name="theme-color" content="#0f0e0c">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+</div>
+
 <script>
 // ── Inline PWA manifest + icon as data URIs ──
 (function() {
@@ -33,29 +35,29 @@ const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" w
 const iconDataUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
 
 // Apple touch icon
-const touchIcon = document.createElement(‘link’);
-touchIcon.rel = ‘apple-touch-icon’;
+const touchIcon = document.createElement('link');
+touchIcon.rel = 'apple-touch-icon';
 touchIcon.href = iconDataUrl;
 document.currentScript.parentNode.appendChild(touchIcon);
 
 // Inline manifest
 const manifest = {
-name: “Ich mach’ das!”,
-short_name: ‘Ich mach das’,
-description: ‘Habit Tracker & Gewichtstagebuch’,
-start_url: ‘.’,
-display: ‘standalone’,
-background_color: ‘#0f0e0c’,
-theme_color: ‘#0f0e0c’,
-orientation: ‘portrait’,
+name: "Ich mach' das!",
+short_name: 'Ich mach das',
+description: 'Habit Tracker & Gewichtstagebuch',
+start_url: '.',
+display: 'standalone',
+background_color: '#0f0e0c',
+theme_color: '#0f0e0c',
+orientation: 'portrait',
 icons: [
-{ src: iconDataUrl, sizes: ‘192x192’, type: ‘image/svg+xml’, purpose: ‘any maskable’ },
-{ src: iconDataUrl, sizes: ‘512x512’, type: ‘image/svg+xml’, purpose: ‘any maskable’ }
+{ src: iconDataUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+{ src: iconDataUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
 ]
 };
-const blob = new Blob([JSON.stringify(manifest)], { type: ‘application/manifest+json’ });
-const manifestLink = document.createElement(‘link’);
-manifestLink.rel = ‘manifest’;
+const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+const manifestLink = document.createElement('link');
+manifestLink.rel = 'manifest';
 manifestLink.href = URL.createObjectURL(blob);
 document.currentScript.parentNode.appendChild(manifestLink);
 })();
@@ -608,7 +610,78 @@ display: none;
 z-index: 10;
 }
 
-@media (max-width: 420px) {
+.edit-btn {
+background: none;
+border: 1px solid var(--border);
+border-radius: 3px;
+color: var(--muted);
+font-size: 12px;
+padding: 4px 8px;
+cursor: pointer;
+transition: all 0.2s;
+line-height: 1;
+}
+.edit-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Modal */
+.modal-overlay {
+position: fixed;
+inset: 0;
+background: #000000aa;
+z-index: 150;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 24px;
+animation: fadeUp 0.25s ease both;
+}
+.modal-box {
+background: #1a1916;
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 24px;
+width: 100%;
+max-width: 380px;
+position: relative;
+}
+.modal-title {
+font-family: 'Playfair Display', serif;
+font-size: 18px;
+font-weight: 700;
+margin-bottom: 20px;
+color: var(--text);
+}
+.modal-del-btn {
+flex: 1;
+background: #2a1414;
+border: 1px solid #e0606066;
+border-radius: 4px;
+color: #ff6060;
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+letter-spacing: 0.1em;
+padding: 13px 10px;
+cursor: pointer;
+transition: all 0.2s;
+white-space: nowrap;
+}
+.modal-del-btn:hover { background: #3a1a1a; }
+.modal-cancel {
+display: block;
+width: 100%;
+margin-top: 10px;
+background: none;
+border: none;
+color: var(--muted);
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+letter-spacing: 0.1em;
+padding: 8px;
+cursor: pointer;
+text-align: center;
+transition: color 0.2s;
+}
+.modal-cancel:hover { color: var(--text); }
 .panel { padding: 0 14px; }
 .weight-stats { gap: 8px; }
 }
@@ -685,7 +758,10 @@ z-index: 10;
 <div class="panel" id="panel-habit">
 <div class="panel-header">
 <span class="panel-tag tag-gold">Vorsatz 1</span>
+<div style="display:flex;gap:6px">
+<button class="edit-btn" onclick="editHabit(1)">✎</button>
 <button class="reset-btn" onclick="resetApp()">Neu starten</button>
+</div>
 </div>
 <div class="habit-layout">
 <div class="habit-left">
@@ -707,6 +783,7 @@ z-index: 10;
 <div class="panel" id="panel-habit2">
 <div class="panel-header">
 <span class="panel-tag tag-blue">Vorsatz 2</span>
+<button class="edit-btn" onclick="editHabit(2)">✎</button>
 </div>
 <div class="habit-layout">
 <div class="habit-left">
@@ -774,7 +851,22 @@ z-index: 10;
 
 </div>
 
-<script>
+<!-- ════ EDIT HABIT MODAL ════ -->
+
+<div id="edit-modal" class="modal-overlay" style="display:none">
+<div class="modal-box">
+<div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
+<div class="input-group" style="margin-bottom:16px">
+<label>Neuer Vorsatz</label>
+<input type="text" id="edit-input" maxlength="60" />
+</div>
+<div style="display:flex;gap:8px">
+<button class="btn-next" style="flex:1;padding:13px;font-size:11px" onclick="saveEditHabit()">Speichern</button>
+<button class="modal-del-btn" onclick="deleteHabit()">Löschen & neu</button>
+</div>
+<button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
+</div>
+</div>
 const K = { h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
 
 function realToday() {
@@ -795,35 +887,35 @@ return localDateStr(now);
 
 function localDateStr(d) {
 const y = d.getFullYear();
-const m = String(d.getMonth() + 1).padStart(2, '0');
-const day = String(d.getDate()).padStart(2, '0');
+const m = String(d.getMonth() + 1).padStart(2, ‘0’);
+const day = String(d.getDate()).padStart(2, ‘0’);
 return `${y}-${m}-${day}`;
 }
-function fmt(d) { const [y,m,dd]=d.split('-'); return `${dd}.${m}.${y}`; }
+function fmt(d) { const [y,m,dd]=d.split(’-’); return `${dd}.${m}.${y}`; }
 function parseDate(dateStr) {
 // Parse YYYY-MM-DD as local date (avoids UTC midnight timezone shift)
-const [y,m,d] = dateStr.split('-').map(Number);
+const [y,m,d] = dateStr.split(’-’).map(Number);
 return new Date(y, m-1, d, 12, 0, 0);
 }
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function save(k,v) { localStorage.setItem(k, JSON.stringify(v)); }
 
 function nextStep(from) {
-if (from === 0 && !document.getElementById('inp-habit1').value.trim()) { document.getElementById('inp-habit1').focus(); return; }
-if (from === 1 && !document.getElementById('inp-habit2').value.trim()) { document.getElementById('inp-habit2').focus(); return; }
-document.getElementById(`step${from}`).classList.remove('active');
-document.getElementById(`dot${from}`).classList.remove('active');
+if (from === 0 && !document.getElementById(‘inp-habit1’).value.trim()) { document.getElementById(‘inp-habit1’).focus(); return; }
+if (from === 1 && !document.getElementById(‘inp-habit2’).value.trim()) { document.getElementById(‘inp-habit2’).focus(); return; }
+document.getElementById(`step${from}`).classList.remove(‘active’);
+document.getElementById(`dot${from}`).classList.remove(‘active’);
 const next = from + 1;
-document.getElementById(`step${next}`).classList.add('active');
-document.getElementById(`dot${next}`).classList.add('active');
+document.getElementById(`step${next}`).classList.add(‘active’);
+document.getElementById(`dot${next}`).classList.add(‘active’);
 }
 
 function startApp() {
-const h1 = document.getElementById('inp-habit1').value.trim();
-const h2 = document.getElementById('inp-habit2').value.trim();
-const sw = parseFloat(document.getElementById('inp-startw').value);
-const gw = parseFloat(document.getElementById('inp-goalw').value);
-if (!sw || !gw) { document.getElementById('inp-startw').focus(); return; }
+const h1 = document.getElementById(‘inp-habit1’).value.trim();
+const h2 = document.getElementById(‘inp-habit2’).value.trim();
+const sw = parseFloat(document.getElementById(‘inp-startw’).value);
+const gw = parseFloat(document.getElementById(‘inp-goalw’).value);
+if (!sw || !gw) { document.getElementById(‘inp-startw’).focus(); return; }
 save(K.h1, h1); save(K.h2, h2); save(K.startW, sw); save(K.goalW, gw);
 const t = today();
 const l1 = {}; l1[t] = false; save(K.log1, l1);
@@ -833,13 +925,13 @@ showMain();
 }
 
 function showMain() {
-document.getElementById('setup-overlay').classList.add('hidden');
-document.getElementById('main').classList.add('visible');
+document.getElementById(‘setup-overlay’).classList.add(‘hidden’);
+document.getElementById(‘main’).classList.add(‘visible’);
 const t = today();
-document.getElementById('h1-name').textContent = load(K.h1) || '—';
-document.getElementById('h2-name').textContent = load(K.h2) || '—';
-document.getElementById('h1-date').textContent = 'Heute — ' + fmt(t);
-document.getElementById('h2-date').textContent = 'Heute — ' + fmt(t);
+document.getElementById(‘h1-name’).textContent = load(K.h1) || ‘—’;
+document.getElementById(‘h2-name’).textContent = load(K.h2) || ‘—’;
+document.getElementById(‘h1-date’).textContent = ’Heute — ’ + fmt(t);
+document.getElementById(‘h2-date’).textContent = ’Heute — ’ + fmt(t);
 const log1 = load(K.log1) || {}; const log2 = load(K.log2) || {};
 if (!(t in log1)) { log1[t] = false; save(K.log1, log1); }
 if (!(t in log2)) { log2[t] = false; save(K.log2, log2); }
@@ -852,8 +944,9 @@ function renderHabit(n) {
 const log = load(n === 1 ? K.log1 : K.log2) || {};
 const t = today();
 const done = log[t] === true;
-document.getElementById(`h${n}-check`).classList.toggle('done', done);
+document.getElementById(`h${n}-check`).classList.toggle(‘done’, done);
 
+```
 const days = Object.keys(log).sort();
 
 // Current streak: count backwards from today, break on any false/missing
@@ -890,6 +983,8 @@ pip.textContent = log[d] ? '✓' : '';
 pip.title = fmt(d);
 strip.appendChild(pip);
 });
+```
+
 }
 
 function toggleHabit(n) {
@@ -901,17 +996,18 @@ log[t] = !was;
 save(logKey, log);
 if (!was) {
 const el = document.getElementById(`h${n}-count`);
-el.classList.add('bump');
-setTimeout(() => el.classList.remove('bump'), 400);
+el.classList.add(‘bump’);
+setTimeout(() => el.classList.remove(‘bump’), 400);
 }
 renderHabit(n);
 }
 
 function renderWeight() {
 const sw = load(K.startW), gw = load(K.goalW), wLog = load(K.wLog) || [];
-document.getElementById('w-start').textContent = sw ? sw.toFixed(1) : '—';
-document.getElementById('w-goal').textContent = gw ? gw.toFixed(1) : '—';
+document.getElementById(‘w-start’).textContent = sw ? sw.toFixed(1) : ‘—’;
+document.getElementById(‘w-goal’).textContent = gw ? gw.toFixed(1) : ‘—’;
 
+```
 if (wLog.length > 0) {
 const cur = wLog[wLog.length - 1].val;
 document.getElementById('w-current').textContent = cur.toFixed(1);
@@ -1016,15 +1112,18 @@ dots.appendChild(d);
 });
 }
 drawChart();
+```
+
 }
 
 function drawChart() {
-const canvas = document.getElementById('w-chart');
+const canvas = document.getElementById(‘w-chart’);
 if (!canvas) return;
 const wLog = (load(K.wLog) || []).slice().sort((a,b) => a.date.localeCompare(b.date));
 const sw = load(K.startW), gw = load(K.goalW);
 if (!sw || !gw) return;
 
+```
 const dpr = window.devicePixelRatio || 1;
 const rect = canvas.getBoundingClientRect();
 if (rect.width === 0) return;
@@ -1171,10 +1270,12 @@ canvas._wLog = wLog;
 canvas._toX = toX;
 canvas._toY = toY;
 canvas._months = months;
+```
+
 }
 
 function logWeight() {
-const inp = document.getElementById('w-input');
+const inp = document.getElementById(‘w-input’);
 const val = parseFloat(inp.value);
 if (isNaN(val) || val < 20 || val > 400) { inp.focus(); return; }
 const wLog = load(K.wLog) || [];
@@ -1182,30 +1283,94 @@ const t = realToday();
 const idx = wLog.findIndex(e => e.date === t);
 if (idx >= 0) wLog[idx].val = val; else wLog.push({ date: t, val });
 save(K.wLog, wLog);
-inp.value = '';
+inp.value = ‘’;
 renderWeight();
 requestAnimationFrame(drawChart);
 }
 
-// Keyboard shortcuts
-document.getElementById('inp-habit1').addEventListener('keydown', e => { if (e.key === 'Enter') nextStep(0); });
-document.getElementById('inp-habit2').addEventListener('keydown', e => { if (e.key === 'Enter') nextStep(1); });
-document.getElementById('inp-startw').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('inp-goalw').focus(); });
-document.getElementById('inp-goalw').addEventListener('keydown', e => { if (e.key === 'Enter') startApp(); });
-document.getElementById('w-input').addEventListener('keydown', e => { if (e.key === 'Enter') logWeight(); });
+let _editingHabit = 0;
+
+function editHabit(n) {
+_editingHabit = n;
+const name = load(n === 1 ? K.h1 : K.h2) || ‘’;
+document.getElementById(‘edit-modal-title’).textContent = ‘Vorsatz ’ + n + ’ bearbeiten’;
+const inp = document.getElementById(‘edit-input’);
+inp.value = name;
+document.getElementById(‘edit-modal’).style.display = ‘flex’;
+setTimeout(() => inp.focus(), 100);
+}
+
+function saveEditHabit() {
+const val = document.getElementById(‘edit-input’).value.trim();
+if (!val) return;
+save(_editingHabit === 1 ? K.h1 : K.h2, val);
+document.getElementById(`h${_editingHabit}-name`).textContent = val;
+closeEditModal();
+}
+
+function deleteHabit() {
+const n = _editingHabit;
+save(n === 1 ? K.h1 : K.h2, ‘’);
+save(n === 1 ? K.log1 : K.log2, {});
+closeEditModal();
+// Show setup for just this habit
+showSingleHabitSetup(n);
+}
+
+function showSingleHabitSetup(n) {
+const color = n === 1 ? ‘var(–gold)’ : ‘var(–blue)’;
+const modal = document.getElementById(‘edit-modal’);
+modal.style.display = ‘flex’;
+modal.innerHTML = ` <div class="modal-box"> <div class="modal-title">Neuer Vorsatz ${n}</div> <div class="input-group" style="margin-bottom:16px"> <label>Was nimmst du dir vor?</label> <input type="text" id="new-habit-input" placeholder="z.B. täglich spazieren" maxlength="60" /> </div> <button class="btn-next" style="padding:13px;font-size:11px" onclick="confirmNewHabit(${n})">Speichern →</button> <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button> </div>`;
+setTimeout(() => {
+const inp = document.getElementById(‘new-habit-input’);
+if (inp) inp.focus();
+inp.addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) confirmNewHabit(n); });
+}, 100);
+}
+
+function confirmNewHabit(n) {
+const val = document.getElementById(‘new-habit-input’).value.trim();
+if (!val) return;
+const key = n === 1 ? K.h1 : K.h2;
+const logKey = n === 1 ? K.log1 : K.log2;
+save(key, val);
+const t = today();
+const newLog = {}; newLog[t] = false;
+save(logKey, newLog);
+closeEditModal();
+showMain();
+}
+
+function closeEditModal() {
+const modal = document.getElementById(‘edit-modal’);
+modal.style.display = ‘none’;
+// Restore original modal HTML in case it was replaced
+modal.innerHTML = ` <div class="modal-box"> <div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div> <div class="input-group" style="margin-bottom:16px"> <label>Neuer Vorsatz</label> <input type="text" id="edit-input" maxlength="60" /> </div> <div style="display:flex;gap:8px"> <button class="btn-next" style="flex:1;padding:13px;font-size:11px" onclick="saveEditHabit()">Speichern</button> <button class="modal-del-btn" onclick="deleteHabit()">Löschen & neu</button> </div> <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button> </div>`;
+}
+
+document.getElementById(‘edit-modal’).addEventListener(‘click’, function(e) {
+if (e.target === this) closeEditModal();
+});
+document.getElementById(‘inp-habit1’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) nextStep(0); });
+document.getElementById(‘inp-habit2’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) nextStep(1); });
+document.getElementById(‘inp-startw’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) document.getElementById(‘inp-goalw’).focus(); });
+document.getElementById(‘inp-goalw’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) startApp(); });
+document.getElementById(‘w-input’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) logWeight(); });
 
 function resetApp() {
-if (!confirm('Wirklich alles zurücksetzen?')) return;
+if (!confirm(‘Wirklich alles zurücksetzen?’)) return;
 Object.values(K).forEach(k => localStorage.removeItem(k));
 location.reload();
 }
 
 // Chart tooltip interaction
-document.addEventListener('DOMContentLoaded', () => {
-const canvas = document.getElementById('w-chart');
-const tooltip = document.getElementById('chart-tooltip');
+document.addEventListener(‘DOMContentLoaded’, () => {
+const canvas = document.getElementById(‘w-chart’);
+const tooltip = document.getElementById(‘chart-tooltip’);
 if (!canvas || !tooltip) return;
 
+```
 function handleMove(clientX, clientY) {
 if (!canvas._wLog || canvas._wLog.length < 1) return;
 const rect = canvas.getBoundingClientRect();
@@ -1238,13 +1403,15 @@ e.preventDefault();
 handleMove(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: false });
 canvas.addEventListener('touchend', () => { setTimeout(() => { tooltip.style.display = 'none'; }, 1200); });
+```
+
 });
 
 // Redraw chart on resize
-window.addEventListener('resize', drawChart);
+window.addEventListener(‘resize’, drawChart);
 
 // Use ResizeObserver to draw chart as soon as canvas has real dimensions
-const chartCanvas = document.getElementById('w-chart');
+const chartCanvas = document.getElementById(‘w-chart’);
 if (chartCanvas && window.ResizeObserver) {
 const ro = new ResizeObserver(entries => {
 for (const entry of entries) {
@@ -1257,11 +1424,11 @@ ro.observe(chartCanvas);
 }
 
 // Splash
-window.addEventListener('load', () => {
+window.addEventListener(‘load’, () => {
 setTimeout(() => {
-const splash = document.getElementById('splash');
-splash.classList.add('fade-out');
-setTimeout(() => splash.classList.add('gone'), 650);
+const splash = document.getElementById(‘splash’);
+splash.classList.add(‘fade-out’);
+setTimeout(() => splash.classList.add(‘gone’), 650);
 }, 2200);
 });
 
