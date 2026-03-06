@@ -807,10 +807,12 @@ document.getElementById(`h${n}-check`).classList.toggle('done', done);
 
 const days = Object.keys(log).sort();
 
-// Current streak: count backwards from today, break on any false/missing
+// Current streak: count backwards, skip today if not yet checked
 let streak = 0;
 for (let i = days.length - 1; i >= 0; i--) {
-if (log[days[i]] === true) streak++;
+const d = days[i];
+if (d === t && log[d] === false) continue; // today not yet checked — skip
+if (log[d] === true) streak++;
 else break;
 }
 
@@ -876,27 +878,28 @@ document.getElementById('w-progress').style.width = pct + '%';
 const sortedLog = [...wLog].sort((a, b) => a.date.localeCompare(b.date));
 
 const nowDate = new Date();
-const dayOfWeek = nowDate.getDay(); // 0=Sun, 1=Mon...6=Sat
-
-// Days back to last Saturday:
-// Sat=0, Sun=1, Mon=2, Tue=3, Wed=4, Thu=5, Fri=6
+const dayOfWeek = nowDate.getDay();
 const daysToLastSat = dayOfWeek === 6 ? 0 : dayOfWeek === 0 ? 1 : dayOfWeek + 1;
-
 const lastSatDate = new Date(nowDate);
 lastSatDate.setDate(nowDate.getDate() - daysToLastSat);
 const lastSatStr = localDateStr(lastSatDate);
 
-// Baseline = entry on last Saturday, or nearest entry before it
+const latestEntry = sortedLog[sortedLog.length - 1];
+
+// Baseline: oldest entry from this week (on or after last Saturday)
+// If none this week, use the most recent entry before last Saturday
+const thisWeekEntries = sortedLog.filter(e => e.date >= lastSatStr);
 let baseline = null;
-const satEntry = sortedLog.find(e => e.date === lastSatStr);
-if (satEntry) {
-baseline = satEntry;
+if (thisWeekEntries.length >= 2) {
+baseline = thisWeekEntries[0]; // oldest this week
+} else if (thisWeekEntries.length === 1) {
+// Only one entry this week — compare to most recent before last Saturday
+const before = sortedLog.filter(e => e.date < lastSatStr);
+baseline = before.length > 0 ? before[before.length - 1] : null;
 } else {
 const before = sortedLog.filter(e => e.date < lastSatStr);
-baseline = before.length > 0 ? before[before.length - 1] : sortedLog[0];
+baseline = before.length > 0 ? before[before.length - 1] : null;
 }
-
-const latestEntry = sortedLog[sortedLog.length - 1];
 
 const weeklyEl = document.getElementById('w-weekly');
 const weeklyVal = document.getElementById('w-weekly-val');
@@ -987,10 +990,13 @@ const pad = { top: 12, right: 16, bottom: 24, left: 36 };
 const cw = W - pad.left - pad.right;
 const ch = H - pad.top - pad.bottom;
 
-// Y range: slightly beyond start/goal
-const allVals = wLog.map(e => e.val).concat([sw, gw]);
-const minV = Math.min(...allVals) - 0.5;
-const maxV = Math.max(...allVals) + 0.5;
+// Y range: zoom in on actual data values only (not goal)
+const dataVals = wLog.map(e => e.val);
+const dataMin = Math.min(...dataVals);
+const dataMax = Math.max(...dataVals);
+const dataPad = Math.max(0.5, (dataMax - dataMin) * 0.3);
+const minV = dataMin - dataPad;
+const maxV = dataMax + dataPad;
 const rangeV = maxV - minV;
 
 const toX = (i) => pad.left + (wLog.length <= 1 ? cw / 2 : (i / (wLog.length - 1)) * cw);
