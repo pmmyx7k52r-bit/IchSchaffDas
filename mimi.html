@@ -717,18 +717,16 @@ transition: color 0.2s;
 <div class="modal-box">
 <div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
 <div class="input-group" style="margin-bottom:16px">
-<label>Neuer Vorsatz</label>
-<input type="text" id="edit-input" maxlength="60" />
+<label>Vorsatz ändern</label>
+<input type="text" id="edit-input" maxlength="60" onblur="saveEditHabit()" />
 </div>
-<div style="display:flex;gap:8px">
-<button class="btn-next" style="flex:1;padding:13px;font-size:11px" onclick="saveEditHabit()">Speichern</button>
-<button class="modal-del-btn" onclick="deleteHabit()">Löschen & neu</button>
-</div>
+<button class="modal-del-btn" style="width:100%;margin-bottom:6px" onclick="deleteHabit()">Löschen & neu starten</button>
 <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
 </div>
 </div>
 
-<script> h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
+<script>
+const K = { h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
 
 function realToday() {
 const now = new Date();
@@ -932,9 +930,9 @@ const daysUntilNextSat = daysToLastSat === 0 ? 7 : 7 - daysToLastSat;
 const nextSat = new Date(nowDate);
 nextSat.setDate(nowDate.getDate() + daysUntilNextSat);
 const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-weeklyVal.textContent = '— kg';
+weeklyVal.textContent = '';
 weeklyVal.className = 'w-weekly-val neutral';
-weeklyNote.textContent = 'Ziel: ' + ((sw || cur) - 0.6).toFixed(1) + ' kg bis Sa ' + nextSat.getDate() + '. ' + months[nextSat.getMonth()];
+weeklyNote.textContent = 'Ziel bis Sa ' + nextSat.getDate() + '. ' + months[nextSat.getMonth()] + ': ' + ((sw || cur) - 0.6).toFixed(1) + ' kg';
 weeklyNote.className = 'w-weekly-note neutral';
 }
 
@@ -955,7 +953,6 @@ forecastEl.innerHTML = `Bei 0,6 kg/Woche wird das Ziel am <span>${dateStr}</span
 }
 } else {
 document.getElementById('w-current').textContent = sw ? sw.toFixed(1) : '—';
-document.getElementById('w-diff').textContent = '0.0';
 }
 
 const dots = document.getElementById('w-dots');
@@ -1149,7 +1146,11 @@ document.getElementById('edit-modal-title').textContent = 'Vorsatz ' + n + ' bea
 const inp = document.getElementById('edit-input');
 inp.value = name;
 document.getElementById('edit-modal').style.display = 'flex';
-setTimeout(() => inp.focus(), 100);
+setTimeout(() => {
+inp.focus();
+inp.select();
+inp.addEventListener('keydown', e => { if (e.key === 'Enter') { saveEditHabit(); closeEditModal(); } }, { once: true });
+}, 100);
 }
 
 function saveEditHabit() {
@@ -1206,18 +1207,14 @@ showMain();
 function closeEditModal() {
 const modal = document.getElementById('edit-modal');
 modal.style.display = 'none';
-// Restore original modal HTML in case it was replaced
 modal.innerHTML = `
 <div class="modal-box">
 <div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
 <div class="input-group" style="margin-bottom:16px">
-<label>Neuer Vorsatz</label>
-<input type="text" id="edit-input" maxlength="60" />
+<label>Vorsatz ändern</label>
+<input type="text" id="edit-input" maxlength="60" onblur="saveEditHabit()" />
 </div>
-<div style="display:flex;gap:8px">
-<button class="btn-next" style="flex:1;padding:13px;font-size:11px" onclick="saveEditHabit()">Speichern</button>
-<button class="modal-del-btn" onclick="deleteHabit()">Löschen & neu</button>
-</div>
+<button class="modal-del-btn" style="width:100%;margin-bottom:6px" onclick="deleteHabit()">Löschen & neu starten</button>
 <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
 </div>`;
 }
