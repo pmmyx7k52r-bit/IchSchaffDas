@@ -5,64 +5,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Ich mach' das!</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ich mach das">
 <meta name="theme-color" content="#0f0e0c">
+<title>Ich mach' das!</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-</div>
-
-<script>
-// ── Inline PWA manifest + icon as data URIs ──
-(function() {
-const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-<rect width="512" height="512" rx="112" fill="#1a3d28"/>
-<radialGradient id="g" cx="50%" cy="45%" r="55%">
-<stop offset="0%" stop-color="#2d6644"/>
-<stop offset="100%" stop-color="#0f2518"/>
-</radialGradient>
-<rect width="512" height="512" rx="112" fill="url(#g)"/>
-<rect x="148" y="272" width="96" height="148" rx="20" fill="#f5c878"/>
-<path d="M244 272 C244 272 252 180 268 155 C278 138 295 128 310 135 C328 143 330 165 322 185 C314 205 296 220 296 220 L380 220 C396 220 408 232 408 248 C408 258 403 267 394 272 C402 276 408 285 408 295 C408 308 399 319 386 321 C390 328 390 338 385 346 C380 354 371 358 362 357 C362 365 357 374 348 378 C339 382 296 382 270 376 C258 373 244 364 244 355 Z" fill="#f5c878"/>
-<path d="M310 240 Q325 235 338 240" stroke="#e8a84a" stroke-width="5" stroke-linecap="round" fill="none"/>
-<path d="M320 265 Q337 260 350 265" stroke="#e8a84a" stroke-width="5" stroke-linecap="round" fill="none"/>
-<circle cx="256" cy="460" r="12" fill="#c9a84c" opacity="0.6"/>
-<circle cx="256" cy="460" r="6" fill="#c9a84c"/>
-</svg>`;
-const iconDataUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
-
-// Apple touch icon
-const touchIcon = document.createElement('link');
-touchIcon.rel = 'apple-touch-icon';
-touchIcon.href = iconDataUrl;
-document.currentScript.parentNode.appendChild(touchIcon);
-
-// Inline manifest
-const manifest = {
-name: "Ich mach' das!",
-short_name: 'Ich mach das',
-description: 'Habit Tracker & Gewichtstagebuch',
-start_url: '.',
-display: 'standalone',
-background_color: '#0f0e0c',
-theme_color: '#0f0e0c',
-orientation: 'portrait',
-icons: [
-{ src: iconDataUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-{ src: iconDataUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
-]
-};
-const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-const manifestLink = document.createElement('link');
-manifestLink.rel = 'manifest';
-manifestLink.href = URL.createObjectURL(blob);
-document.currentScript.parentNode.appendChild(manifestLink);
-})();
-</script>
-
 <style>
 :root {
 --bg: #0f0e0c;
@@ -78,98 +26,19 @@ document.currentScript.parentNode.appendChild(manifestLink);
 --blue-light: #9dcde8;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+- { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
 
 body {
-background: var(--bg);
-color: var(--text);
-font-family: 'DM Mono', monospace;
+background: var(–bg);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
 }
 
-/* ─── SPLASH SCREEN ─── */
-#splash {
-position: fixed;
-inset: 0;
-background: #0f2518;
-background-image: radial-gradient(ellipse at 50% 40%, #1a3d28 0%, #0a1a10 70%);
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-z-index: 200;
-transition: opacity 0.6s ease, transform 0.6s ease;
-}
-#splash.fade-out {
-opacity: 0;
-transform: scale(1.05);
-pointer-events: none;
-}
-#splash.gone { display: none; }
-
-.splash-icon {
-font-size: 96px;
-line-height: 1;
-margin-bottom: 28px;
-animation: splashBounce 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-animation-delay: 0.2s;
-opacity: 0;
-}
-.splash-title {
-font-family: 'Playfair Display', serif;
-font-size: 28px;
-font-weight: 900;
-color: #f0ebe0;
-letter-spacing: 0.05em;
-animation: splashFade 0.5s ease both;
-animation-delay: 0.5s;
-opacity: 0;
-}
-.splash-sub {
-font-family: 'DM Mono', monospace;
-font-size: 10px;
-letter-spacing: 0.4em;
-color: #6dbf8a;
-text-transform: uppercase;
-margin-top: 8px;
-animation: splashFade 0.5s ease both;
-animation-delay: 0.7s;
-opacity: 0;
-}
-.splash-bar {
-width: 120px;
-height: 2px;
-background: #1a3d28;
-border-radius: 2px;
-margin-top: 40px;
-overflow: hidden;
-animation: splashFade 0.5s ease both;
-animation-delay: 0.8s;
-opacity: 0;
-}
-.splash-bar-fill {
-height: 100%;
-background: linear-gradient(90deg, #6dbf8a, #c9a84c);
-border-radius: 2px;
-animation: splashLoad 1.2s ease both;
-animation-delay: 0.9s;
-}
-@keyframes splashBounce {
-from { opacity: 0; transform: scale(0.4) translateY(30px); }
-to { opacity: 1; transform: scale(1) translateY(0); }
-}
-@keyframes splashFade {
-from { opacity: 0; transform: translateY(10px); }
-to { opacity: 1; transform: translateY(0); }
-}
-@keyframes splashLoad {
-from { width: 0%; }
-to { width: 100%; }
-}
 #setup-overlay {
 position: fixed;
 inset: 0;
-background: var(--bg);
+background: var(–bg);
 background-image: radial-gradient(ellipse at 20% 20%, #1e1a10 0%, transparent 60%),
 radial-gradient(ellipse at 80% 80%, #0c1218 0%, transparent 60%);
 display: flex;
@@ -191,10 +60,10 @@ text-align: center;
 .setup-step.active { display: block; }
 
 .logo {
-font-family: 'Playfair Display', serif;
+font-family: ‘Playfair Display’, serif;
 font-size: 11px;
 letter-spacing: 0.45em;
-color: var(--gold);
+color: var(–gold);
 text-transform: uppercase;
 margin-bottom: 44px;
 }
@@ -208,13 +77,13 @@ margin-bottom: 30px;
 .step-dot {
 width: 6px; height: 6px;
 border-radius: 50%;
-background: var(--border);
+background: var(–border);
 transition: background 0.3s;
 }
-.step-dot.active { background: var(--gold); }
+.step-dot.active { background: var(–gold); }
 
 .setup-headline {
-font-family: 'Playfair Display', serif;
+font-family: ‘Playfair Display’, serif;
 font-size: clamp(26px, 5.5vw, 38px);
 font-weight: 900;
 line-height: 1.15;
@@ -222,7 +91,7 @@ margin-bottom: 8px;
 }
 
 .setup-sub {
-color: var(--muted);
+color: var(–muted);
 font-size: 11px;
 letter-spacing: 0.08em;
 margin-bottom: 32px;
@@ -233,25 +102,25 @@ margin-bottom: 32px;
 display: block;
 font-size: 9px;
 letter-spacing: 0.3em;
-color: var(--muted);
+color: var(–muted);
 text-transform: uppercase;
 margin-bottom: 8px;
 text-align: left;
 }
 .input-group input {
 width: 100%;
-background: var(--card);
-border: 1px solid var(--border);
+background: var(–card);
+border: 1px solid var(–border);
 border-radius: 4px;
-color: var(--text);
-font-family: 'DM Mono', monospace;
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
 font-size: 15px;
 padding: 15px 18px;
 outline: none;
 transition: border-color 0.2s;
 }
-.input-group input:focus { border-color: var(--gold); }
-.input-group input::placeholder { color: var(--muted); }
+.input-group input:focus { border-color: var(–gold); }
+.input-group input::placeholder { color: var(–muted); }
 
 .weight-row {
 display: grid;
@@ -262,11 +131,11 @@ margin-bottom: 14px;
 
 .btn-next {
 width: 100%;
-background: var(--gold);
+background: var(–gold);
 color: #0f0e0c;
 border: none;
 border-radius: 4px;
-font-family: 'DM Mono', monospace;
+font-family: ‘DM Mono’, monospace;
 font-size: 12px;
 font-weight: 500;
 letter-spacing: 0.18em;
@@ -276,7 +145,7 @@ cursor: pointer;
 margin-top: 6px;
 transition: background 0.2s, transform 0.1s;
 }
-.btn-next:hover { background: var(--gold-light); }
+.btn-next:hover { background: var(–gold-light); }
 .btn-next:active { transform: scale(0.98); }
 
 /* ─── MAIN LAYOUT ─── */
@@ -295,7 +164,7 @@ padding: 0 22px;
 justify-content: center;
 overflow: hidden;
 }
-.panel:not(:last-child) { border-bottom: 1px solid var(--border); }
+.panel:not(:last-child) { border-bottom: 1px solid var(–border); }
 
 /* Habit panels: smaller — roughly 20% each */
 #panel-habit, #panel-habit2 { flex: 0 0 20%; min-height: 0; }
@@ -303,14 +172,14 @@ overflow: hidden;
 #panel-weight { flex: 1; min-height: 0; }
 
 .panel::before {
-content: '';
+content: ‘’;
 position: absolute;
 left: 0; top: 0; bottom: 0;
 width: 2px;
 }
-#panel-habit::before { background: linear-gradient(180deg, transparent, var(--gold), transparent); }
-#panel-habit2::before { background: linear-gradient(180deg, transparent, var(--blue), transparent); }
-#panel-weight::before { background: linear-gradient(180deg, transparent, var(--success), transparent); }
+#panel-habit::before { background: linear-gradient(180deg, transparent, var(–gold), transparent); }
+#panel-habit2::before { background: linear-gradient(180deg, transparent, var(–blue), transparent); }
+#panel-weight::before { background: linear-gradient(180deg, transparent, var(–success), transparent); }
 
 #panel-habit { background: linear-gradient(135deg, #141210 0%, #111009 100%); }
 #panel-habit2 { background: linear-gradient(135deg, #0e1218 0%, #0b0f16 100%); }
@@ -330,23 +199,23 @@ text-transform: uppercase;
 padding: 3px 8px;
 border-radius: 2px;
 }
-.tag-gold { color: var(--gold); border: 1px solid #3a2f15; background: #1a1508; }
-.tag-blue { color: var(--blue); border: 1px solid #153040; background: #0c1820; }
-.tag-green { color: var(--success); border: 1px solid #153025; background: #0c1810; }
+.tag-gold { color: var(–gold); border: 1px solid #3a2f15; background: #1a1508; }
+.tag-blue { color: var(–blue); border: 1px solid #153040; background: #0c1820; }
+.tag-green { color: var(–success); border: 1px solid #153025; background: #0c1810; }
 
 .reset-btn {
 background: none;
-border: 1px solid var(--border);
+border: 1px solid var(–border);
 border-radius: 3px;
-color: var(--muted);
-font-family: 'DM Mono', monospace;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
 font-size: 9px;
 letter-spacing: 0.1em;
 padding: 5px 10px;
 cursor: pointer;
 transition: all 0.2s;
 }
-.reset-btn:hover { border-color: var(--muted); color: var(--text); }
+.reset-btn:hover { border-color: var(–muted); color: var(–text); }
 
 /* Habit layout */
 .habit-layout {
@@ -357,7 +226,7 @@ gap: 12px;
 }
 .habit-left { flex: 1; min-width: 0; }
 .habit-name {
-font-family: 'Playfair Display', serif;
+font-family: ‘Playfair Display’, serif;
 font-size: clamp(13px, 2.5vw, 18px);
 font-weight: 700;
 line-height: 1.2;
@@ -368,7 +237,7 @@ margin-bottom: 3px;
 }
 .today-badge {
 font-size: 7px;
-color: var(--muted);
+color: var(–muted);
 letter-spacing: 0.15em;
 margin-bottom: 5px;
 }
@@ -376,12 +245,12 @@ margin-bottom: 5px;
 .log-pip {
 width: 14px; height: 14px;
 border-radius: 2px;
-border: 1px solid var(--border);
-background: var(--card);
+border: 1px solid var(–border);
+background: var(–card);
 font-size: 7px;
 display: flex; align-items: center; justify-content: center;
 }
-.log-pip.ok { background: #192a1e; border-color: var(--success); color: var(--success); }
+.log-pip.ok { background: #192a1e; border-color: var(–success); color: var(–success); }
 .log-pip.no { background: #1e1414; border-color: #4a2828; }
 
 .habit-right {
@@ -392,7 +261,7 @@ flex-shrink: 0;
 }
 .big-count { text-align: center; }
 .big-num {
-font-family: 'Playfair Display', serif;
+font-family: ‘Playfair Display’, serif;
 font-size: clamp(28px, 6vw, 44px);
 font-weight: 900;
 line-height: 1;
@@ -400,27 +269,27 @@ transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 display: block;
 }
 .big-num.bump { transform: scale(1.2); }
-.big-label { font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-top: 1px; }
-.record-label { font-size: 8px; color: var(--muted); margin-top: 3px; letter-spacing: 0.05em; white-space: nowrap; }
+.big-label { font-size: 7px; letter-spacing: 0.2em; color: var(–muted); text-transform: uppercase; margin-top: 1px; }
+.record-label { font-size: 8px; color: var(–muted); margin-top: 3px; letter-spacing: 0.05em; white-space: nowrap; }
 
-#panel-habit .big-num { color: var(--gold); }
-#panel-habit2 .big-num { color: var(--blue); }
+#panel-habit .big-num { color: var(–gold); }
+#panel-habit2 .big-num { color: var(–blue); }
 
 .check-btn {
 width: 38px; height: 38px;
 border-radius: 50%;
-border: 2px solid var(--border);
-background: var(--card);
+border: 2px solid var(–border);
+background: var(–card);
 cursor: pointer;
 display: flex; align-items: center; justify-content: center;
 font-size: 16px;
 transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 color: transparent;
 }
-#panel-habit .check-btn:hover { border-color: var(--gold); }
-#panel-habit .check-btn.done { border-color: var(--success); background: var(--success); color: #0a1e10; transform: scale(1.08); }
-#panel-habit2 .check-btn:hover { border-color: var(--blue); }
-#panel-habit2 .check-btn.done { border-color: var(--blue); background: var(--blue); color: #051020; transform: scale(1.08); }
+#panel-habit .check-btn:hover { border-color: var(–gold); }
+#panel-habit .check-btn.done { border-color: var(–success); background: var(–success); color: #0a1e10; transform: scale(1.08); }
+#panel-habit2 .check-btn:hover { border-color: var(–blue); }
+#panel-habit2 .check-btn.done { border-color: var(–blue); background: var(–blue); color: #051020; transform: scale(1.08); }
 
 /* Weight panel */
 .weight-layout {
@@ -437,18 +306,18 @@ flex: 1;
 }
 .wstat { text-align: center; }
 .wstat-val {
-font-family: 'Playfair Display', serif;
+font-family: ‘Playfair Display’, serif;
 font-size: clamp(20px, 4.5vw, 34px);
 font-weight: 700;
 line-height: 1;
 }
-.wstat-label { font-size: 8px; letter-spacing: 0.25em; color: var(--muted); text-transform: uppercase; margin-top: 3px; }
-.wstat.current .wstat-val { color: var(--success); }
-.wstat.start .wstat-val { color: var(--muted); }
-.wstat.goal .wstat-val { color: var(--gold); }
-.wstat.diff .wstat-val { color: var(--blue-light); }
+.wstat-label { font-size: 8px; letter-spacing: 0.25em; color: var(–muted); text-transform: uppercase; margin-top: 3px; }
+.wstat.current .wstat-val { color: var(–success); }
+.wstat.start .wstat-val { color: var(–muted); }
+.wstat.goal .wstat-val { color: var(–gold); }
+.wstat.diff .wstat-val { color: var(–blue-light); }
 
-.w-divider { width: 1px; height: 44px; background: var(--border); flex-shrink: 0; }
+.w-divider { width: 1px; height: 44px; background: var(–border); flex-shrink: 0; }
 
 .weight-entry {
 display: flex;
@@ -461,32 +330,32 @@ flex-shrink: 0;
 display: flex;
 align-items: center;
 gap: 6px;
-background: var(--card);
-border: 1px solid var(--border);
+background: var(–card);
+border: 1px solid var(–border);
 border-radius: 4px;
 padding: 7px 12px;
 transition: border-color 0.2s;
 }
-.weight-input-wrap:focus-within { border-color: var(--success); }
+.weight-input-wrap:focus-within { border-color: var(–success); }
 .weight-input-wrap input {
 width: 65px;
 background: none;
 border: none;
-color: var(--text);
-font-family: 'DM Mono', monospace;
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
 font-size: 17px;
 outline: none;
 text-align: right;
 }
-.weight-input-wrap input::placeholder { color: var(--border); }
-.weight-unit { color: var(--muted); font-size: 11px; letter-spacing: 0.1em; }
+.weight-input-wrap input::placeholder { color: var(–border); }
+.weight-unit { color: var(–muted); font-size: 11px; letter-spacing: 0.1em; }
 
 .btn-log-weight {
 background: #1a2e1e;
-border: 1px solid var(--success);
+border: 1px solid var(–success);
 border-radius: 3px;
-color: var(--success);
-font-family: 'DM Mono', monospace;
+color: var(–success);
+font-family: ‘DM Mono’, monospace;
 font-size: 9px;
 letter-spacing: 0.15em;
 padding: 8px 14px;
@@ -501,21 +370,21 @@ white-space: nowrap;
 .wlog-dot {
 width: 5px; height: 5px;
 border-radius: 50%;
-background: var(--success);
+background: var(–success);
 opacity: 0.4;
 }
 .wlog-dot:last-child { opacity: 1; }
 
 .weight-progress-bar {
 height: 2px;
-background: var(--border);
+background: var(–border);
 border-radius: 2px;
 overflow: hidden;
 margin-top: 10px;
 }
 .weight-progress-fill {
 height: 100%;
-background: linear-gradient(90deg, var(--success), var(--gold));
+background: linear-gradient(90deg, var(–success), var(–gold));
 border-radius: 2px;
 transition: width 0.6s ease;
 }
@@ -537,17 +406,17 @@ to { opacity: 1; transform: translateX(0); }
 .w-forecast {
 font-size: 10px;
 letter-spacing: 0.12em;
-color: var(--muted);
+color: var(–muted);
 margin-top: 7px;
 min-height: 14px;
 transition: color 0.3s;
 }
 .w-forecast span {
-color: var(--gold);
+color: var(–gold);
 font-weight: 500;
 }
 .w-forecast.done {
-color: var(--success);
+color: var(–success);
 }
 
 .w-weekly {
@@ -557,9 +426,9 @@ gap: 12px;
 margin-top: 6px;
 flex-wrap: wrap;
 }
-.w-weekly-label { color: var(--muted); font-size: 9px; letter-spacing: 0.15em; flex-shrink: 0; }
+.w-weekly-label { color: var(–muted); font-size: 9px; letter-spacing: 0.15em; flex-shrink: 0; }
 .w-weekly-val {
-font-family: 'Playfair Display', serif;
+font-family: ‘Playfair Display’, serif;
 font-size: clamp(30px, 7vw, 46px);
 font-weight: 900;
 transition: color 0.4s;
@@ -569,7 +438,7 @@ flex-shrink: 0;
 .w-weekly-val.good { color: #4ee88a; text-shadow: 0 0 20px #4ee88a55; }
 .w-weekly-val.warn { color: #f0c040; text-shadow: 0 0 20px #f0c04055; }
 .w-weekly-val.bad { color: #ff6060; text-shadow: 0 0 20px #ff606055; }
-.w-weekly-val.neutral { color: var(--muted); }
+.w-weekly-val.neutral { color: var(–muted); }
 .w-weekly-note {
 font-size: 10px;
 letter-spacing: 0.08em;
@@ -582,7 +451,7 @@ flex-shrink: 1;
 .w-weekly-note.good { background: #0d3320; border: 1px solid #4ee88a88; color: #4ee88a; }
 .w-weekly-note.warn { background: #2e2400; border: 1px solid #f0c04088; color: #f0c040; }
 .w-weekly-note.bad { background: #330d0d; border: 1px solid #ff606088; color: #ff6060; }
-.w-weekly-note.neutral { background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 9px; }
+.w-weekly-note.neutral { background: var(–card); border: 1px solid var(–border); color: var(–muted); font-size: 9px; }
 
 /* Weight chart */
 .w-chart-wrap {
@@ -599,11 +468,11 @@ display: block;
 .chart-tooltip {
 position: absolute;
 background: #1c1a17ee;
-border: 1px solid var(--border);
+border: 1px solid var(–border);
 border-radius: 4px;
 padding: 4px 8px;
 font-size: 10px;
-color: var(--text);
+color: var(–text);
 pointer-events: none;
 white-space: nowrap;
 display: none;
@@ -612,16 +481,16 @@ z-index: 10;
 
 .edit-btn {
 background: none;
-border: 1px solid var(--border);
+border: 1px solid var(–border);
 border-radius: 3px;
-color: var(--muted);
+color: var(–muted);
 font-size: 12px;
 padding: 4px 8px;
 cursor: pointer;
 transition: all 0.2s;
 line-height: 1;
 }
-.edit-btn:hover { border-color: var(--gold); color: var(--gold); }
+.edit-btn:hover { border-color: var(–gold); color: var(–gold); }
 
 /* Modal */
 .modal-overlay {
@@ -637,7 +506,7 @@ animation: fadeUp 0.25s ease both;
 }
 .modal-box {
 background: #1a1916;
-border: 1px solid var(--border);
+border: 1px solid var(–border);
 border-radius: 8px;
 padding: 24px;
 width: 100%;
@@ -645,11 +514,11 @@ max-width: 380px;
 position: relative;
 }
 .modal-title {
-font-family: 'Playfair Display', serif;
+font-family: ‘Playfair Display’, serif;
 font-size: 18px;
 font-weight: 700;
 margin-bottom: 20px;
-color: var(--text);
+color: var(–text);
 }
 .modal-del-btn {
 flex: 1;
@@ -657,7 +526,7 @@ background: #2a1414;
 border: 1px solid #e0606066;
 border-radius: 4px;
 color: #ff6060;
-font-family: 'DM Mono', monospace;
+font-family: ‘DM Mono’, monospace;
 font-size: 10px;
 letter-spacing: 0.1em;
 padding: 13px 10px;
@@ -672,8 +541,8 @@ width: 100%;
 margin-top: 10px;
 background: none;
 border: none;
-color: var(--muted);
-font-family: 'DM Mono', monospace;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
 font-size: 10px;
 letter-spacing: 0.1em;
 padding: 8px;
@@ -681,7 +550,7 @@ cursor: pointer;
 text-align: center;
 transition: color 0.2s;
 }
-.modal-cancel:hover { color: var(--text); }
+.modal-cancel:hover { color: var(–text); }
 .panel { padding: 0 14px; }
 .weight-stats { gap: 8px; }
 }
@@ -689,15 +558,6 @@ transition: color 0.2s;
 
 </head>
 <body>
-
-<!-- ════ SPLASH SCREEN ════ -->
-
-<div id="splash">
-<div class="splash-icon">👍🏼</div>
-<div class="splash-title">Ich mach' das!</div>
-<div class="splash-sub">Jeden Tag ein Schritt</div>
-<div class="splash-bar"><div class="splash-bar-fill"></div></div>
-</div>
 
 <!-- ════ SETUP OVERLAY ════ -->
 
@@ -867,7 +727,8 @@ transition: color 0.2s;
 <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
 </div>
 </div>
-const K = { h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
+
+<script> h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
 
 function realToday() {
 const now = new Date();
@@ -887,35 +748,35 @@ return localDateStr(now);
 
 function localDateStr(d) {
 const y = d.getFullYear();
-const m = String(d.getMonth() + 1).padStart(2, ‘0’);
-const day = String(d.getDate()).padStart(2, ‘0’);
+const m = String(d.getMonth() + 1).padStart(2, '0');
+const day = String(d.getDate()).padStart(2, '0');
 return `${y}-${m}-${day}`;
 }
-function fmt(d) { const [y,m,dd]=d.split(’-’); return `${dd}.${m}.${y}`; }
+function fmt(d) { const [y,m,dd]=d.split('-'); return `${dd}.${m}.${y}`; }
 function parseDate(dateStr) {
 // Parse YYYY-MM-DD as local date (avoids UTC midnight timezone shift)
-const [y,m,d] = dateStr.split(’-’).map(Number);
+const [y,m,d] = dateStr.split('-').map(Number);
 return new Date(y, m-1, d, 12, 0, 0);
 }
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function save(k,v) { localStorage.setItem(k, JSON.stringify(v)); }
 
 function nextStep(from) {
-if (from === 0 && !document.getElementById(‘inp-habit1’).value.trim()) { document.getElementById(‘inp-habit1’).focus(); return; }
-if (from === 1 && !document.getElementById(‘inp-habit2’).value.trim()) { document.getElementById(‘inp-habit2’).focus(); return; }
-document.getElementById(`step${from}`).classList.remove(‘active’);
-document.getElementById(`dot${from}`).classList.remove(‘active’);
+if (from === 0 && !document.getElementById('inp-habit1').value.trim()) { document.getElementById('inp-habit1').focus(); return; }
+if (from === 1 && !document.getElementById('inp-habit2').value.trim()) { document.getElementById('inp-habit2').focus(); return; }
+document.getElementById(`step${from}`).classList.remove('active');
+document.getElementById(`dot${from}`).classList.remove('active');
 const next = from + 1;
-document.getElementById(`step${next}`).classList.add(‘active’);
-document.getElementById(`dot${next}`).classList.add(‘active’);
+document.getElementById(`step${next}`).classList.add('active');
+document.getElementById(`dot${next}`).classList.add('active');
 }
 
 function startApp() {
-const h1 = document.getElementById(‘inp-habit1’).value.trim();
-const h2 = document.getElementById(‘inp-habit2’).value.trim();
-const sw = parseFloat(document.getElementById(‘inp-startw’).value);
-const gw = parseFloat(document.getElementById(‘inp-goalw’).value);
-if (!sw || !gw) { document.getElementById(‘inp-startw’).focus(); return; }
+const h1 = document.getElementById('inp-habit1').value.trim();
+const h2 = document.getElementById('inp-habit2').value.trim();
+const sw = parseFloat(document.getElementById('inp-startw').value);
+const gw = parseFloat(document.getElementById('inp-goalw').value);
+if (!sw || !gw) { document.getElementById('inp-startw').focus(); return; }
 save(K.h1, h1); save(K.h2, h2); save(K.startW, sw); save(K.goalW, gw);
 const t = today();
 const l1 = {}; l1[t] = false; save(K.log1, l1);
@@ -925,13 +786,13 @@ showMain();
 }
 
 function showMain() {
-document.getElementById(‘setup-overlay’).classList.add(‘hidden’);
-document.getElementById(‘main’).classList.add(‘visible’);
+document.getElementById('setup-overlay').classList.add('hidden');
+document.getElementById('main').classList.add('visible');
 const t = today();
-document.getElementById(‘h1-name’).textContent = load(K.h1) || ‘—’;
-document.getElementById(‘h2-name’).textContent = load(K.h2) || ‘—’;
-document.getElementById(‘h1-date’).textContent = ’Heute — ’ + fmt(t);
-document.getElementById(‘h2-date’).textContent = ’Heute — ’ + fmt(t);
+document.getElementById('h1-name').textContent = load(K.h1) || '—';
+document.getElementById('h2-name').textContent = load(K.h2) || '—';
+document.getElementById('h1-date').textContent = 'Heute — ' + fmt(t);
+document.getElementById('h2-date').textContent = 'Heute — ' + fmt(t);
 const log1 = load(K.log1) || {}; const log2 = load(K.log2) || {};
 if (!(t in log1)) { log1[t] = false; save(K.log1, log1); }
 if (!(t in log2)) { log2[t] = false; save(K.log2, log2); }
@@ -944,9 +805,8 @@ function renderHabit(n) {
 const log = load(n === 1 ? K.log1 : K.log2) || {};
 const t = today();
 const done = log[t] === true;
-document.getElementById(`h${n}-check`).classList.toggle(‘done’, done);
+document.getElementById(`h${n}-check`).classList.toggle('done', done);
 
-```
 const days = Object.keys(log).sort();
 
 // Current streak: count backwards from today, break on any false/missing
@@ -983,8 +843,6 @@ pip.textContent = log[d] ? '✓' : '';
 pip.title = fmt(d);
 strip.appendChild(pip);
 });
-```
-
 }
 
 function toggleHabit(n) {
@@ -996,18 +854,17 @@ log[t] = !was;
 save(logKey, log);
 if (!was) {
 const el = document.getElementById(`h${n}-count`);
-el.classList.add(‘bump’);
-setTimeout(() => el.classList.remove(‘bump’), 400);
+el.classList.add('bump');
+setTimeout(() => el.classList.remove('bump'), 400);
 }
 renderHabit(n);
 }
 
 function renderWeight() {
 const sw = load(K.startW), gw = load(K.goalW), wLog = load(K.wLog) || [];
-document.getElementById(‘w-start’).textContent = sw ? sw.toFixed(1) : ‘—’;
-document.getElementById(‘w-goal’).textContent = gw ? gw.toFixed(1) : ‘—’;
+document.getElementById('w-start').textContent = sw ? sw.toFixed(1) : '—';
+document.getElementById('w-goal').textContent = gw ? gw.toFixed(1) : '—';
 
-```
 if (wLog.length > 0) {
 const cur = wLog[wLog.length - 1].val;
 document.getElementById('w-current').textContent = cur.toFixed(1);
@@ -1112,18 +969,15 @@ dots.appendChild(d);
 });
 }
 drawChart();
-```
-
 }
 
 function drawChart() {
-const canvas = document.getElementById(‘w-chart’);
+const canvas = document.getElementById('w-chart');
 if (!canvas) return;
 const wLog = (load(K.wLog) || []).slice().sort((a,b) => a.date.localeCompare(b.date));
 const sw = load(K.startW), gw = load(K.goalW);
 if (!sw || !gw) return;
 
-```
 const dpr = window.devicePixelRatio || 1;
 const rect = canvas.getBoundingClientRect();
 if (rect.width === 0) return;
@@ -1270,12 +1124,10 @@ canvas._wLog = wLog;
 canvas._toX = toX;
 canvas._toY = toY;
 canvas._months = months;
-```
-
 }
 
 function logWeight() {
-const inp = document.getElementById(‘w-input’);
+const inp = document.getElementById('w-input');
 const val = parseFloat(inp.value);
 if (isNaN(val) || val < 20 || val > 400) { inp.focus(); return; }
 const wLog = load(K.wLog) || [];
@@ -1283,7 +1135,7 @@ const t = realToday();
 const idx = wLog.findIndex(e => e.date === t);
 if (idx >= 0) wLog[idx].val = val; else wLog.push({ date: t, val });
 save(K.wLog, wLog);
-inp.value = ‘’;
+inp.value = '';
 renderWeight();
 requestAnimationFrame(drawChart);
 }
@@ -1292,16 +1144,16 @@ let _editingHabit = 0;
 
 function editHabit(n) {
 _editingHabit = n;
-const name = load(n === 1 ? K.h1 : K.h2) || ‘’;
-document.getElementById(‘edit-modal-title’).textContent = ‘Vorsatz ’ + n + ’ bearbeiten’;
-const inp = document.getElementById(‘edit-input’);
+const name = load(n === 1 ? K.h1 : K.h2) || '';
+document.getElementById('edit-modal-title').textContent = 'Vorsatz ' + n + ' bearbeiten';
+const inp = document.getElementById('edit-input');
 inp.value = name;
-document.getElementById(‘edit-modal’).style.display = ‘flex’;
+document.getElementById('edit-modal').style.display = 'flex';
 setTimeout(() => inp.focus(), 100);
 }
 
 function saveEditHabit() {
-const val = document.getElementById(‘edit-input’).value.trim();
+const val = document.getElementById('edit-input').value.trim();
 if (!val) return;
 save(_editingHabit === 1 ? K.h1 : K.h2, val);
 document.getElementById(`h${_editingHabit}-name`).textContent = val;
@@ -1310,7 +1162,7 @@ closeEditModal();
 
 function deleteHabit() {
 const n = _editingHabit;
-save(n === 1 ? K.h1 : K.h2, ‘’);
+save(n === 1 ? K.h1 : K.h2, '');
 save(n === 1 ? K.log1 : K.log2, {});
 closeEditModal();
 // Show setup for just this habit
@@ -1318,19 +1170,28 @@ showSingleHabitSetup(n);
 }
 
 function showSingleHabitSetup(n) {
-const color = n === 1 ? ‘var(–gold)’ : ‘var(–blue)’;
-const modal = document.getElementById(‘edit-modal’);
-modal.style.display = ‘flex’;
-modal.innerHTML = ` <div class="modal-box"> <div class="modal-title">Neuer Vorsatz ${n}</div> <div class="input-group" style="margin-bottom:16px"> <label>Was nimmst du dir vor?</label> <input type="text" id="new-habit-input" placeholder="z.B. täglich spazieren" maxlength="60" /> </div> <button class="btn-next" style="padding:13px;font-size:11px" onclick="confirmNewHabit(${n})">Speichern →</button> <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button> </div>`;
+const color = n === 1 ? 'var(--gold)' : 'var(--blue)';
+const modal = document.getElementById('edit-modal');
+modal.style.display = 'flex';
+modal.innerHTML = `
+<div class="modal-box">
+<div class="modal-title">Neuer Vorsatz ${n}</div>
+<div class="input-group" style="margin-bottom:16px">
+<label>Was nimmst du dir vor?</label>
+<input type="text" id="new-habit-input" placeholder="z.B. täglich spazieren" maxlength="60" />
+</div>
+<button class="btn-next" style="padding:13px;font-size:11px" onclick="confirmNewHabit(${n})">Speichern →</button>
+<button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
+</div>`;
 setTimeout(() => {
-const inp = document.getElementById(‘new-habit-input’);
+const inp = document.getElementById('new-habit-input');
 if (inp) inp.focus();
-inp.addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) confirmNewHabit(n); });
+inp.addEventListener('keydown', e => { if (e.key === 'Enter') confirmNewHabit(n); });
 }, 100);
 }
 
 function confirmNewHabit(n) {
-const val = document.getElementById(‘new-habit-input’).value.trim();
+const val = document.getElementById('new-habit-input').value.trim();
 if (!val) return;
 const key = n === 1 ? K.h1 : K.h2;
 const logKey = n === 1 ? K.log1 : K.log2;
@@ -1343,34 +1204,45 @@ showMain();
 }
 
 function closeEditModal() {
-const modal = document.getElementById(‘edit-modal’);
-modal.style.display = ‘none’;
+const modal = document.getElementById('edit-modal');
+modal.style.display = 'none';
 // Restore original modal HTML in case it was replaced
-modal.innerHTML = ` <div class="modal-box"> <div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div> <div class="input-group" style="margin-bottom:16px"> <label>Neuer Vorsatz</label> <input type="text" id="edit-input" maxlength="60" /> </div> <div style="display:flex;gap:8px"> <button class="btn-next" style="flex:1;padding:13px;font-size:11px" onclick="saveEditHabit()">Speichern</button> <button class="modal-del-btn" onclick="deleteHabit()">Löschen & neu</button> </div> <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button> </div>`;
+modal.innerHTML = `
+<div class="modal-box">
+<div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
+<div class="input-group" style="margin-bottom:16px">
+<label>Neuer Vorsatz</label>
+<input type="text" id="edit-input" maxlength="60" />
+</div>
+<div style="display:flex;gap:8px">
+<button class="btn-next" style="flex:1;padding:13px;font-size:11px" onclick="saveEditHabit()">Speichern</button>
+<button class="modal-del-btn" onclick="deleteHabit()">Löschen & neu</button>
+</div>
+<button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
+</div>`;
 }
 
-document.getElementById(‘edit-modal’).addEventListener(‘click’, function(e) {
+document.getElementById('edit-modal').addEventListener('click', function(e) {
 if (e.target === this) closeEditModal();
 });
-document.getElementById(‘inp-habit1’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) nextStep(0); });
-document.getElementById(‘inp-habit2’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) nextStep(1); });
-document.getElementById(‘inp-startw’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) document.getElementById(‘inp-goalw’).focus(); });
-document.getElementById(‘inp-goalw’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) startApp(); });
-document.getElementById(‘w-input’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’) logWeight(); });
+document.getElementById('inp-habit1').addEventListener('keydown', e => { if (e.key === 'Enter') nextStep(0); });
+document.getElementById('inp-habit2').addEventListener('keydown', e => { if (e.key === 'Enter') nextStep(1); });
+document.getElementById('inp-startw').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('inp-goalw').focus(); });
+document.getElementById('inp-goalw').addEventListener('keydown', e => { if (e.key === 'Enter') startApp(); });
+document.getElementById('w-input').addEventListener('keydown', e => { if (e.key === 'Enter') logWeight(); });
 
 function resetApp() {
-if (!confirm(‘Wirklich alles zurücksetzen?’)) return;
+if (!confirm('Wirklich alles zurücksetzen?')) return;
 Object.values(K).forEach(k => localStorage.removeItem(k));
 location.reload();
 }
 
 // Chart tooltip interaction
-document.addEventListener(‘DOMContentLoaded’, () => {
-const canvas = document.getElementById(‘w-chart’);
-const tooltip = document.getElementById(‘chart-tooltip’);
+document.addEventListener('DOMContentLoaded', () => {
+const canvas = document.getElementById('w-chart');
+const tooltip = document.getElementById('chart-tooltip');
 if (!canvas || !tooltip) return;
 
-```
 function handleMove(clientX, clientY) {
 if (!canvas._wLog || canvas._wLog.length < 1) return;
 const rect = canvas.getBoundingClientRect();
@@ -1403,15 +1275,13 @@ e.preventDefault();
 handleMove(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: false });
 canvas.addEventListener('touchend', () => { setTimeout(() => { tooltip.style.display = 'none'; }, 1200); });
-```
-
 });
 
 // Redraw chart on resize
-window.addEventListener(‘resize’, drawChart);
+window.addEventListener('resize', drawChart);
 
 // Use ResizeObserver to draw chart as soon as canvas has real dimensions
-const chartCanvas = document.getElementById(‘w-chart’);
+const chartCanvas = document.getElementById('w-chart');
 if (chartCanvas && window.ResizeObserver) {
 const ro = new ResizeObserver(entries => {
 for (const entry of entries) {
@@ -1423,14 +1293,6 @@ drawChart();
 ro.observe(chartCanvas);
 }
 
-// Splash
-window.addEventListener(‘load’, () => {
-setTimeout(() => {
-const splash = document.getElementById(‘splash’);
-splash.classList.add(‘fade-out’);
-setTimeout(() => splash.classList.add(‘gone’), 650);
-}, 2200);
-});
 
 // Init
 if (load(K.h1) && load(K.startW)) showMain();
