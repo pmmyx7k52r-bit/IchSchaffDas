@@ -5,552 +5,277 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Ich mach' das!</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ich mach das">
 <meta name="theme-color" content="#0f0e0c">
-<title>Ich mach' das!</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+(function() {
+const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<rect width="512" height="512" rx="112" fill="#1a3d28"/>
+<radialGradient id="g" cx="50%" cy="45%" r="55%">
+<stop offset="0%" stop-color="#2d6644"/>
+<stop offset="100%" stop-color="#0f2518"/>
+</radialGradient>
+<rect width="512" height="512" rx="112" fill="url(#g)"/>
+<rect x="148" y="272" width="96" height="148" rx="20" fill="#f5c878"/>
+<path d="M244 272 C244 272 252 180 268 155 C278 138 295 128 310 135 C328 143 330 165 322 185 C314 205 296 220 296 220 L380 220 C396 220 408 232 408 248 C408 258 403 267 394 272 C402 276 408 285 408 295 C408 308 399 319 386 321 C390 328 390 338 385 346 C380 354 371 358 362 357 C362 365 357 374 348 378 C339 382 296 382 270 376 C258 373 244 364 244 355 Z" fill="#f5c878"/>
+<path d="M310 240 Q325 235 338 240" stroke="#e8a84a" stroke-width="5" stroke-linecap="round" fill="none"/>
+<path d="M320 265 Q337 260 350 265" stroke="#e8a84a" stroke-width="5" stroke-linecap="round" fill="none"/>
+<circle cx="256" cy="460" r="12" fill="#c9a84c" opacity="0.6"/>
+<circle cx="256" cy="460" r="6" fill="#c9a84c"/>
+</svg>`;
+const iconDataUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+const touchIcon = document.createElement('link');
+touchIcon.rel = 'apple-touch-icon';
+touchIcon.href = iconDataUrl;
+document.currentScript.parentNode.appendChild(touchIcon);
+const manifest = {
+name: "Ich mach' das!", short_name: 'Ich mach das',
+description: 'Habit Tracker & Gewichtstagebuch',
+start_url: '.', display: 'standalone',
+background_color: '#0f0e0c', theme_color: '#0f0e0c', orientation: 'portrait',
+icons: [
+{ src: iconDataUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+{ src: iconDataUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+]
+};
+const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+const manifestLink = document.createElement('link');
+manifestLink.rel = 'manifest';
+manifestLink.href = URL.createObjectURL(blob);
+document.currentScript.parentNode.appendChild(manifestLink);
+})();
+</script>
+
 <style>
 :root {
---bg: #1a1916;
---panel: #1e1c19;
---card: #28251f;
---border: #3a3630;
---gold: #d4a84c;
---gold-light: #ecd080;
---text: #f5f0e8;
---muted: #9a9088;
---success: #5dd68a;
---blue: #7abbdf;
---blue-light: #aad4ee;
+--bg: #0f0e0c;
+--panel: #141311;
+--card: #1c1a17;
+--border: #2a2824;
+--gold: #c9a84c;
+--gold-light: #e8c97a;
+--text: #f0ebe0;
+--muted: #6a6560;
+--success: #6dbf8a;
+--blue: #6aabcf;
+--blue-light: #9dcde8;
 }
 
-- { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
 
 body {
-background: var(–bg);
-color: var(–text);
-font-family: ‘DM Mono’, monospace;
+background: var(--bg);
+color: var(--text);
+font-family: 'DM Mono', monospace;
 }
 
+/* SPLASH */
+#splash {
+position: fixed; inset: 0;
+background: #0f2518;
+background-image: radial-gradient(ellipse at 50% 40%, #1a3d28 0%, #0a1a10 70%);
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+z-index: 200;
+transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#splash.fade-out { opacity: 0; transform: scale(1.05); pointer-events: none; }
+#splash.gone { display: none; }
+.splash-icon { font-size: 96px; line-height: 1; margin-bottom: 28px; animation: splashBounce 0.7s cubic-bezier(0.34,1.56,0.64,1) both; animation-delay: 0.2s; opacity: 0; }
+.splash-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #f0ebe0; letter-spacing: 0.05em; animation: splashFade 0.5s ease both; animation-delay: 0.5s; opacity: 0; }
+.splash-sub { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.4em; color: #6dbf8a; text-transform: uppercase; margin-top: 8px; animation: splashFade 0.5s ease both; animation-delay: 0.7s; opacity: 0; }
+.splash-bar { width: 120px; height: 2px; background: #1a3d28; border-radius: 2px; margin-top: 40px; overflow: hidden; animation: splashFade 0.5s ease both; animation-delay: 0.8s; opacity: 0; }
+.splash-bar-fill { height: 100%; background: linear-gradient(90deg, #6dbf8a, #c9a84c); border-radius: 2px; animation: splashLoad 1.2s ease both; animation-delay: 0.9s; }
+@keyframes splashBounce { from { opacity:0; transform:scale(0.4) translateY(30px); } to { opacity:1; transform:scale(1) translateY(0); } }
+@keyframes splashFade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes splashLoad { from { width:0%; } to { width:100%; } }
+
+/* SETUP */
 #setup-overlay {
-position: fixed;
-inset: 0;
-background: var(–bg);
+position: fixed; inset: 0; background: var(--bg);
 background-image: radial-gradient(ellipse at 20% 20%, #1e1a10 0%, transparent 60%),
 radial-gradient(ellipse at 80% 80%, #0c1218 0%, transparent 60%);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 100;
-animation: fadeUp 0.5s ease both;
+display: flex; align-items: center; justify-content: center;
+z-index: 100; animation: fadeUp 0.5s ease both;
 }
 #setup-overlay.hidden { display: none; }
-
-.setup-box {
-width: 100%;
-max-width: 460px;
-padding: 0 28px;
-text-align: center;
-}
-
+.setup-box { width: 100%; max-width: 460px; padding: 0 28px; text-align: center; }
 .setup-step { display: none; animation: fadeUp 0.4s ease both; }
 .setup-step.active { display: block; }
-
-.logo {
-font-family: ‘Playfair Display’, serif;
-font-size: 11px;
-letter-spacing: 0.45em;
-color: var(–gold);
-text-transform: uppercase;
-margin-bottom: 44px;
-}
-
-.step-indicator {
-display: flex;
-justify-content: center;
-gap: 6px;
-margin-bottom: 30px;
-}
-.step-dot {
-width: 6px; height: 6px;
-border-radius: 50%;
-background: var(–border);
-transition: background 0.3s;
-}
-.step-dot.active { background: var(–gold); }
-
-.setup-headline {
-font-family: ‘Playfair Display’, serif;
-font-size: clamp(26px, 5.5vw, 38px);
-font-weight: 900;
-line-height: 1.15;
-margin-bottom: 8px;
-}
-
-.setup-sub {
-color: var(–muted);
-font-size: 11px;
-letter-spacing: 0.08em;
-margin-bottom: 32px;
-}
-
+.logo { font-family: 'Playfair Display', serif; font-size: 11px; letter-spacing: 0.45em; color: var(--gold); text-transform: uppercase; margin-bottom: 44px; }
+.step-indicator { display: flex; justify-content: center; gap: 6px; margin-bottom: 30px; }
+.step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
+.step-dot.active { background: var(--gold); }
+.setup-headline { font-family: 'Playfair Display', serif; font-size: clamp(26px,5.5vw,38px); font-weight: 900; line-height: 1.15; margin-bottom: 8px; }
+.setup-sub { color: var(--muted); font-size: 11px; letter-spacing: 0.08em; margin-bottom: 32px; }
 .input-group { margin-bottom: 14px; }
-.input-group label {
-display: block;
-font-size: 9px;
-letter-spacing: 0.3em;
-color: var(–muted);
-text-transform: uppercase;
-margin-bottom: 8px;
-text-align: left;
-}
-.input-group input {
-width: 100%;
-background: var(–card);
-border: 1px solid var(–border);
-border-radius: 4px;
-color: var(–text);
-font-family: ‘DM Mono’, monospace;
-font-size: 15px;
-padding: 15px 18px;
-outline: none;
-transition: border-color 0.2s;
-}
-.input-group input:focus { border-color: var(–gold); }
-.input-group input::placeholder { color: var(–muted); }
-
-.weight-row {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 12px;
-margin-bottom: 14px;
-}
-
-.btn-next {
-width: 100%;
-background: var(–gold);
-color: #0f0e0c;
-border: none;
-border-radius: 4px;
-font-family: ‘DM Mono’, monospace;
-font-size: 12px;
-font-weight: 500;
-letter-spacing: 0.18em;
-text-transform: uppercase;
-padding: 16px;
-cursor: pointer;
-margin-top: 6px;
-transition: background 0.2s, transform 0.1s;
-}
-.btn-next:hover { background: var(–gold-light); }
+.input-group label { display: block; font-size: 9px; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; text-align: left; }
+.input-group input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 15px; padding: 15px 18px; outline: none; transition: border-color 0.2s; }
+.input-group input:focus { border-color: var(--gold); }
+.input-group input::placeholder { color: var(--muted); }
+.weight-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.btn-next { width: 100%; background: var(--gold); color: #0f0e0c; border: none; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; padding: 16px; cursor: pointer; margin-top: 6px; transition: background 0.2s, transform 0.1s; }
+.btn-next:hover { background: var(--gold-light); }
 .btn-next:active { transform: scale(0.98); }
 
-/* ─── MAIN LAYOUT ─── */
-#main {
-display: none;
-height: 100vh;
-flex-direction: column;
-}
+/* MAIN LAYOUT */
+#main { display: none; height: 100vh; flex-direction: column; }
 #main.visible { display: flex; }
-
-.panel {
-position: relative;
-display: flex;
-flex-direction: column;
-padding: 0 22px;
-justify-content: center;
-overflow: hidden;
-}
-.panel:not(:last-child) { border-bottom: 1px solid var(–border); }
-
-/* Habit panels: smaller — roughly 20% each */
+.panel { position: relative; display: flex; flex-direction: column; padding: 0 22px; justify-content: center; overflow: hidden; }
+.panel:not(:last-child) { border-bottom: 1px solid var(--border); }
 #panel-habit, #panel-habit2 { flex: 0 0 20%; min-height: 0; }
-/* Weight panel: takes the rest */
 #panel-weight { flex: 1; min-height: 0; }
+.panel::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
+#panel-habit::before { background: linear-gradient(180deg, transparent, var(--gold), transparent); }
+#panel-habit2::before { background: linear-gradient(180deg, transparent, var(--blue), transparent); }
+#panel-weight::before { background: linear-gradient(180deg, transparent, var(--success), transparent); }
+#panel-habit { background: linear-gradient(135deg, #141210 0%, #111009 100%); }
+#panel-habit2 { background: linear-gradient(135deg, #0e1218 0%, #0b0f16 100%); }
+#panel-weight { background: linear-gradient(135deg, #0b1610 0%, #091210 100%); }
 
-.panel::before {
-content: ‘’;
-position: absolute;
-left: 0; top: 0; bottom: 0;
-width: 2px;
-}
-#panel-habit::before { background: linear-gradient(180deg, transparent, var(–gold), transparent); }
-#panel-habit2::before { background: linear-gradient(180deg, transparent, var(–blue), transparent); }
-#panel-weight::before { background: linear-gradient(180deg, transparent, var(–success), transparent); }
+.panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.panel-tag { font-size: 8px; letter-spacing: 0.35em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; }
+.tag-gold { color: var(--gold); border: 1px solid #3a2f15; background: #1a1508; }
+.tag-blue { color: var(--blue); border: 1px solid #153040; background: #0c1820; }
+.tag-green { color: var(--success); border: 1px solid #153025; background: #0c1810; }
 
-#panel-habit { background: linear-gradient(135deg, #221f18 0%, #1d1b15 100%); }
-#panel-habit2 { background: linear-gradient(135deg, #181e26 0%, #141820 100%); }
-#panel-weight { background: linear-gradient(135deg, #162018 0%, #121c15 100%); }
+.reset-btn { background: none; border: 1px solid var(--border); border-radius: 3px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; padding: 5px 10px; cursor: pointer; transition: all 0.2s; }
+.reset-btn:hover { border-color: var(--muted); color: var(--text); }
 
-.panel-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 4px;
-}
+/* NEU: Edit-Button */
+.edit-btn { background: none; border: 1px solid var(--border); border-radius: 3px; color: var(--muted); font-size: 13px; padding: 3px 7px; cursor: pointer; transition: all 0.2s; line-height: 1.4; }
+.edit-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-.panel-tag {
-font-size: 8px;
-letter-spacing: 0.35em;
-text-transform: uppercase;
-padding: 3px 8px;
-border-radius: 2px;
-}
-.tag-gold { color: var(–gold); border: 1px solid #4a3a18; background: #2a2010; }
-.tag-blue { color: var(–blue); border: 1px solid #1e3f55; background: #152535; }
-.tag-green { color: var(–success); border: 1px solid #1e4030; background: #122518; }
-
-.reset-btn {
-background: none;
-border: 1px solid var(–border);
-border-radius: 3px;
-color: var(–muted);
-font-family: ‘DM Mono’, monospace;
-font-size: 9px;
-letter-spacing: 0.1em;
-padding: 5px 10px;
-cursor: pointer;
-transition: all 0.2s;
-}
-.reset-btn:hover { border-color: var(–muted); color: var(–text); }
-
-/* Habit layout */
-.habit-layout {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 12px;
-}
+.habit-layout { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .habit-left { flex: 1; min-width: 0; }
-.habit-name {
-font-family: ‘Playfair Display’, serif;
-font-size: clamp(13px, 2.5vw, 18px);
-font-weight: 700;
-line-height: 1.2;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-margin-bottom: 3px;
-}
-.today-badge {
-font-size: 7px;
-color: var(–muted);
-letter-spacing: 0.15em;
-margin-bottom: 5px;
-}
+.habit-name { font-family: 'Playfair Display', serif; font-size: clamp(13px,2.5vw,18px); font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+.today-badge { font-size: 7px; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 5px; }
 .log-strip { display: flex; gap: 2px; flex-wrap: wrap; }
-.log-pip {
-width: 14px; height: 14px;
-border-radius: 2px;
-border: 1px solid var(–border);
-background: var(–card);
-font-size: 7px;
-display: flex; align-items: center; justify-content: center;
-}
-.log-pip.ok { background: #192a1e; border-color: var(–success); color: var(–success); }
+.log-pip { width: 14px; height: 14px; border-radius: 2px; border: 1px solid var(--border); background: var(--card); font-size: 7px; display: flex; align-items: center; justify-content: center; }
+.log-pip.ok { background: #192a1e; border-color: var(--success); color: var(--success); }
 .log-pip.no { background: #1e1414; border-color: #4a2828; }
-
-.habit-right {
-display: flex;
-align-items: center;
-gap: 10px;
-flex-shrink: 0;
-}
+.habit-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .big-count { text-align: center; }
-.big-num {
-font-family: ‘Playfair Display’, serif;
-font-size: clamp(28px, 6vw, 44px);
-font-weight: 900;
-line-height: 1;
-transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-display: block;
-}
+.big-num { font-family: 'Playfair Display', serif; font-size: clamp(28px,6vw,44px); font-weight: 900; line-height: 1; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); display: block; }
 .big-num.bump { transform: scale(1.2); }
-.big-label { font-size: 7px; letter-spacing: 0.2em; color: var(–muted); text-transform: uppercase; margin-top: 1px; }
-.record-label { font-size: 8px; color: var(–muted); margin-top: 3px; letter-spacing: 0.05em; white-space: nowrap; }
+.big-label { font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-top: 1px; }
+.record-label { font-size: 8px; color: var(--muted); margin-top: 3px; letter-spacing: 0.05em; white-space: nowrap; }
+#panel-habit .big-num { color: var(--gold); }
+#panel-habit2 .big-num { color: var(--blue); }
+.check-btn { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--border); background: var(--card); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); color: transparent; }
+#panel-habit .check-btn:hover { border-color: var(--gold); }
+#panel-habit .check-btn.done { border-color: var(--success); background: var(--success); color: #0a1e10; transform: scale(1.08); }
+#panel-habit2 .check-btn:hover { border-color: var(--blue); }
+#panel-habit2 .check-btn.done { border-color: var(--blue); background: var(--blue); color: #051020; transform: scale(1.08); }
 
-#panel-habit .big-num { color: var(–gold); }
-#panel-habit2 .big-num { color: var(–blue); }
-
-.check-btn {
-width: 38px; height: 38px;
-border-radius: 50%;
-border: 2px solid var(–border);
-background: var(–card);
-cursor: pointer;
-display: flex; align-items: center; justify-content: center;
-font-size: 16px;
-transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-color: transparent;
-}
-#panel-habit .check-btn:hover { border-color: var(–gold); }
-#panel-habit .check-btn.done { border-color: var(–success); background: var(–success); color: #0a1e10; transform: scale(1.08); }
-#panel-habit2 .check-btn:hover { border-color: var(–blue); }
-#panel-habit2 .check-btn.done { border-color: var(–blue); background: var(–blue); color: #051020; transform: scale(1.08); }
-
-/* Weight panel */
-.weight-layout {
-display: flex;
-align-items: center;
-gap: 20px;
-flex-wrap: wrap;
-}
-.weight-stats {
-display: flex;
-gap: 12px;
-align-items: center;
-flex: 1;
-}
+/* WEIGHT */
+.weight-layout { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.weight-stats { display: flex; gap: 12px; align-items: center; flex: 1; }
 .wstat { text-align: center; }
-.wstat-val {
-font-family: ‘Playfair Display’, serif;
-font-size: clamp(20px, 4.5vw, 34px);
-font-weight: 700;
-line-height: 1;
-}
-.wstat-label { font-size: 8px; letter-spacing: 0.25em; color: var(–muted); text-transform: uppercase; margin-top: 3px; }
-.wstat.current .wstat-val { color: var(–success); }
-.wstat.start .wstat-val { color: var(–muted); }
-.wstat.goal .wstat-val { color: var(–gold); }
-.wstat.diff .wstat-val { color: var(–blue-light); }
-
-.w-divider { width: 1px; height: 44px; background: var(–border); flex-shrink: 0; }
-
-.weight-entry {
-display: flex;
-flex-direction: column;
-align-items: flex-end;
-gap: 7px;
-flex-shrink: 0;
-}
-.weight-input-wrap {
-display: flex;
-align-items: center;
-gap: 6px;
-background: var(–card);
-border: 1px solid var(–border);
-border-radius: 4px;
-padding: 7px 12px;
-transition: border-color 0.2s;
-}
-.weight-input-wrap:focus-within { border-color: var(–success); }
-.weight-input-wrap input {
-width: 65px;
-background: none;
-border: none;
-color: var(–text);
-font-family: ‘DM Mono’, monospace;
-font-size: 17px;
-outline: none;
-text-align: right;
-}
-.weight-input-wrap input::placeholder { color: var(–border); }
-.weight-unit { color: var(–muted); font-size: 11px; letter-spacing: 0.1em; }
-
-.btn-log-weight {
-background: #1a2e1e;
-border: 1px solid var(–success);
-border-radius: 3px;
-color: var(–success);
-font-family: ‘DM Mono’, monospace;
-font-size: 9px;
-letter-spacing: 0.15em;
-padding: 8px 14px;
-cursor: pointer;
-text-transform: uppercase;
-transition: all 0.2s;
-white-space: nowrap;
-}
+.wstat-val { font-family: 'Playfair Display', serif; font-size: clamp(20px,4.5vw,34px); font-weight: 700; line-height: 1; }
+.wstat-label { font-size: 8px; letter-spacing: 0.25em; color: var(--muted); text-transform: uppercase; margin-top: 3px; }
+.wstat.current .wstat-val { color: var(--success); }
+.wstat.start .wstat-val { color: var(--muted); }
+.wstat.goal .wstat-val { color: var(--gold); }
+.wstat.diff .wstat-val { color: var(--blue-light); }
+.w-divider { width: 1px; height: 44px; background: var(--border); flex-shrink: 0; }
+.weight-entry { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; flex-shrink: 0; }
+.weight-input-wrap { display: flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 7px 12px; transition: border-color 0.2s; }
+.weight-input-wrap:focus-within { border-color: var(--success); }
+.weight-input-wrap input { width: 65px; background: none; border: none; color: var(--text); font-family: 'DM Mono', monospace; font-size: 17px; outline: none; text-align: right; }
+.weight-input-wrap input::placeholder { color: var(--border); }
+.weight-unit { color: var(--muted); font-size: 11px; letter-spacing: 0.1em; }
+.btn-log-weight { background: #1a2e1e; border: 1px solid var(--success); border-radius: 3px; color: var(--success); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; padding: 8px 14px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; white-space: nowrap; }
 .btn-log-weight:hover { background: #243d28; }
-
 .wlog-dots { display: flex; gap: 3px; }
-.wlog-dot {
-width: 5px; height: 5px;
-border-radius: 50%;
-background: var(–success);
-opacity: 0.4;
-}
+.wlog-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--success); opacity: 0.4; }
 .wlog-dot:last-child { opacity: 1; }
+.weight-progress-bar { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 10px; }
+.weight-progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), var(--gold)); border-radius: 2px; transition: width 0.6s ease; }
 
-.weight-progress-bar {
-height: 2px;
-background: var(–border);
-border-radius: 2px;
-overflow: hidden;
-margin-top: 10px;
-}
-.weight-progress-fill {
-height: 100%;
-background: linear-gradient(90deg, var(–success), var(–gold));
-border-radius: 2px;
-transition: width 0.6s ease;
-}
-
-/* Animations */
-@keyframes fadeUp {
-from { opacity: 0; transform: translateY(16px); }
-to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideIn {
-from { opacity: 0; transform: translateX(16px); }
-to { opacity: 1; transform: translateX(0); }
-}
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
 .panel { animation: slideIn 0.5s ease both; }
 #panel-habit { animation-delay: 0.05s; }
 #panel-habit2 { animation-delay: 0.15s; }
 #panel-weight { animation-delay: 0.25s; }
 
-.w-forecast {
-font-size: 10px;
-letter-spacing: 0.12em;
-color: var(–muted);
-margin-top: 7px;
-min-height: 14px;
-transition: color 0.3s;
-}
-.w-forecast span {
-color: var(–gold);
-font-weight: 500;
-}
-.w-forecast.done {
-color: var(–success);
-}
+.w-forecast { font-size: 10px; letter-spacing: 0.12em; color: var(--muted); margin-top: 7px; min-height: 14px; transition: color 0.3s; }
+.w-forecast span { color: var(--gold); font-weight: 500; }
+.w-forecast.done { color: var(--success); }
 
-.w-weekly {
-display: flex;
-align-items: center;
-gap: 12px;
-margin-top: 6px;
-flex-wrap: wrap;
-}
-.w-weekly-label { color: var(–muted); font-size: 9px; letter-spacing: 0.15em; flex-shrink: 0; }
-.w-weekly-val {
-font-family: ‘Playfair Display’, serif;
-font-size: clamp(30px, 7vw, 46px);
-font-weight: 900;
-transition: color 0.4s;
-line-height: 1;
-flex-shrink: 0;
-}
+.w-weekly { display: flex; align-items: center; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
+.w-weekly-label { color: var(--muted); font-size: 9px; letter-spacing: 0.15em; flex-shrink: 0; }
+.w-weekly-val { font-family: 'Playfair Display', serif; font-size: clamp(30px,7vw,46px); font-weight: 900; transition: color 0.4s; line-height: 1; flex-shrink: 0; }
 .w-weekly-val.good { color: #4ee88a; text-shadow: 0 0 20px #4ee88a55; }
 .w-weekly-val.warn { color: #f0c040; text-shadow: 0 0 20px #f0c04055; }
 .w-weekly-val.bad { color: #ff6060; text-shadow: 0 0 20px #ff606055; }
-.w-weekly-val.neutral { color: var(–muted); }
-.w-weekly-note {
-font-size: 10px;
-letter-spacing: 0.08em;
-padding: 3px 9px;
-border-radius: 3px;
-font-weight: 400;
-transition: all 0.4s;
-flex-shrink: 1;
-}
-.w-weekly-note.good { background: #143d28; border: 1px solid #5dd68a; color: #5dd68a; }
-.w-weekly-note.warn { background: #3a2e00; border: 1px solid #f0c040; color: #f0c040; }
-.w-weekly-note.bad { background: #401515; border: 1px solid #ff6060; color: #ff6060; }
-.w-weekly-note.neutral { background: var(–card); border: 1px solid var(–border); color: var(–muted); font-size: 9px; }
+.w-weekly-val.neutral { color: var(--muted); }
+.w-weekly-note { font-size: 10px; letter-spacing: 0.08em; padding: 3px 9px; border-radius: 3px; font-weight: 400; transition: all 0.4s; flex-shrink: 1; }
+.w-weekly-note.good { background: #0d3320; border: 1px solid #4ee88a88; color: #4ee88a; }
+.w-weekly-note.warn { background: #2e2400; border: 1px solid #f0c04088; color: #f0c040; }
+.w-weekly-note.bad { background: #330d0d; border: 1px solid #ff606088; color: #ff6060; }
+.w-weekly-note.neutral { background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 9px; }
 
-/* Weight chart */
-.w-chart-wrap {
-flex: 1;
-min-height: 0;
-position: relative;
-margin-top: 8px;
-}
-#w-chart {
-width: 100%;
-height: 100%;
-display: block;
-}
-.chart-tooltip {
-position: absolute;
-background: #1c1a17ee;
-border: 1px solid var(–border);
-border-radius: 4px;
-padding: 4px 8px;
-font-size: 10px;
-color: var(–text);
-pointer-events: none;
-white-space: nowrap;
-display: none;
-z-index: 10;
-}
+.w-chart-wrap { flex: 1; min-height: 0; position: relative; margin-top: 8px; }
+#w-chart { width: 100%; height: 100%; display: block; }
+.chart-tooltip { position: absolute; background: #1c1a17ee; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-size: 10px; color: var(--text); pointer-events: none; white-space: nowrap; display: none; z-index: 10; }
 
-.edit-btn {
-background: none;
-border: 1px solid var(–border);
-border-radius: 3px;
-color: var(–muted);
-font-size: 12px;
-padding: 4px 8px;
-cursor: pointer;
-transition: all 0.2s;
-line-height: 1;
+/* NEU: Edit Modal */
+.modal-backdrop {
+position: fixed; inset: 0; background: #000000aa;
+z-index: 150; display: flex; align-items: flex-end;
+animation: fadeUp 0.2s ease both;
 }
-.edit-btn:hover { border-color: var(–gold); color: var(–gold); }
+.modal-backdrop.hidden { display: none; }
+.modal-sheet {
+width: 100%; background: #1c1a17;
+border-top: 1px solid var(--border);
+border-radius: 16px 16px 0 0;
+padding: 24px 22px 40px;
+}
+.modal-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+.modal-input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 15px; padding: 13px 16px; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
+.modal-input:focus { border-color: var(--gold); }
+.modal-save { width: 100%; background: var(--gold); color: #0f0e0c; border: none; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; padding: 14px; cursor: pointer; margin-bottom: 8px; transition: background 0.2s; }
+.modal-save:hover { background: var(--gold-light); }
+.modal-delete { width: 100%; background: none; border: 1px solid #5a2020; border-radius: 4px; color: #e06060; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; padding: 12px; cursor: pointer; margin-bottom: 8px; transition: all 0.2s; }
+.modal-delete:hover { background: #2a1414; }
+.modal-cancel { width: 100%; background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; padding: 10px; cursor: pointer; }
 
-/* Modal */
-.modal-overlay {
-position: fixed;
-inset: 0;
-background: #000000aa;
-z-index: 150;
-display: flex;
-align-items: center;
-justify-content: center;
-padding: 24px;
-animation: fadeUp 0.25s ease both;
+/* NEU: Confirm-Sheet (ersetzt confirm()) */
+.confirm-sheet {
+width: 100%; background: #1c1a17;
+border-top: 1px solid var(--border);
+border-radius: 16px 16px 0 0;
+padding: 24px 22px 40px;
 }
-.modal-box {
-background: #1a1916;
-border: 1px solid var(–border);
-border-radius: 8px;
-padding: 24px;
-width: 100%;
-max-width: 380px;
-position: relative;
+.confirm-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.confirm-sub { font-size: 11px; color: var(--muted); margin-bottom: 20px; letter-spacing: 0.05em; }
+.confirm-ok { width: 100%; background: none; border: 1px solid #5a2020; border-radius: 4px; color: #e06060; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; padding: 13px; cursor: pointer; margin-bottom: 8px; transition: all 0.2s; }
+.confirm-ok:hover { background: #2a1414; }
+.confirm-cancel { width: 100%; background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; padding: 10px; cursor: pointer; }
+
+/* NEU: New-Habit-Sheet */
+.newhab-sheet {
+width: 100%; background: #1c1a17;
+border-top: 1px solid var(--border);
+border-radius: 16px 16px 0 0;
+padding: 24px 22px 40px;
 }
-.modal-title {
-font-family: ‘Playfair Display’, serif;
-font-size: 18px;
-font-weight: 700;
-margin-bottom: 20px;
-color: var(–text);
-}
-.modal-del-btn {
-flex: 1;
-background: #2a1414;
-border: 1px solid #e0606066;
-border-radius: 4px;
-color: #ff6060;
-font-family: ‘DM Mono’, monospace;
-font-size: 10px;
-letter-spacing: 0.1em;
-padding: 13px 10px;
-cursor: pointer;
-transition: all 0.2s;
-white-space: nowrap;
-}
-.modal-del-btn:hover { background: #3a1a1a; }
-.modal-cancel {
-display: block;
-width: 100%;
-margin-top: 10px;
-background: none;
-border: none;
-color: var(–muted);
-font-family: ‘DM Mono’, monospace;
-font-size: 10px;
-letter-spacing: 0.1em;
-padding: 8px;
-cursor: pointer;
-text-align: center;
-transition: color 0.2s;
-}
-.modal-cancel:hover { color: var(–text); }
+.newhab-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+.newhab-input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 15px; padding: 13px 16px; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
+.newhab-input:focus { border-color: var(--gold); }
+.newhab-save { width: 100%; background: var(--gold); color: #0f0e0c; border: none; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; padding: 14px; cursor: pointer; margin-bottom: 8px; }
+.newhab-cancel { width: 100%; background: none; border: none; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; padding: 10px; cursor: pointer; }
+
+@media (max-width: 420px) {
 .panel { padding: 0 14px; }
 .weight-stats { gap: 8px; }
 }
@@ -559,7 +284,16 @@ transition: color 0.2s;
 </head>
 <body>
 
-<!-- ════ SETUP OVERLAY ════ -->
+<!-- SPLASH -->
+
+<div id="splash">
+<div class="splash-icon">&#128077;&#127996;</div>
+<div class="splash-title">Ich mach' das!</div>
+<div class="splash-sub">Jeden Tag ein Schritt</div>
+<div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
+
+<!-- SETUP -->
 
 <div id="setup-overlay">
 <div class="setup-box">
@@ -569,28 +303,24 @@ transition: color 0.2s;
 <div class="step-dot" id="dot1"></div>
 <div class="step-dot" id="dot2"></div>
 </div>
-
-```
 <div class="setup-step active" id="step0">
 <h1 class="setup-headline">Was nimmst du<br>dir vor?</h1>
-<p class="setup-sub">Dein erster Vorsatz — z.B. kein Alkohol</p>
+<p class="setup-sub">Dein erster Vorsatz &mdash; z.B. kein Alkohol</p>
 <div class="input-group">
 <label>Vorsatz 1</label>
 <input type="text" id="inp-habit1" placeholder="z.B. keinen Alkohol trinken" maxlength="60" />
 </div>
-<button class="btn-next" onclick="nextStep(0)">Weiter →</button>
+<button class="btn-next" onclick="nextStep(0)">Weiter &rarr;</button>
 </div>
-
 <div class="setup-step" id="step1">
 <h1 class="setup-headline">Noch ein<br>Vorsatz?</h1>
-<p class="setup-sub">Dein zweiter Vorsatz — z.B. täglich spazieren</p>
+<p class="setup-sub">Dein zweiter Vorsatz &mdash; z.B. t&auml;glich spazieren</p>
 <div class="input-group">
 <label>Vorsatz 2</label>
-<input type="text" id="inp-habit2" placeholder="z.B. täglich spazieren gehen" maxlength="60" />
+<input type="text" id="inp-habit2" placeholder="z.B. t&auml;glich spazieren gehen" maxlength="60" />
 </div>
-<button class="btn-next" onclick="nextStep(1)">Weiter →</button>
+<button class="btn-next" onclick="nextStep(1)">Weiter &rarr;</button>
 </div>
-
 <div class="setup-step" id="step2">
 <h1 class="setup-headline">Dein<br>Gewichtsziel</h1>
 <p class="setup-sub">Start- und Wunschgewicht eingeben</p>
@@ -604,23 +334,21 @@ transition: color 0.2s;
 <input type="number" id="inp-goalw" placeholder="75" step="0.1" min="30" max="300" />
 </div>
 </div>
-<button class="btn-next" onclick="startApp()">Los geht's →</button>
+<button class="btn-next" onclick="startApp()">Los geht's &rarr;</button>
 </div>
-```
-
 </div>
 </div>
 
-<!-- ════ MAIN 3-PANEL ════ -->
+<!-- MAIN -->
 
 <div id="main">
 
 <div class="panel" id="panel-habit">
 <div class="panel-header">
 <span class="panel-tag tag-gold">Vorsatz 1</span>
-<div style="display:flex;gap:6px">
-<button class="edit-btn" onclick="editHabit(1)">✎</button>
-<button class="reset-btn" onclick="resetApp()">Neu starten</button>
+<div style="display:flex;gap:6px;align-items:center;">
+<button class="edit-btn" onclick="openEditModal(1)" title="Bearbeiten">&#9998;</button>
+<button class="reset-btn" onclick="openResetConfirm()">Neu starten</button>
 </div>
 </div>
 <div class="habit-layout">
@@ -635,7 +363,7 @@ transition: color 0.2s;
 <div class="big-label">Serie</div>
 <div class="record-label" id="h1-record"></div>
 </div>
-<button class="check-btn" id="h1-check" onclick="toggleHabit(1)">✓</button>
+<button class="check-btn" id="h1-check" onclick="toggleHabit(1)">&#10003;</button>
 </div>
 </div>
 </div>
@@ -643,7 +371,7 @@ transition: color 0.2s;
 <div class="panel" id="panel-habit2">
 <div class="panel-header">
 <span class="panel-tag tag-blue">Vorsatz 2</span>
-<button class="edit-btn" onclick="editHabit(2)">✎</button>
+<button class="edit-btn" onclick="openEditModal(2)" title="Bearbeiten">&#9998;</button>
 </div>
 <div class="habit-layout">
 <div class="habit-left">
@@ -657,7 +385,7 @@ transition: color 0.2s;
 <div class="big-label">Serie</div>
 <div class="record-label" id="h2-record"></div>
 </div>
-<button class="check-btn" id="h2-check" onclick="toggleHabit(2)">✓</button>
+<button class="check-btn" id="h2-check" onclick="toggleHabit(2)">&#10003;</button>
 </div>
 </div>
 </div>
@@ -666,43 +394,40 @@ transition: color 0.2s;
 <div class="panel-header">
 <span class="panel-tag tag-green">Gewicht</span>
 </div>
-<!-- Top row: stats + entry -->
 <div class="weight-layout">
 <div class="weight-stats">
 <div class="wstat start">
-<div class="wstat-val" id="w-start">—</div>
+<div class="wstat-val" id="w-start">&mdash;</div>
 <div class="wstat-label">Start</div>
 </div>
 <div class="w-divider"></div>
 <div class="wstat goal">
-<div class="wstat-val" id="w-goal">—</div>
+<div class="wstat-val" id="w-goal">&mdash;</div>
 <div class="wstat-label">Ziel</div>
 </div>
 <div class="w-divider"></div>
 <div class="wstat current">
-<div class="wstat-val" id="w-current">—</div>
+<div class="wstat-val" id="w-current">&mdash;</div>
 <div class="wstat-label">Aktuell</div>
 </div>
 </div>
 <div class="weight-entry">
 <div class="weight-input-wrap">
-<input type="number" id="w-input" placeholder="—" step="0.1" min="30" max="300" />
+<input type="number" id="w-input" placeholder="&mdash;" step="0.1" min="30" max="300" />
 <span class="weight-unit">kg</span>
 </div>
-<button class="btn-log-weight" onclick="logWeight()">Eintragen ↵</button>
+<button class="btn-log-weight" onclick="logWeight()">Eintragen &#8629;</button>
 </div>
 </div>
-<!-- Status row -->
 <div class="weight-progress-bar">
 <div class="weight-progress-fill" id="w-progress" style="width:0%"></div>
 </div>
 <div class="w-weekly" id="w-weekly" style="display:none">
 <span class="w-weekly-label">Diese Woche:</span>
-<span class="w-weekly-val neutral" id="w-weekly-val">—</span>
-<span class="w-weekly-note neutral" id="w-weekly-note">—</span>
+<span class="w-weekly-val neutral" id="w-weekly-val">&mdash;</span>
+<span class="w-weekly-note neutral" id="w-weekly-note">&mdash;</span>
 </div>
 <div class="w-forecast" id="w-forecast"></div>
-<!-- Chart -->
 <div class="w-chart-wrap">
 <canvas id="w-chart"></canvas>
 <div class="chart-tooltip" id="chart-tooltip"></div>
@@ -711,594 +436,411 @@ transition: color 0.2s;
 
 </div>
 
-<!-- ════ EDIT HABIT MODAL ════ -->
+<!-- EDIT MODAL (Rename + Delete) -->
 
-<div id="edit-modal" class="modal-overlay" style="display:none">
-<div class="modal-box">
+<div id="edit-modal" class="modal-backdrop hidden">
+<div class="modal-sheet">
 <div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
-<div class="input-group" style="margin-bottom:16px">
-<label>Vorsatz ändern</label>
-<input type="text" id="edit-input" maxlength="60" onblur="saveEditHabit()" />
-</div>
-<button class="modal-del-btn" style="width:100%;margin-bottom:6px" onclick="deleteHabit()">Löschen & neu starten</button>
+<input type="text" class="modal-input" id="edit-modal-input" maxlength="60" />
+<button class="modal-save" onclick="saveHabitName()">Speichern</button>
+<button class="modal-delete" onclick="openDeleteConfirm()">&#10005; Vorsatz l&ouml;schen &amp; neu starten</button>
 <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
+</div>
+</div>
+
+<!-- CONFIRM DELETE -->
+
+<div id="confirm-modal" class="modal-backdrop hidden">
+<div class="confirm-sheet">
+<div class="confirm-title" id="confirm-title">Vorsatz l&ouml;schen?</div>
+<div class="confirm-sub" id="confirm-sub">Der Verlauf wird gel&ouml;scht. Das kann nicht r&uuml;ckg&auml;ngig gemacht werden.</div>
+<button class="confirm-ok" id="confirm-ok-btn">Ja, l&ouml;schen</button>
+<button class="confirm-cancel" onclick="closeConfirmModal()">Abbrechen</button>
+</div>
+</div>
+
+<!-- NEW HABIT NAME -->
+
+<div id="newhab-modal" class="modal-backdrop hidden">
+<div class="newhab-sheet">
+<div class="newhab-title" id="newhab-title">Neuer Vorsatz</div>
+<input type="text" class="newhab-input" id="newhab-input" maxlength="60" placeholder="Neuer Vorsatz..." />
+<button class="newhab-save" onclick="saveNewHabit()">Los geht's</button>
+<button class="newhab-cancel" onclick="closeNewHabModal()">Abbrechen</button>
 </div>
 </div>
 
 <script>
 const K = { h1:'v_habit1', h2:'v_habit2', log1:'v_log1', log2:'v_log2', startW:'v_startW', goalW:'v_goalW', wLog:'v_wLog' };
 
-function realToday() {
-const now = new Date();
-return localDateStr(now);
-}
-
+function realToday() { return localDateStr(new Date()); }
 function today() {
 const now = new Date();
-// For habits: before noon counts as yesterday
-if (now.getHours() < 12) {
-const yesterday = new Date(now);
-yesterday.setDate(now.getDate() - 1);
-return localDateStr(yesterday);
-}
+if (now.getHours() < 12) { const y = new Date(now); y.setDate(now.getDate()-1); return localDateStr(y); }
 return localDateStr(now);
 }
-
 function localDateStr(d) {
-const y = d.getFullYear();
-const m = String(d.getMonth() + 1).padStart(2, '0');
-const day = String(d.getDate()).padStart(2, '0');
-return `${y}-${m}-${day}`;
+return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 function fmt(d) { const [y,m,dd]=d.split('-'); return `${dd}.${m}.${y}`; }
-function parseDate(dateStr) {
-// Parse YYYY-MM-DD as local date (avoids UTC midnight timezone shift)
-const [y,m,d] = dateStr.split('-').map(Number);
-return new Date(y, m-1, d, 12, 0, 0);
-}
+function parseDate(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d,12,0,0); }
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function save(k,v) { localStorage.setItem(k, JSON.stringify(v)); }
 
 function nextStep(from) {
-if (from === 0 && !document.getElementById('inp-habit1').value.trim()) { document.getElementById('inp-habit1').focus(); return; }
-if (from === 1 && !document.getElementById('inp-habit2').value.trim()) { document.getElementById('inp-habit2').focus(); return; }
-document.getElementById(`step${from}`).classList.remove('active');
-document.getElementById(`dot${from}`).classList.remove('active');
-const next = from + 1;
-document.getElementById(`step${next}`).classList.add('active');
-document.getElementById(`dot${next}`).classList.add('active');
+if (from===0 && !document.getElementById('inp-habit1').value.trim()) { document.getElementById('inp-habit1').focus(); return; }
+if (from===1 && !document.getElementById('inp-habit2').value.trim()) { document.getElementById('inp-habit2').focus(); return; }
+document.getElementById('step'+from).classList.remove('active');
+document.getElementById('dot'+from).classList.remove('active');
+document.getElementById('step'+(from+1)).classList.add('active');
+document.getElementById('dot'+(from+1)).classList.add('active');
 }
 
 function startApp() {
-const h1 = document.getElementById('inp-habit1').value.trim();
-const h2 = document.getElementById('inp-habit2').value.trim();
-const sw = parseFloat(document.getElementById('inp-startw').value);
-const gw = parseFloat(document.getElementById('inp-goalw').value);
-if (!sw || !gw) { document.getElementById('inp-startw').focus(); return; }
-save(K.h1, h1); save(K.h2, h2); save(K.startW, sw); save(K.goalW, gw);
-const t = today();
-const l1 = {}; l1[t] = false; save(K.log1, l1);
-const l2 = {}; l2[t] = false; save(K.log2, l2);
-save(K.wLog, [{ date: realToday(), val: sw }]);
+const h1=document.getElementById('inp-habit1').value.trim();
+const h2=document.getElementById('inp-habit2').value.trim();
+const sw=parseFloat(document.getElementById('inp-startw').value);
+const gw=parseFloat(document.getElementById('inp-goalw').value);
+if (!sw||!gw) { document.getElementById('inp-startw').focus(); return; }
+save(K.h1,h1); save(K.h2,h2); save(K.startW,sw); save(K.goalW,gw);
+const t=today();
+const l1={}; l1[t]=false; save(K.log1,l1);
+const l2={}; l2[t]=false; save(K.log2,l2);
+save(K.wLog,[{date:realToday(),val:sw}]);
 showMain();
 }
 
 function showMain() {
 document.getElementById('setup-overlay').classList.add('hidden');
 document.getElementById('main').classList.add('visible');
-const t = today();
-document.getElementById('h1-name').textContent = load(K.h1) || '—';
-document.getElementById('h2-name').textContent = load(K.h2) || '—';
-document.getElementById('h1-date').textContent = 'Heute — ' + fmt(t);
-document.getElementById('h2-date').textContent = 'Heute — ' + fmt(t);
-const log1 = load(K.log1) || {}; const log2 = load(K.log2) || {};
-if (!(t in log1)) { log1[t] = false; save(K.log1, log1); }
-if (!(t in log2)) { log2[t] = false; save(K.log2, log2); }
+const t=today();
+document.getElementById('h1-name').textContent=load(K.h1)||'—';
+document.getElementById('h2-name').textContent=load(K.h2)||'—';
+document.getElementById('h1-date').textContent='Heute — '+fmt(t);
+document.getElementById('h2-date').textContent='Heute — '+fmt(t);
+const log1=load(K.log1)||{}; const log2=load(K.log2)||{};
+if (!(t in log1)) { log1[t]=false; save(K.log1,log1); }
+if (!(t in log2)) { log2[t]=false; save(K.log2,log2); }
 renderAll();
 }
 
-function renderAll() { renderHabit(1); renderHabit(2); renderWeight(); requestAnimationFrame(() => requestAnimationFrame(drawChart)); }
+function renderAll() { renderHabit(1); renderHabit(2); renderWeight(); requestAnimationFrame(()=>requestAnimationFrame(drawChart)); }
 
 function renderHabit(n) {
-const log = load(n === 1 ? K.log1 : K.log2) || {};
-const t = today();
-const done = log[t] === true;
-document.getElementById(`h${n}-check`).classList.toggle('done', done);
-
-const days = Object.keys(log).sort();
-
-// Current streak: count backwards, skip today if not yet checked
-let streak = 0;
-for (let i = days.length - 1; i >= 0; i--) {
-const d = days[i];
-if (d === t && log[d] === false) continue; // today not yet checked — skip
-if (log[d] === true) streak++;
-else break;
-}
-
-// Best streak ever
-let best = 0, cur = 0;
-days.forEach(d => {
-if (log[d] === true) { cur++; best = Math.max(best, cur); }
-else cur = 0;
-});
-
-document.getElementById(`h${n}-count`).textContent = streak;
-
-const recEl = document.getElementById(`h${n}-record`);
-if (best > streak && best > 0) {
-recEl.textContent = '🏆 Rekord: ' + best;
-} else if (best > 0 && best === streak && streak > 1) {
-recEl.textContent = '🏆 Neuer Rekord!';
-} else {
-recEl.textContent = '';
-}
-
-const strip = document.getElementById(`h${n}-log`);
-strip.innerHTML = '';
-days.slice(-22).forEach(d => {
-const pip = document.createElement('div');
-pip.className = 'log-pip' + (log[d] ? ' ok' : ' no');
-pip.textContent = log[d] ? '✓' : '';
-pip.title = fmt(d);
+const log=load(n===1?K.log1:K.log2)||{};
+const t=today();
+document.getElementById('h'+n+'-check').classList.toggle('done',log[t]===true);
+const days=Object.keys(log).sort();
+let streak=0;
+for (let i=days.length-1;i>=0;i--) { if(log[days[i]]===true) streak++; else break; }
+let best=0,cur=0;
+days.forEach(d=>{ if(log[d]===true){cur++;best=Math.max(best,cur);}else cur=0; });
+document.getElementById('h'+n+'-count').textContent=streak;
+const recEl=document.getElementById('h'+n+'-record');
+if (best>streak&&best>0) recEl.textContent='🏆 Rekord: '+best;
+else if (best>0&&best===streak&&streak>1) recEl.textContent='🏆 Neuer Rekord!';
+else recEl.textContent='';
+const strip=document.getElementById('h'+n+'-log');
+strip.innerHTML='';
+days.slice(-22).forEach(d=>{
+const pip=document.createElement('div');
+pip.className='log-pip'+(log[d]?' ok':' no');
+pip.textContent=log[d]?'✓':'';
+pip.title=fmt(d);
 strip.appendChild(pip);
 });
 }
 
 function toggleHabit(n) {
-const logKey = n === 1 ? K.log1 : K.log2;
-const log = load(logKey) || {};
-const t = today();
-const was = log[t] === true;
-log[t] = !was;
-save(logKey, log);
-if (!was) {
-const el = document.getElementById(`h${n}-count`);
-el.classList.add('bump');
-setTimeout(() => el.classList.remove('bump'), 400);
-}
+const logKey=n===1?K.log1:K.log2;
+const log=load(logKey)||{};
+const t=today();
+const was=log[t]===true;
+log[t]=!was;
+save(logKey,log);
+if (!was) { const el=document.getElementById('h'+n+'-count'); el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),400); }
 renderHabit(n);
 }
 
 function renderWeight() {
-const sw = load(K.startW), gw = load(K.goalW), wLog = load(K.wLog) || [];
-document.getElementById('w-start').textContent = sw ? sw.toFixed(1) : '—';
-document.getElementById('w-goal').textContent = gw ? gw.toFixed(1) : '—';
-
-if (wLog.length > 0) {
-const cur = wLog[wLog.length - 1].val;
-document.getElementById('w-current').textContent = cur.toFixed(1);
-
-if (sw && gw && sw !== gw) {
-const pct = Math.min(100, Math.max(0, ((sw - cur) / (sw - gw)) * 100));
-document.getElementById('w-progress').style.width = pct + '%';
+const sw=load(K.startW),gw=load(K.goalW),wLog=load(K.wLog)||[];
+document.getElementById('w-start').textContent=sw?sw.toFixed(1):'—';
+document.getElementById('w-goal').textContent=gw?gw.toFixed(1):'—';
+if (wLog.length>0) {
+const cur=wLog[wLog.length-1].val;
+document.getElementById('w-current').textContent=cur.toFixed(1);
+if (sw&&gw&&sw!==gw) {
+const pct=Math.min(100,Math.max(0,((sw-cur)/(sw-gw))*100));
+document.getElementById('w-progress').style.width=pct+'%';
 }
-
-// ── Weekly development ──
-const sortedLog = [...wLog].sort((a, b) => a.date.localeCompare(b.date));
-
-const nowDate = new Date();
-const dayOfWeek = nowDate.getDay();
-const daysToLastSat = dayOfWeek === 6 ? 0 : dayOfWeek === 0 ? 1 : dayOfWeek + 1;
-const lastSatDate = new Date(nowDate);
-lastSatDate.setDate(nowDate.getDate() - daysToLastSat);
-const lastSatStr = localDateStr(lastSatDate);
-
-const latestEntry = sortedLog[sortedLog.length - 1];
-
-// Baseline: oldest entry from this week (on or after last Saturday)
-// If none this week, use the most recent entry before last Saturday
-const thisWeekEntries = sortedLog.filter(e => e.date >= lastSatStr);
-let baseline = null;
-if (thisWeekEntries.length >= 2) {
-baseline = thisWeekEntries[0]; // oldest this week
-} else if (thisWeekEntries.length === 1) {
-// Only one entry this week — compare to most recent before last Saturday
-const before = sortedLog.filter(e => e.date < lastSatStr);
-baseline = before.length > 0 ? before[before.length - 1] : null;
+const sortedLog=[...wLog].sort((a,b)=>a.date.localeCompare(b.date));
+const nowDate=new Date();
+const dow=nowDate.getDay();
+const daysToLastSat=dow===6?0:dow===0?1:dow+1;
+const lastSatDate=new Date(nowDate);
+lastSatDate.setDate(nowDate.getDate()-daysToLastSat);
+const lastSatStr=localDateStr(lastSatDate);
+let baseline=null;
+const satEntry=sortedLog.find(e=>e.date===lastSatStr);
+if (satEntry) { baseline=satEntry; }
+else { const before=sortedLog.filter(e=>e.date<lastSatStr); baseline=before.length>0?before[before.length-1]:sortedLog[0]; }
+const latestEntry=sortedLog[sortedLog.length-1];
+const weeklyEl=document.getElementById('w-weekly');
+const weeklyVal=document.getElementById('w-weekly-val');
+const weeklyNote=document.getElementById('w-weekly-note');
+weeklyEl.style.display='flex';
+if (baseline&&latestEntry&&baseline.date!==latestEntry.date) {
+const weekDiff=latestEntry.val-baseline.val;
+const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const baseDate=parseDate(baseline.date);
+const baseDateStr=baseDate.getDate()+'. '+months[baseDate.getMonth()];
+weeklyVal.textContent=(weekDiff>0?'+':'')+weekDiff.toFixed(1)+' kg';
+if (weekDiff<=-0.6) { weeklyVal.className='w-weekly-val good'; weeklyNote.className='w-weekly-note good'; weeklyNote.textContent='✓ Wochenziel erreicht!'; }
+else if (weekDiff<=0) { weeklyVal.className='w-weekly-val warn'; weeklyNote.className='w-weekly-note warn'; weeklyNote.textContent='noch '+Math.abs(weekDiff+0.6).toFixed(1)+' kg bis Ziel'; }
+else { weeklyVal.className='w-weekly-val bad'; weeklyNote.className='w-weekly-note bad'; weeklyNote.textContent='über Wochenstart ('+baseDateStr+')'; }
 } else {
-const before = sortedLog.filter(e => e.date < lastSatStr);
-baseline = before.length > 0 ? before[before.length - 1] : null;
+const daysUntilNextSat=daysToLastSat===0?7:7-daysToLastSat;
+const nextSat=new Date(nowDate); nextSat.setDate(nowDate.getDate()+daysUntilNextSat);
+const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+weeklyVal.textContent='— kg'; weeklyVal.className='w-weekly-val neutral';
+weeklyNote.textContent='Ziel: '+((sw||cur)-0.6).toFixed(1)+' kg bis Sa '+nextSat.getDate()+'. '+months[nextSat.getMonth()];
+weeklyNote.className='w-weekly-note neutral';
 }
-
-const weeklyEl = document.getElementById('w-weekly');
-const weeklyVal = document.getElementById('w-weekly-val');
-const weeklyNote = document.getElementById('w-weekly-note');
-weeklyEl.style.display = 'flex';
-
-if (baseline && latestEntry && baseline.date !== latestEntry.date) {
-const weekDiff = latestEntry.val - baseline.val;
-const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const baseDate = parseDate(baseline.date);
-const baseDateStr = baseDate.getDate() + '. ' + months[baseDate.getMonth()];
-
-weeklyVal.textContent = (weekDiff > 0 ? '+' : '') + weekDiff.toFixed(1) + ' kg';
-
-if (weekDiff <= -0.6) {
-weeklyVal.className = 'w-weekly-val good';
-weeklyNote.className = 'w-weekly-note good';
-weeklyNote.textContent = '✓ Wochenziel erreicht!';
-} else if (weekDiff <= 0) {
-weeklyVal.className = 'w-weekly-val warn';
-weeklyNote.className = 'w-weekly-note warn';
-weeklyNote.textContent = 'noch ' + Math.abs(weekDiff + 0.6).toFixed(1) + ' kg bis Ziel';
-} else {
-weeklyVal.className = 'w-weekly-val bad';
-weeklyNote.className = 'w-weekly-note bad';
-weeklyNote.textContent = 'über Wochenstart (' + baseDateStr + ')';
+const forecastEl=document.getElementById('w-forecast');
+const remaining=cur-gw;
+if (remaining<=0) { forecastEl.className='w-forecast done'; forecastEl.innerHTML='🎉 Ziel bereits erreicht!'; }
+else {
+const goalDate=new Date(); goalDate.setDate(goalDate.getDate()+Math.round((remaining/0.6)*7));
+const m2=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+forecastEl.className='w-forecast';
+forecastEl.innerHTML='Bei 0,6 kg/Woche wird das Ziel am <span>'+goalDate.getDate()+'. '+m2[goalDate.getMonth()]+' '+goalDate.getFullYear()+'</span> erreicht';
 }
-} else {
-// Only one entry or baseline = latest — show goal hint
-const daysUntilNextSat = daysToLastSat === 0 ? 7 : 7 - daysToLastSat;
-const nextSat = new Date(nowDate);
-nextSat.setDate(nowDate.getDate() + daysUntilNextSat);
-const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-weeklyVal.textContent = '';
-weeklyVal.className = 'w-weekly-val neutral';
-weeklyNote.textContent = 'Ziel bis Sa ' + nextSat.getDate() + '. ' + months[nextSat.getMonth()] + ': ' + ((sw || cur) - 0.6).toFixed(1) + ' kg';
-weeklyNote.className = 'w-weekly-note neutral';
-}
-
-// Forecast
-const forecastEl = document.getElementById('w-forecast');
-const remaining = cur - gw;
-if (remaining <= 0) {
-forecastEl.className = 'w-forecast done';
-forecastEl.innerHTML = '🎉 Ziel bereits erreicht!';
-} else {
-const weeksNeeded = remaining / 0.6;
-const goalDate = new Date();
-goalDate.setDate(goalDate.getDate() + Math.round(weeksNeeded * 7));
-const months2 = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-const dateStr = goalDate.getDate() + '. ' + months2[goalDate.getMonth()] + ' ' + goalDate.getFullYear();
-forecastEl.className = 'w-forecast';
-forecastEl.innerHTML = `Bei 0,6 kg/Woche wird das Ziel am <span>${dateStr}</span> erreicht`;
-}
-} else {
-document.getElementById('w-current').textContent = sw ? sw.toFixed(1) : '—';
-}
-
-const dots = document.getElementById('w-dots');
-if (dots) {
-dots.innerHTML = '';
-(load(K.wLog) || []).slice(-14).forEach(e => {
-const d = document.createElement('div');
-d.className = 'wlog-dot';
-d.title = fmt(e.date) + ': ' + e.val + ' kg';
-dots.appendChild(d);
-});
-}
+} else { document.getElementById('w-current').textContent=sw?sw.toFixed(1):'—'; }
 drawChart();
 }
 
 function drawChart() {
-const canvas = document.getElementById('w-chart');
+const canvas=document.getElementById('w-chart');
 if (!canvas) return;
-const wLog = (load(K.wLog) || []).slice().sort((a,b) => a.date.localeCompare(b.date));
-const sw = load(K.startW), gw = load(K.goalW);
-if (!sw || !gw) return;
-
-const dpr = window.devicePixelRatio || 1;
-const rect = canvas.getBoundingClientRect();
-if (rect.width === 0) return;
-canvas.width = rect.width * dpr;
-canvas.height = rect.height * dpr;
-const ctx = canvas.getContext('2d');
-ctx.scale(dpr, dpr);
-const W = rect.width, H = rect.height;
-const pad = { top: 12, right: 16, bottom: 24, left: 36 };
-const cw = W - pad.left - pad.right;
-const ch = H - pad.top - pad.bottom;
-
-// Y range: zoom in on actual data values only (not goal)
-const dataVals = wLog.map(e => e.val);
-const dataMin = Math.min(...dataVals);
-const dataMax = Math.max(...dataVals);
-const dataPad = Math.max(0.5, (dataMax - dataMin) * 0.3);
-const minV = dataMin - dataPad;
-const maxV = dataMax + dataPad;
-const rangeV = maxV - minV;
-
-const toX = (i) => pad.left + (wLog.length <= 1 ? cw / 2 : (i / (wLog.length - 1)) * cw);
-const toY = (v) => pad.top + ch - ((v - minV) / rangeV) * ch;
-
-ctx.clearRect(0, 0, W, H);
-
-// Grid lines
-const yTicks = 4;
-ctx.strokeStyle = '#2a282422';
-ctx.lineWidth = 1;
-for (let i = 0; i <= yTicks; i++) {
-const v = minV + (rangeV / yTicks) * i;
-const y = toY(v);
-ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
-ctx.fillStyle = '#6a6560';
-ctx.font = `${9 * dpr / dpr}px DM Mono, monospace`;
-ctx.textAlign = 'right';
-ctx.fillText(v.toFixed(1), pad.left - 4, y + 3);
+const wLog=(load(K.wLog)||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+const sw=load(K.startW),gw=load(K.goalW);
+if (!sw||!gw) return;
+const dpr=window.devicePixelRatio||1;
+const rect=canvas.getBoundingClientRect();
+if (rect.width===0) return;
+canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+const ctx=canvas.getContext('2d');
+ctx.scale(dpr,dpr);
+const W=rect.width,H=rect.height;
+const pad={top:12,right:16,bottom:24,left:36};
+const cw=W-pad.left-pad.right,ch=H-pad.top-pad.bottom;
+const allVals=wLog.map(e=>e.val).concat([sw,gw]);
+const minV=Math.min(...allVals)-0.5,maxV=Math.max(...allVals)+0.5,rangeV=maxV-minV;
+const toX=(i)=>pad.left+(wLog.length<=1?cw/2:(i/(wLog.length-1))*cw);
+const toY=(v)=>pad.top+ch-((v-minV)/rangeV)*ch;
+ctx.clearRect(0,0,W,H);
+const yTicks=4;
+ctx.strokeStyle='#2a282422'; ctx.lineWidth=1;
+for (let i=0;i<=yTicks;i++) {
+const v=minV+(rangeV/yTicks)*i,y=toY(v);
+ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+ctx.fillStyle='#6a6560'; ctx.font='9px DM Mono,monospace'; ctx.textAlign='right';
+ctx.fillText(v.toFixed(1),pad.left-4,y+3);
 }
-
-// Goal line (dashed gold)
-if (gw >= minV && gw <= maxV) {
-const gy = toY(gw);
-ctx.setLineDash([4, 4]);
-ctx.strokeStyle = '#c9a84c66';
-ctx.lineWidth = 1;
-ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(W - pad.right, gy); ctx.stroke();
+if (gw>=minV&&gw<=maxV) {
+const gy=toY(gw);
+ctx.setLineDash([4,4]); ctx.strokeStyle='#c9a84c66'; ctx.lineWidth=1;
+ctx.beginPath(); ctx.moveTo(pad.left,gy); ctx.lineTo(W-pad.right,gy); ctx.stroke();
 ctx.setLineDash([]);
-ctx.fillStyle = '#c9a84c99';
-ctx.font = `8px DM Mono, monospace`;
-ctx.textAlign = 'left';
-ctx.fillText('Ziel', W - pad.right + 2, gy + 3);
+ctx.fillStyle='#c9a84c99'; ctx.font='8px DM Mono,monospace'; ctx.textAlign='left';
+ctx.fillText('Ziel',W-pad.right+2,gy+3);
 }
-
-// Trend line (0.6kg/week) from start
-if (wLog.length >= 1) {
-const startDate = parseDate(wLog[0].date);
-const endDate = parseDate(wLog[wLog.length-1].date);
-const totalDays = Math.max(1, (endDate - startDate) / 86400000);
-const trendStart = sw;
-const trendEnd = sw - (totalDays / 7) * 0.6;
-
-const x0 = pad.left, x1 = toX(wLog.length - 1);
-const ty0 = toY(Math.max(minV, Math.min(maxV, trendStart)));
-const ty1 = toY(Math.max(minV, Math.min(maxV, trendEnd)));
-ctx.setLineDash([3, 5]);
-ctx.strokeStyle = '#6dbf8a44';
-ctx.lineWidth = 1.5;
-ctx.beginPath(); ctx.moveTo(x0, ty0); ctx.lineTo(x1, ty1); ctx.stroke();
+if (wLog.length>=1) {
+const startDate=parseDate(wLog[0].date),endDate=parseDate(wLog[wLog.length-1].date);
+const totalDays=Math.max(1,(endDate-startDate)/86400000);
+const trendEnd=sw-(totalDays/7)*0.6;
+ctx.setLineDash([3,5]); ctx.strokeStyle='#6dbf8a44'; ctx.lineWidth=1.5;
+ctx.beginPath(); ctx.moveTo(pad.left,toY(Math.max(minV,Math.min(maxV,sw)))); ctx.lineTo(toX(wLog.length-1),toY(Math.max(minV,Math.min(maxV,trendEnd)))); ctx.stroke();
 ctx.setLineDash([]);
 }
-
-if (wLog.length < 2) {
-// Single point
-if (wLog.length === 1) {
-const x = toX(0), y = toY(wLog[0].val);
-ctx.beginPath();
-ctx.arc(x, y, 4, 0, Math.PI * 2);
-ctx.fillStyle = '#6dbf8a';
-ctx.fill();
-}
+if (wLog.length<2) {
+if (wLog.length===1) { ctx.beginPath(); ctx.arc(toX(0),toY(wLog[0].val),4,0,Math.PI*2); ctx.fillStyle='#6dbf8a'; ctx.fill(); }
 return;
 }
-
-// Area fill under curve
-const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
-grad.addColorStop(0, '#6dbf8a22');
-grad.addColorStop(1, '#6dbf8a00');
-ctx.beginPath();
-ctx.moveTo(toX(0), toY(wLog[0].val));
-for (let i = 1; i < wLog.length; i++) {
-const x0 = toX(i-1), y0 = toY(wLog[i-1].val);
-const x1 = toX(i), y1 = toY(wLog[i].val);
-const cpx = (x0 + x1) / 2;
-ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
-}
-ctx.lineTo(toX(wLog.length - 1), H - pad.bottom);
-ctx.lineTo(toX(0), H - pad.bottom);
-ctx.closePath();
-ctx.fillStyle = grad;
-ctx.fill();
-
-// Main line
-ctx.beginPath();
-ctx.moveTo(toX(0), toY(wLog[0].val));
-for (let i = 1; i < wLog.length; i++) {
-const x0 = toX(i-1), y0 = toY(wLog[i-1].val);
-const x1 = toX(i), y1 = toY(wLog[i].val);
-const cpx = (x0 + x1) / 2;
-ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
-}
-ctx.strokeStyle = '#6dbf8a';
-ctx.lineWidth = 2;
-ctx.lineJoin = 'round';
-ctx.stroke();
-
-// Dots
-const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-wLog.forEach((e, i) => {
-const x = toX(i), y = toY(e.val);
-const isSat = parseDate(e.date).getDay() === 6;
-ctx.beginPath();
-ctx.arc(x, y, isSat ? 4 : 2.5, 0, Math.PI * 2);
-ctx.fillStyle = isSat ? '#c9a84c' : '#6dbf8a';
-ctx.fill();
-if (isSat) {
-ctx.strokeStyle = '#0b1610';
-ctx.lineWidth = 1.5;
-ctx.stroke();
-}
+const grad=ctx.createLinearGradient(0,pad.top,0,H-pad.bottom);
+grad.addColorStop(0,'#6dbf8a22'); grad.addColorStop(1,'#6dbf8a00');
+ctx.beginPath(); ctx.moveTo(toX(0),toY(wLog[0].val));
+for (let i=1;i<wLog.length;i++) { const cpx=(toX(i-1)+toX(i))/2; ctx.bezierCurveTo(cpx,toY(wLog[i-1].val),cpx,toY(wLog[i].val),toX(i),toY(wLog[i].val)); }
+ctx.lineTo(toX(wLog.length-1),H-pad.bottom); ctx.lineTo(toX(0),H-pad.bottom); ctx.closePath();
+ctx.fillStyle=grad; ctx.fill();
+ctx.beginPath(); ctx.moveTo(toX(0),toY(wLog[0].val));
+for (let i=1;i<wLog.length;i++) { const cpx=(toX(i-1)+toX(i))/2; ctx.bezierCurveTo(cpx,toY(wLog[i-1].val),cpx,toY(wLog[i].val),toX(i),toY(wLog[i].val)); }
+ctx.strokeStyle='#6dbf8a'; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.stroke();
+const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+wLog.forEach((e,i)=>{
+const isSat=parseDate(e.date).getDay()===6;
+ctx.beginPath(); ctx.arc(toX(i),toY(e.val),isSat?4:2.5,0,Math.PI*2);
+ctx.fillStyle=isSat?'#c9a84c':'#6dbf8a'; ctx.fill();
+if(isSat){ctx.strokeStyle='#0b1610';ctx.lineWidth=1.5;ctx.stroke();}
 });
-
-// X-axis date labels (sparse)
-ctx.fillStyle = '#6a6560';
-ctx.font = '8px DM Mono, monospace';
-ctx.textAlign = 'center';
-const maxLabels = Math.min(wLog.length, Math.floor(cw / 40));
-const step = Math.max(1, Math.floor(wLog.length / maxLabels));
-for (let i = 0; i < wLog.length; i += step) {
-const d = parseDate(wLog[i].date);
-const label = d.getDate() + '.' + months[d.getMonth()];
-ctx.fillText(label, toX(i), H - pad.bottom + 12);
+ctx.fillStyle='#6a6560'; ctx.font='8px DM Mono,monospace'; ctx.textAlign='center';
+const maxLabels=Math.min(wLog.length,Math.floor(cw/40));
+const step=Math.max(1,Math.floor(wLog.length/maxLabels));
+for (let i=0;i<wLog.length;i+=step) {
+const d=parseDate(wLog[i].date);
+ctx.fillText(d.getDate()+'.'+months[d.getMonth()],toX(i),H-pad.bottom+12);
 }
-
-// Tooltip on touch/hover
-canvas._wLog = wLog;
-canvas._toX = toX;
-canvas._toY = toY;
-canvas._months = months;
+canvas._wLog=wLog; canvas._toX=toX; canvas._toY=toY; canvas._months=months;
 }
 
 function logWeight() {
-const inp = document.getElementById('w-input');
-const val = parseFloat(inp.value);
-if (isNaN(val) || val < 20 || val > 400) { inp.focus(); return; }
-const wLog = load(K.wLog) || [];
-const t = realToday();
-const idx = wLog.findIndex(e => e.date === t);
-if (idx >= 0) wLog[idx].val = val; else wLog.push({ date: t, val });
-save(K.wLog, wLog);
-inp.value = '';
+const inp=document.getElementById('w-input');
+const val=parseFloat(inp.value);
+if (isNaN(val)||val<20||val>400) { inp.focus(); return; }
+const wLog=load(K.wLog)||[];
+const t=realToday();
+const idx=wLog.findIndex(e=>e.date===t);
+if (idx>=0) wLog[idx].val=val; else wLog.push({date:t,val});
+save(K.wLog,wLog);
+inp.value='';
 renderWeight();
 requestAnimationFrame(drawChart);
 }
 
-let _editingHabit = 0;
+// ── EDIT HABIT ──────────────────────────────────────────────
+let _editN = 0;
 
-function editHabit(n) {
-_editingHabit = n;
-const name = load(n === 1 ? K.h1 : K.h2) || '';
+function openEditModal(n) {
+_editN = n;
 document.getElementById('edit-modal-title').textContent = 'Vorsatz ' + n + ' bearbeiten';
-const inp = document.getElementById('edit-input');
-inp.value = name;
-document.getElementById('edit-modal').style.display = 'flex';
-setTimeout(() => {
-inp.focus();
-inp.select();
-inp.addEventListener('keydown', e => { if (e.key === 'Enter') { saveEditHabit(); closeEditModal(); } }, { once: true });
-}, 100);
-}
-
-function saveEditHabit() {
-const val = document.getElementById('edit-input').value.trim();
-if (!val) return;
-save(_editingHabit === 1 ? K.h1 : K.h2, val);
-document.getElementById(`h${_editingHabit}-name`).textContent = val;
-closeEditModal();
-}
-
-function deleteHabit() {
-const n = _editingHabit;
-save(n === 1 ? K.h1 : K.h2, '');
-save(n === 1 ? K.log1 : K.log2, {});
-closeEditModal();
-// Show setup for just this habit
-showSingleHabitSetup(n);
-}
-
-function showSingleHabitSetup(n) {
-const color = n === 1 ? 'var(--gold)' : 'var(--blue)';
-const modal = document.getElementById('edit-modal');
-modal.style.display = 'flex';
-modal.innerHTML = `
-<div class="modal-box">
-<div class="modal-title">Neuer Vorsatz ${n}</div>
-<div class="input-group" style="margin-bottom:16px">
-<label>Was nimmst du dir vor?</label>
-<input type="text" id="new-habit-input" placeholder="z.B. täglich spazieren" maxlength="60" />
-</div>
-<button class="btn-next" style="padding:13px;font-size:11px" onclick="confirmNewHabit(${n})">Speichern →</button>
-<button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
-</div>`;
-setTimeout(() => {
-const inp = document.getElementById('new-habit-input');
-if (inp) inp.focus();
-inp.addEventListener('keydown', e => { if (e.key === 'Enter') confirmNewHabit(n); });
-}, 100);
-}
-
-function confirmNewHabit(n) {
-const val = document.getElementById('new-habit-input').value.trim();
-if (!val) return;
-const key = n === 1 ? K.h1 : K.h2;
-const logKey = n === 1 ? K.log1 : K.log2;
-save(key, val);
-const t = today();
-const newLog = {}; newLog[t] = false;
-save(logKey, newLog);
-closeEditModal();
-showMain();
+const inp = document.getElementById('edit-modal-input');
+inp.value = load(n === 1 ? K.h1 : K.h2) || '';
+document.getElementById('edit-modal').classList.remove('hidden');
+setTimeout(() => { inp.focus(); inp.select(); }, 80);
 }
 
 function closeEditModal() {
-const modal = document.getElementById('edit-modal');
-modal.style.display = 'none';
-modal.innerHTML = `
-<div class="modal-box">
-<div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
-<div class="input-group" style="margin-bottom:16px">
-<label>Vorsatz ändern</label>
-<input type="text" id="edit-input" maxlength="60" onblur="saveEditHabit()" />
-</div>
-<button class="modal-del-btn" style="width:100%;margin-bottom:6px" onclick="deleteHabit()">Löschen & neu starten</button>
-<button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
-</div>`;
+document.getElementById('edit-modal').classList.add('hidden');
 }
 
-document.getElementById('edit-modal').addEventListener('click', function(e) {
-if (e.target === this) closeEditModal();
-});
-document.getElementById('inp-habit1').addEventListener('keydown', e => { if (e.key === 'Enter') nextStep(0); });
-document.getElementById('inp-habit2').addEventListener('keydown', e => { if (e.key === 'Enter') nextStep(1); });
-document.getElementById('inp-startw').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('inp-goalw').focus(); });
-document.getElementById('inp-goalw').addEventListener('keydown', e => { if (e.key === 'Enter') startApp(); });
-document.getElementById('w-input').addEventListener('keydown', e => { if (e.key === 'Enter') logWeight(); });
+function saveHabitName() {
+const val = document.getElementById('edit-modal-input').value.trim();
+if (!val) return;
+save(_editN === 1 ? K.h1 : K.h2, val);
+document.getElementById('h' + _editN + '-name').textContent = val;
+closeEditModal();
+}
 
-function resetApp() {
-if (!confirm('Wirklich alles zurücksetzen?')) return;
+function openDeleteConfirm() {
+closeEditModal();
+document.getElementById('confirm-title').textContent = 'Vorsatz ' + _editN + ' löschen?';
+document.getElementById('confirm-sub').textContent = 'Der gesamte Verlauf wird gelöscht. Danach kannst du einen neuen Vorsatz eingeben.';
+document.getElementById('confirm-ok-btn').onclick = doDeleteHabit;
+document.getElementById('confirm-modal').classList.remove('hidden');
+}
+
+function closeConfirmModal() {
+document.getElementById('confirm-modal').classList.add('hidden');
+}
+
+function doDeleteHabit() {
+closeConfirmModal();
+// Clear log
+const t = today();
+const newLog = {}; newLog[t] = false;
+save(_editN === 1 ? K.log1 : K.log2, newLog);
+// Open new-name sheet
+document.getElementById('newhab-title').textContent = 'Neuer Vorsatz ' + _editN;
+document.getElementById('newhab-input').value = '';
+document.getElementById('newhab-modal').classList.remove('hidden');
+setTimeout(() => document.getElementById('newhab-input').focus(), 80);
+}
+
+function closeNewHabModal() {
+document.getElementById('newhab-modal').classList.add('hidden');
+renderHabit(_editN);
+}
+
+function saveNewHabit() {
+const val = document.getElementById('newhab-input').value.trim();
+if (!val) return;
+save(_editN === 1 ? K.h1 : K.h2, val);
+document.getElementById('h' + _editN + '-name').textContent = val;
+document.getElementById('newhab-modal').classList.add('hidden');
+renderHabit(_editN);
+}
+
+// ── RESET (kein confirm(), stattdessen Modal) ──────────────
+function openResetConfirm() {
+document.getElementById('confirm-title').textContent = 'Alles zurücksetzen?';
+document.getElementById('confirm-sub').textContent = 'Alle Daten (beide Vorsätze + Gewicht) werden gelöscht.';
+document.getElementById('confirm-ok-btn').onclick = doResetApp;
+document.getElementById('confirm-modal').classList.remove('hidden');
+}
+
+function doResetApp() {
 Object.values(K).forEach(k => localStorage.removeItem(k));
 location.reload();
 }
 
-// Chart tooltip interaction
+// Keyboard shortcuts
+document.getElementById('inp-habit1').addEventListener('keydown', e=>{if(e.key==='Enter')nextStep(0);});
+document.getElementById('inp-habit2').addEventListener('keydown', e=>{if(e.key==='Enter')nextStep(1);});
+document.getElementById('inp-startw').addEventListener('keydown', e=>{if(e.key==='Enter')document.getElementById('inp-goalw').focus();});
+document.getElementById('inp-goalw').addEventListener('keydown', e=>{if(e.key==='Enter')startApp();});
+document.getElementById('w-input').addEventListener('keydown', e=>{if(e.key==='Enter')logWeight();});
+document.getElementById('edit-modal-input').addEventListener('keydown', e=>{if(e.key==='Enter')saveHabitName(); if(e.key==='Escape')closeEditModal();});
+document.getElementById('newhab-input').addEventListener('keydown', e=>{if(e.key==='Enter')saveNewHabit();});
+
+// Backdrop tap to close
+document.getElementById('edit-modal').addEventListener('click', function(e){if(e.target===this)closeEditModal();});
+document.getElementById('confirm-modal').addEventListener('click', function(e){if(e.target===this)closeConfirmModal();});
+document.getElementById('newhab-modal').addEventListener('click', function(e){if(e.target===this)closeNewHabModal();});
+
+// Chart tooltip
 document.addEventListener('DOMContentLoaded', () => {
-const canvas = document.getElementById('w-chart');
-const tooltip = document.getElementById('chart-tooltip');
-if (!canvas || !tooltip) return;
-
-function handleMove(clientX, clientY) {
-if (!canvas._wLog || canvas._wLog.length < 1) return;
-const rect = canvas.getBoundingClientRect();
-const x = clientX - rect.left;
-const wLog = canvas._wLog;
-// Find nearest point
-let nearest = 0, minDist = Infinity;
-wLog.forEach((e, i) => {
-const dist = Math.abs(canvas._toX(i) - x);
-if (dist < minDist) { minDist = dist; nearest = i; }
-});
-if (minDist < 30) {
-const e = wLog[nearest];
-const months = canvas._months;
-const d = parseDate(e.date);
-const label = d.getDate() + '. ' + months[d.getMonth()] + ': ' + e.val.toFixed(1) + ' kg';
-tooltip.textContent = label;
-tooltip.style.display = 'block';
-const tx = Math.min(canvas._toX(nearest), rect.width - tooltip.offsetWidth - 4);
-tooltip.style.left = tx + 'px';
-tooltip.style.top = (canvas._toY(e.val) - 28) + 'px';
-} else {
-tooltip.style.display = 'none';
+const canvas=document.getElementById('w-chart');
+const tooltip=document.getElementById('chart-tooltip');
+if (!canvas||!tooltip) return;
+function handleMove(cx,cy) {
+if (!canvas._wLog||canvas._wLog.length<1) return;
+const rect=canvas.getBoundingClientRect();
+const x=cx-rect.left;
+let nearest=0,minDist=Infinity;
+canvas._wLog.forEach((e,i)=>{ const dist=Math.abs(canvas._toX(i)-x); if(dist<minDist){minDist=dist;nearest=i;} });
+if (minDist<30) {
+const e=canvas._wLog[nearest];
+const d=parseDate(e.date);
+tooltip.textContent=d.getDate()+'. '+canvas._months[d.getMonth()]+': '+e.val.toFixed(1)+' kg';
+tooltip.style.display='block';
+tooltip.style.left=Math.min(canvas._toX(nearest),canvas.getBoundingClientRect().width-tooltip.offsetWidth-4)+'px';
+tooltip.style.top=(canvas._toY(e.val)-28)+'px';
+} else tooltip.style.display='none';
 }
-}
-canvas.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
-canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
-canvas.addEventListener('touchmove', e => {
-e.preventDefault();
-handleMove(e.touches[0].clientX, e.touches[0].clientY);
-}, { passive: false });
-canvas.addEventListener('touchend', () => { setTimeout(() => { tooltip.style.display = 'none'; }, 1200); });
+canvas.addEventListener('mousemove',e=>handleMove(e.clientX,e.clientY));
+canvas.addEventListener('mouseleave',()=>{tooltip.style.display='none';});
+canvas.addEventListener('touchmove',e=>{e.preventDefault();handleMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+canvas.addEventListener('touchend',()=>{setTimeout(()=>{tooltip.style.display='none';},1200);});
 });
 
-// Redraw chart on resize
 window.addEventListener('resize', drawChart);
-
-// Use ResizeObserver to draw chart as soon as canvas has real dimensions
-const chartCanvas = document.getElementById('w-chart');
-if (chartCanvas && window.ResizeObserver) {
-const ro = new ResizeObserver(entries => {
-for (const entry of entries) {
-if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
-drawChart();
-}
-}
+const chartCanvas=document.getElementById('w-chart');
+if (chartCanvas&&window.ResizeObserver) {
+const ro=new ResizeObserver(entries=>{
+for (const entry of entries) { if(entry.contentRect.width>0&&entry.contentRect.height>0) drawChart(); }
 });
 ro.observe(chartCanvas);
 }
 
+window.addEventListener('load', () => {
+setTimeout(() => {
+const s=document.getElementById('splash');
+s.classList.add('fade-out');
+setTimeout(()=>s.classList.add('gone'),650);
+}, 2200);
+});
 
-// Init
-if (load(K.h1) && load(K.startW)) showMain();
+if (load(K.h1)&&load(K.startW)) showMain();
 </script>
 
 </body>
