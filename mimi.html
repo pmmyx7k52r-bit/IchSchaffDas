@@ -300,7 +300,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div id="body-info"></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.7.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetConfirm()">Neu starten</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.8.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -340,7 +340,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
     <input type="text" class="modal-input" id="edit-modal-input" maxlength="60"/>
     <button class="modal-save" onclick="saveHabitName()">Speichern</button>
-    <button class="modal-delete" id="edit-delete" onclick="openDeleteConfirm()">&#10005; Vorsatz l&ouml;schen &amp; neu starten</button>
+    <button class="modal-delete" id="edit-delete" onclick="openDeleteConfirm()">&#10005; Vorsatz l&ouml;schen</button>
     <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
   </div>
 </div>
@@ -352,6 +352,14 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <button class="modal-save" onclick="saveMealTime()">Speichern</button>
     <button class="modal-delete" onclick="deleteMeal()">&#10005; Eintrag l&ouml;schen</button>
     <button class="modal-cancel" onclick="closeMealModal()">Abbrechen</button>
+  </div>
+</div>
+<div id="reset-modal" class="modal-backdrop hidden">
+  <div class="modal-sheet">
+    <div class="modal-title">Zur&uuml;cksetzen</div>
+    <button class="modal-delete" onclick="askClearMeals()">Essenszeiten l&ouml;schen</button>
+    <button class="modal-delete" onclick="openResetConfirm()">Alles zur&uuml;cksetzen (Vors&auml;tze, Gewicht, Essenszeiten)</button>
+    <button class="modal-cancel" onclick="closeResetMenu()">Abbrechen</button>
   </div>
 </div>
 <div id="confirm-modal" class="modal-backdrop hidden">
@@ -677,12 +685,16 @@ let _editN=0;
 function openEditModal(n){_editN=n;const cur=load(n===1?K.h1:K.h2)||'';document.getElementById('edit-modal-title').textContent='Vorsatz '+n+(cur?' bearbeiten':' hinzufügen');document.getElementById('edit-delete').style.display=cur?'':'none';const inp=document.getElementById('edit-modal-input');inp.value=cur;document.getElementById('edit-modal').classList.remove('hidden');setTimeout(()=>{inp.focus();inp.select();},80);}
 function closeEditModal(){document.getElementById('edit-modal').classList.add('hidden');}
 function saveHabitName(){const val=document.getElementById('edit-modal-input').value.trim();if(!val)return;save(_editN===1?K.h1:K.h2,val);const lk=_editN===1?K.log1:K.log2,log=load(lk)||{},t=today();if(!(t in log)){log[t]=false;save(lk,log);}closeEditModal();renderHabit(_editN);}
-function openDeleteConfirm(){closeEditModal();document.getElementById('confirm-title').textContent='Vorsatz '+_editN+' löschen?';document.getElementById('confirm-sub').textContent='Der gesamte Verlauf wird gelöscht. Danach kannst du einen neuen Vorsatz eingeben.';document.getElementById('confirm-ok-btn').onclick=doDeleteHabit;document.getElementById('confirm-modal').classList.remove('hidden');}
+function openDeleteConfirm(){closeEditModal();document.getElementById('confirm-title').textContent='Vorsatz '+_editN+' löschen?';document.getElementById('confirm-sub').textContent='Nur dieser Vorsatz mit seinem Verlauf wird gelöscht. Der andere Vorsatz, Gewicht und Essenszeiten bleiben.';document.getElementById('confirm-ok-btn').onclick=doDeleteHabit;document.getElementById('confirm-modal').classList.remove('hidden');}
 function closeConfirmModal(){document.getElementById('confirm-modal').classList.add('hidden');}
-function doDeleteHabit(){closeConfirmModal();const t=today();const newLog={};newLog[t]=false;save(_editN===1?K.log1:K.log2,newLog);document.getElementById('newhab-title').textContent='Neuer Vorsatz '+_editN;document.getElementById('newhab-input').value='';document.getElementById('newhab-modal').classList.remove('hidden');setTimeout(()=>document.getElementById('newhab-input').focus(),80);}
+function doDeleteHabit(){closeConfirmModal();localStorage.removeItem(_editN===1?K.h1:K.h2);localStorage.removeItem(_editN===1?K.log1:K.log2);renderHabit(_editN);}
 function closeNewHabModal(){document.getElementById('newhab-modal').classList.add('hidden');renderHabit(_editN);}
 function saveNewHabit(){const val=document.getElementById('newhab-input').value.trim();if(!val)return;save(_editN===1?K.h1:K.h2,val);document.getElementById('h'+_editN+'-name').textContent=val;document.getElementById('newhab-modal').classList.add('hidden');renderHabit(_editN);}
-function openResetConfirm(){document.getElementById('confirm-title').textContent='Alles zurücksetzen?';document.getElementById('confirm-sub').textContent='Alle Daten (beide Vorsätze, Gewicht und Essenszeiten) werden gelöscht.';document.getElementById('confirm-ok-btn').onclick=doResetApp;document.getElementById('confirm-modal').classList.remove('hidden');}
+function openResetMenu(){document.getElementById('reset-modal').classList.remove('hidden');}
+function closeResetMenu(){document.getElementById('reset-modal').classList.add('hidden');}
+function askClearMeals(){closeResetMenu();document.getElementById('confirm-title').textContent='Essenszeiten löschen?';document.getElementById('confirm-sub').textContent='Alle Mahlzeiten-Einträge werden gelöscht. Vorsätze und Gewicht bleiben.';document.getElementById('confirm-ok-btn').onclick=doClearMeals;document.getElementById('confirm-modal').classList.remove('hidden');}
+function doClearMeals(){closeConfirmModal();localStorage.removeItem(MK);renderFast();}
+function openResetConfirm(){closeResetMenu();document.getElementById('confirm-title').textContent='Alles zurücksetzen?';document.getElementById('confirm-sub').textContent='Alle Daten (beide Vorsätze, Gewicht und Essenszeiten) werden gelöscht.';document.getElementById('confirm-ok-btn').onclick=doResetApp;document.getElementById('confirm-modal').classList.remove('hidden');}
 function doResetApp(){Object.values(K).forEach(k=>localStorage.removeItem(k));localStorage.removeItem(MK);location.reload();}
 
 document.getElementById('inp-habit1').addEventListener('keydown',e=>{if(e.key==='Enter')nextStep(0);});
@@ -693,6 +705,7 @@ document.getElementById('w-input').addEventListener('keydown',e=>{if(e.key==='En
 document.getElementById('edit-modal-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveHabitName();if(e.key==='Escape')closeEditModal();});
 document.getElementById('newhab-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveNewHabit();});
 document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+document.getElementById('reset-modal').addEventListener('click',function(e){if(e.target===this)closeResetMenu();});
 document.getElementById('meal-modal').addEventListener('click',function(e){if(e.target===this)closeMealModal();});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)closeConfirmModal();});
 document.getElementById('newhab-modal').addEventListener('click',function(e){if(e.target===this)closeNewHabModal();});
