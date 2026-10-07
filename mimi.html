@@ -71,21 +71,22 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 #panel-habit,#panel-habit2,#panel-fast { flex:0 0 17%; min-height:0; }
 #panel-weight { flex:1 0 auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; }
 #panel-weight.chart-on { flex:1 1 0; min-height:0; }
-#panel-body { flex:0 1 auto; min-height:0; overflow-y:auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; background:linear-gradient(135deg,#060607 0%,#030303 100%); }
+#panel-body { flex:0 1 auto; min-height:0; overflow-y:auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; background:linear-gradient(135deg,#000000 0%,#000000 100%); }
 #panel-body::before { background:linear-gradient(180deg,transparent,var(--sky),transparent); }
-#body-info .fd-grid { grid-template-columns:repeat(auto-fit,minmax(85px,1fr)); gap:5px; }
-#body-info .fd-m { padding:4px 7px; font-size:10px; }
-#body-info .fd-m span { margin-bottom:1px; }
-#body-info .fd-m b { font-size:11px; }
+#body-info .f-text { font-size:11px; }
+#body-info .fd-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; }
+#body-info .fd-m { padding:4px 5px; font-size:9px; hyphens:auto; overflow-wrap:anywhere; }
+#body-info .fd-m span { font-size:9px; margin-bottom:1px; }
+#body-info .fd-m b { font-size:10px; font-weight:500; line-height:1.25; }
 .panel::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; }
 #panel-habit::before  { background:linear-gradient(180deg,transparent,var(--gold),transparent); }
 #panel-habit2::before { background:linear-gradient(180deg,transparent,var(--blue),transparent); }
 #panel-fast::before   { background:linear-gradient(180deg,transparent,var(--sky),transparent); }
 #panel-weight::before { background:linear-gradient(180deg,transparent,var(--success),transparent); }
-#panel-habit  { background:linear-gradient(135deg,#191714 0%,#12100e 100%); }
-#panel-habit2 { background:linear-gradient(135deg,#090a0c 0%,#050506 100%); }
-#panel-fast   { background:linear-gradient(135deg,#14181e 0%,#0e1115 100%); }
-#panel-weight { background:linear-gradient(135deg,#131a14 0%,#0d120e 100%); }
+#panel-habit  { background:linear-gradient(135deg,#322b23 0%,#262019 100%); }
+#panel-habit2 { background:linear-gradient(135deg,#000000 0%,#000000 100%); }
+#panel-fast   { background:linear-gradient(135deg,#243044 0%,#1b2535 100%); }
+#panel-weight { background:linear-gradient(135deg,#243a28 0%,#1b2d1f 100%); }
 .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
 .panel-tag { font-size:10px; letter-spacing:0.35em; text-transform:uppercase; padding:3px 8px; border-radius:2px; }
 .tag-gold  { color:var(--gold);    border:1px solid #3a2f15; background:#1a1508; }
@@ -155,7 +156,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 #panel-fast   { animation-delay:0.2s; }
 #panel-body   { animation-delay:0.22s; }
 #panel-weight { animation-delay:0.25s; }
-.w-forecast { font-size:12px; letter-spacing:0.12em; color:var(--muted); margin-top:7px; min-height:14px; transition:color 0.3s; }
+.w-forecast { font-size:10px; letter-spacing:0.12em; color:var(--muted); margin-top:7px; min-height:14px; transition:color 0.3s; }
 .w-forecast span { color:var(--gold); font-weight:500; }
 .w-forecast.done { color:var(--success); }
 .w-weekly { display:flex; align-items:center; gap:12px; margin-top:6px; flex-wrap:wrap; }
@@ -300,7 +301,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div id="body-info"></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.8.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.11.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -555,7 +556,7 @@ function renderBody(){
   const last=loadMeals()[0],el=document.getElementById('body-info');
   if(!last){el.innerHTML='<p class="f-text" style="color:var(--muted)">Tippe auf „Gegessen“, dann siehst du hier, was gerade im Körper passiert.</p>';return;}
   const h=Math.max(0,(Date.now()-last)/36e5),s=stageOf(h);
-  el.innerHTML=`<div style="color:${s.col};font-size:14px;font-weight:500">${s.name} <span style="color:var(--muted)">· seit ${fmtDur(h)}</span></div><p class="f-text" style="margin:6px 0 10px;color:var(--muted)">${s.desc}</p><div class="fd-grid">${FLAB.map((l,i)=>`<div class="fd-m"><span>${l}</span><b>${s.m[i]}</b></div>`).join('')}</div><div class="fd-n">Schematisch, stark individuell. Mehr unter Essen › Details.</div>`;
+  el.innerHTML=`<div style="color:${s.col};font-size:14px;font-weight:500">${s.name} <span style="color:var(--muted)">· seit ${fmtDur(h)}</span></div><p class="f-text" style="margin:6px 0 10px;color:var(--muted)">${s.desc}</p><div class="fd-grid">${['Zucker','Insulin','Fett','Ketone','Autophagie'].map((l,i)=>`<div class="fd-m"><span>${l}</span><b>${s.m[i].replace('Beim Menschen kaum messbar','Kaum messbar')}</b></div>`).join('')}</div><div class="fd-n">Schematisch, stark individuell. Mehr unter Essen › Details.</div>`;
 }
 function applyChart(){
   const on=load('v_chartOn')===true;
