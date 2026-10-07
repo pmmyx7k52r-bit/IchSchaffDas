@@ -32,7 +32,7 @@ const iconDataUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
 const touchIcon = document.createElement('link');
 touchIcon.rel = 'apple-touch-icon'; touchIcon.href = iconDataUrl;
 document.currentScript.parentNode.appendChild(touchIcon);
-const manifest = { name: "Ich mach' das!", short_name: 'Ich mach das', description: 'Habit Tracker & Gewichtstagebuch', start_url: '.', display: 'standalone', background_color: '#0f0e0c', theme_color: '#0f0e0c', orientation: 'portrait', icons: [{ src: iconDataUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' }, { src: iconDataUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }] };
+const manifest = { name: "Ich mach' das!", short_name: 'Ich mach das', description: 'Habit Tracker, Gewichtstagebuch & Fasten-Ampel', start_url: '.', display: 'standalone', background_color: '#0f0e0c', theme_color: '#0f0e0c', orientation: 'portrait', icons: [{ src: iconDataUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' }, { src: iconDataUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }] };
 const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
 const manifestLink = document.createElement('link');
 manifestLink.rel = 'manifest'; manifestLink.href = URL.createObjectURL(blob);
@@ -40,77 +40,76 @@ document.currentScript.parentNode.appendChild(manifestLink);
 })();
 </script>
 <style>
-:root { --bg:#0f0e0c; --panel:#141311; --card:#1c1a17; --border:#2a2824; --gold:#c9a84c; --gold-light:#e8c97a; --text:#f0ebe0; --muted:#6a6560; --success:#6dbf8a; --blue:#6aabcf; --blue-light:#9dcde8; }
+:root { --bg:#0f0e0c; --panel:#141311; --card:#1c1a17; --border:#2a2824; --gold:#c9a84c; --gold-light:#e8c97a; --text:#f0ebe0; --muted:#a39c90; --success:#6dbf8a; --blue:#6aabcf; --blue-light:#9dcde8; --sky:#38bdf8; }
 * { box-sizing:border-box; margin:0; padding:0; }
 html,body { height:100%; overflow:hidden; }
 body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; }
-#splash { position:fixed; inset:0; background:#0f2518; background-image:radial-gradient(ellipse at 50% 40%,#1a3d28 0%,#0a1a10 70%); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:200; transition:opacity 0.6s ease,transform 0.6s ease; }
-#splash.fade-out { opacity:0; transform:scale(1.05); pointer-events:none; }
-#splash.gone { display:none; }
-.splash-icon { font-size:96px; line-height:1; margin-bottom:28px; animation:splashBounce 0.7s cubic-bezier(0.34,1.56,0.64,1) both; animation-delay:0.2s; opacity:0; }
-.splash-title { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:#f0ebe0; letter-spacing:0.05em; animation:splashFade 0.5s ease both; animation-delay:0.5s; opacity:0; }
-.splash-sub { font-size:10px; letter-spacing:0.4em; color:#6dbf8a; text-transform:uppercase; margin-top:8px; animation:splashFade 0.5s ease both; animation-delay:0.7s; opacity:0; }
-.splash-bar { width:120px; height:2px; background:#1a3d28; border-radius:2px; margin-top:40px; overflow:hidden; animation:splashFade 0.5s ease both; animation-delay:0.8s; opacity:0; }
-.splash-bar-fill { height:100%; background:linear-gradient(90deg,#6dbf8a,#c9a84c); border-radius:2px; animation:splashLoad 1.2s ease both; animation-delay:0.9s; }
-@keyframes splashBounce { from{opacity:0;transform:scale(0.4) translateY(30px)} to{opacity:1;transform:scale(1) translateY(0)} }
-@keyframes splashFade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-@keyframes splashLoad { from{width:0%} to{width:100%} }
 #setup-overlay { position:fixed; inset:0; background:var(--bg); background-image:radial-gradient(ellipse at 20% 20%,#1e1a10 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,#0c1218 0%,transparent 60%); display:flex; align-items:center; justify-content:center; z-index:100; animation:fadeUp 0.5s ease both; }
 #setup-overlay.hidden { display:none; }
 .setup-box { width:100%; max-width:460px; padding:0 28px; text-align:center; }
 .setup-step { display:none; animation:fadeUp 0.4s ease both; }
 .setup-step.active { display:block; }
-.logo { font-family:'Playfair Display',serif; font-size:11px; letter-spacing:0.45em; color:var(--gold); text-transform:uppercase; margin-bottom:44px; }
+.logo { font-family:'Playfair Display',serif; font-size:13px; letter-spacing:0.45em; color:var(--gold); text-transform:uppercase; margin-bottom:44px; }
 .step-indicator { display:flex; justify-content:center; gap:6px; margin-bottom:30px; }
 .step-dot { width:6px; height:6px; border-radius:50%; background:var(--border); transition:background 0.3s; }
 .step-dot.active { background:var(--gold); }
 .setup-headline { font-family:'Playfair Display',serif; font-size:clamp(26px,5.5vw,38px); font-weight:900; line-height:1.15; margin-bottom:8px; }
-.setup-sub { color:var(--muted); font-size:11px; letter-spacing:0.08em; margin-bottom:32px; }
+.setup-sub { color:var(--muted); font-size:13px; letter-spacing:0.08em; margin-bottom:32px; }
 .input-group { margin-bottom:14px; }
-.input-group label { display:block; font-size:9px; letter-spacing:0.3em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; text-align:left; }
-.input-group input { width:100%; background:var(--card); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:'DM Mono',monospace; font-size:15px; padding:15px 18px; outline:none; transition:border-color 0.2s; }
+.input-group label { display:block; font-size:11px; letter-spacing:0.3em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; text-align:left; }
+.input-group input { width:100%; background:var(--card); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:'DM Mono',monospace; font-size:16px; padding:15px 18px; outline:none; transition:border-color 0.2s; }
 .input-group input:focus { border-color:var(--gold); }
 .input-group input::placeholder { color:var(--muted); }
 .weight-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
-.btn-next { width:100%; background:var(--gold); color:#0f0e0c; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:12px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; padding:16px; cursor:pointer; margin-top:6px; transition:background 0.2s,transform 0.1s; }
+.btn-next { width:100%; background:var(--gold); color:#0f0e0c; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:14px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; padding:16px; cursor:pointer; margin-top:6px; transition:background 0.2s,transform 0.1s; }
 .btn-next:hover { background:var(--gold-light); }
 .btn-next:active { transform:scale(0.98); }
 #main { display:none; height:100vh; flex-direction:column; }
 #main.visible { display:flex; }
 .panel { position:relative; display:flex; flex-direction:column; padding:0 22px; justify-content:center; overflow:hidden; }
 .panel:not(:last-child) { border-bottom:1px solid var(--border); }
-#panel-habit,#panel-habit2 { flex:0 0 20%; min-height:0; }
-#panel-weight { flex:1; min-height:0; }
+#panel-habit,#panel-habit2,#panel-fast { flex:0 0 17%; min-height:0; }
+#panel-weight { flex:1 0 auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; }
+#panel-weight.chart-on { flex:1 1 0; min-height:0; }
+#panel-body { flex:0 1 auto; min-height:0; overflow-y:auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; background:linear-gradient(135deg,#060607 0%,#030303 100%); }
+#panel-body::before { background:linear-gradient(180deg,transparent,var(--sky),transparent); }
+#body-info .fd-grid { grid-template-columns:repeat(auto-fit,minmax(85px,1fr)); gap:5px; }
+#body-info .fd-m { padding:4px 7px; font-size:10px; }
+#body-info .fd-m span { margin-bottom:1px; }
+#body-info .fd-m b { font-size:11px; }
 .panel::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; }
 #panel-habit::before  { background:linear-gradient(180deg,transparent,var(--gold),transparent); }
 #panel-habit2::before { background:linear-gradient(180deg,transparent,var(--blue),transparent); }
+#panel-fast::before   { background:linear-gradient(180deg,transparent,var(--sky),transparent); }
 #panel-weight::before { background:linear-gradient(180deg,transparent,var(--success),transparent); }
-#panel-habit  { background:linear-gradient(135deg,#141210 0%,#111009 100%); }
-#panel-habit2 { background:linear-gradient(135deg,#0e1218 0%,#0b0f16 100%); }
-#panel-weight { background:linear-gradient(135deg,#0b1610 0%,#091210 100%); }
+#panel-habit  { background:linear-gradient(135deg,#191714 0%,#12100e 100%); }
+#panel-habit2 { background:linear-gradient(135deg,#090a0c 0%,#050506 100%); }
+#panel-fast   { background:linear-gradient(135deg,#14181e 0%,#0e1115 100%); }
+#panel-weight { background:linear-gradient(135deg,#131a14 0%,#0d120e 100%); }
 .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-.panel-tag { font-size:8px; letter-spacing:0.35em; text-transform:uppercase; padding:3px 8px; border-radius:2px; }
+.panel-tag { font-size:10px; letter-spacing:0.35em; text-transform:uppercase; padding:3px 8px; border-radius:2px; }
 .tag-gold  { color:var(--gold);    border:1px solid #3a2f15; background:#1a1508; }
 .tag-blue  { color:var(--blue);    border:1px solid #153040; background:#0c1820; }
+.tag-sky   { color:var(--sky);     border:1px solid #14405a; background:#0a1b26; }
 .tag-green { color:var(--success); border:1px solid #153025; background:#0c1810; }
-.reset-btn { background:none; border:1px solid var(--border); border-radius:3px; color:var(--muted); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:5px 10px; cursor:pointer; transition:all 0.2s; }
+.reset-btn { background:none; border:1px solid var(--border); border-radius:3px; color:var(--muted); font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:5px 10px; cursor:pointer; transition:all 0.2s; }
 .reset-btn:hover { border-color:var(--muted); color:var(--text); }
-.edit-btn { background:none; border:1px solid var(--border); border-radius:3px; color:var(--muted); font-size:13px; padding:3px 7px; cursor:pointer; transition:all 0.2s; line-height:1.4; }
+.edit-btn { background:none; border:1px solid var(--border); border-radius:3px; color:var(--muted); font-size:14px; padding:3px 7px; cursor:pointer; transition:all 0.2s; line-height:1.4; }
 .edit-btn:hover { border-color:var(--gold); color:var(--gold); }
 .habit-layout { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .habit-left { flex:1; min-width:0; }
-.habit-name { font-family:'Playfair Display',serif; font-size:clamp(13px,2.5vw,18px); font-weight:700; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
-.today-badge { font-size:7px; color:var(--muted); letter-spacing:0.15em; margin-bottom:5px; }
+.habit-name { font-family:'Playfair Display',serif; font-size:clamp(15px,3vw,20px); font-weight:700; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
+.today-badge { font-size:10px; color:var(--muted); letter-spacing:0.15em; margin-bottom:5px; }
 .log-strip { display:flex; gap:2px; flex-wrap:wrap; }
-.log-pip { width:14px; height:14px; border-radius:2px; border:1px solid var(--border); background:var(--card); font-size:7px; display:flex; align-items:center; justify-content:center; }
+.log-pip { width:14px; height:14px; border-radius:2px; border:1px solid var(--border); background:var(--card); font-size:10px; display:flex; align-items:center; justify-content:center; }
 .log-pip.ok { background:#192a1e; border-color:var(--success); color:var(--success); }
 .log-pip.no { background:#1e1414; border-color:#4a2828; }
 .habit-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .big-count { text-align:center; }
 .big-num { font-family:'Playfair Display',serif; font-size:clamp(28px,6vw,44px); font-weight:900; line-height:1; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); display:block; }
 .big-num.bump { transform:scale(1.2); }
-.big-label { font-size:7px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; margin-top:1px; }
-.record-label { font-size:8px; color:var(--muted); margin-top:3px; letter-spacing:0.05em; white-space:nowrap; }
+.big-label { font-size:10px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; margin-top:1px; }
+.record-label { font-size:10px; color:var(--muted); margin-top:3px; letter-spacing:0.05em; white-space:nowrap; }
 #panel-habit  .big-num { color:var(--gold); }
 #panel-habit2 .big-num { color:var(--blue); }
 .check-btn { width:38px; height:38px; border-radius:50%; border:2px solid var(--border); background:var(--card); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); color:transparent; }
@@ -118,11 +117,22 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 #panel-habit  .check-btn.done  { border-color:var(--success); background:var(--success); color:#0a1e10; transform:scale(1.08); }
 #panel-habit2 .check-btn:hover { border-color:var(--blue); }
 #panel-habit2 .check-btn.done  { border-color:var(--blue); background:var(--blue); color:#051020; transform:scale(1.08); }
+.lamps { display:flex; gap:8px; margin-bottom:5px; }
+.lamp { width:24px; height:24px; border-radius:50%; background:#10151c; border:1px solid var(--border); display:block; transition:all 0.3s; }
+.lamp.r.on { background:#ef4444; border-color:#ef4444; box-shadow:0 0 12px #ef4444aa; }
+.lamp.y.on { background:#fbbf24; border-color:#fbbf24; box-shadow:0 0 12px #fbbf24aa; }
+.lamp.g.on { background:#22c55e; border-color:#22c55e; box-shadow:0 0 12px #22c55eaa; }
+.f-text { font-size:13px; line-height:1.3; color:var(--text); }
+.eat-btn { background:var(--sky); color:#06202e; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:14px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; padding:16px 20px; cursor:pointer; transition:transform 0.1s,opacity 0.2s; }
+.eat-btn:active { transform:scale(0.96); }
+#f-text { font-size:19px; font-weight:700; line-height:1.2; }
+#f-since { font-size:12px; letter-spacing:0; color:var(--muted); margin:2px 0 0 !important; }
+.meal-err { color:#e06060; font-size:13px; min-height:16px; margin-bottom:8px; }
 .weight-layout { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
 .weight-stats { display:flex; gap:12px; align-items:center; flex:1; }
 .wstat { text-align:center; }
 .wstat-val { font-family:'Playfair Display',serif; font-size:clamp(20px,4.5vw,34px); font-weight:700; line-height:1; }
-.wstat-label { font-size:8px; letter-spacing:0.25em; color:var(--muted); text-transform:uppercase; margin-top:3px; }
+.wstat-label { font-size:10px; letter-spacing:0.25em; color:var(--muted); text-transform:uppercase; margin-top:3px; }
 .wstat.current .wstat-val { color:var(--success); }
 .wstat.start   .wstat-val { color:var(--muted); }
 .wstat.goal    .wstat-val { color:var(--gold); }
@@ -130,10 +140,10 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 .weight-entry { display:flex; flex-direction:column; align-items:flex-end; gap:7px; flex-shrink:0; }
 .weight-input-wrap { display:flex; align-items:center; gap:6px; background:var(--card); border:1px solid var(--border); border-radius:4px; padding:7px 12px; transition:border-color 0.2s; }
 .weight-input-wrap:focus-within { border-color:var(--success); }
-.weight-input-wrap input { width:65px; background:none; border:none; color:var(--text); font-family:'DM Mono',monospace; font-size:17px; outline:none; text-align:right; }
+.weight-input-wrap input { width:65px; background:none; border:none; color:var(--text); font-family:'DM Mono',monospace; font-size:18px; outline:none; text-align:right; }
 .weight-input-wrap input::placeholder { color:var(--border); }
-.weight-unit { color:var(--muted); font-size:11px; letter-spacing:0.1em; }
-.btn-log-weight { background:#1a2e1e; border:1px solid var(--success); border-radius:3px; color:var(--success); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.15em; padding:8px 14px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; white-space:nowrap; }
+.weight-unit { color:var(--muted); font-size:13px; letter-spacing:0.1em; }
+.btn-log-weight { background:#1a2e1e; border:1px solid var(--success); border-radius:3px; color:var(--success); font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; padding:8px 14px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; white-space:nowrap; }
 .btn-log-weight:hover { background:#243d28; }
 .weight-progress-bar { height:2px; background:var(--border); border-radius:2px; overflow:hidden; margin-top:10px; }
 .weight-progress-fill { height:100%; background:linear-gradient(90deg,var(--success),var(--gold)); border-radius:2px; transition:width 0.6s ease; }
@@ -142,50 +152,55 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 .panel { animation:slideIn 0.5s ease both; }
 #panel-habit  { animation-delay:0.05s; }
 #panel-habit2 { animation-delay:0.15s; }
+#panel-fast   { animation-delay:0.2s; }
+#panel-body   { animation-delay:0.22s; }
 #panel-weight { animation-delay:0.25s; }
-.w-forecast { font-size:10px; letter-spacing:0.12em; color:var(--muted); margin-top:7px; min-height:14px; transition:color 0.3s; }
+.w-forecast { font-size:12px; letter-spacing:0.12em; color:var(--muted); margin-top:7px; min-height:14px; transition:color 0.3s; }
 .w-forecast span { color:var(--gold); font-weight:500; }
 .w-forecast.done { color:var(--success); }
 .w-weekly { display:flex; align-items:center; gap:12px; margin-top:6px; flex-wrap:wrap; }
-.w-weekly-label { color:var(--muted); font-size:9px; letter-spacing:0.15em; flex-shrink:0; }
+.w-weekly-label { color:var(--muted); font-size:11px; letter-spacing:0.15em; flex-shrink:0; }
 .w-weekly-val { font-family:'Playfair Display',serif; font-size:clamp(30px,7vw,46px); font-weight:900; transition:color 0.4s; line-height:1; flex-shrink:0; }
 .w-weekly-val.good    { color:#4ee88a; text-shadow:0 0 20px #4ee88a55; }
 .w-weekly-val.warn    { color:#f0c040; text-shadow:0 0 20px #f0c04055; }
 .w-weekly-val.bad     { color:#ff6060; text-shadow:0 0 20px #ff606055; }
 .w-weekly-val.neutral { color:var(--muted); }
-.w-weekly-note { font-size:10px; letter-spacing:0.08em; padding:3px 9px; border-radius:3px; font-weight:400; transition:all 0.4s; flex-shrink:1; }
+.w-weekly-note { font-size:12px; letter-spacing:0.08em; padding:3px 9px; border-radius:3px; font-weight:400; transition:all 0.4s; flex-shrink:1; }
 .w-weekly-note.good    { background:#0d3320; border:1px solid #4ee88a88; color:#4ee88a; }
 .w-weekly-note.warn    { background:#2e2400; border:1px solid #f0c04088; color:#f0c040; }
 .w-weekly-note.bad     { background:#330d0d; border:1px solid #ff606088; color:#ff6060; }
-.w-weekly-note.neutral { background:var(--card); border:1px solid var(--border); color:var(--muted); font-size:9px; }
-.w-chart-wrap { flex:1; min-height:0; position:relative; margin-top:8px; }
+.w-weekly-note.neutral { background:var(--card); border:1px solid var(--border); color:var(--muted); font-size:11px; }
+.w-chart-wrap { flex:1; min-height:0; position:relative; margin-top:8px; display:none; }
+#panel-weight.chart-on .w-chart-wrap { display:block; }
 #w-chart { width:100%; height:100%; display:block; }
-.chart-tooltip { position:absolute; background:#1c1a17ee; border:1px solid var(--border); border-radius:4px; padding:4px 8px; font-size:10px; color:var(--text); pointer-events:none; white-space:nowrap; display:none; z-index:10; }
+.chart-tooltip { position:absolute; background:#1c1a17ee; border:1px solid var(--border); border-radius:4px; padding:4px 8px; font-size:12px; color:var(--text); pointer-events:none; white-space:nowrap; display:none; z-index:10; }
 .modal-backdrop { position:fixed; inset:0; background:#000000aa; z-index:150; display:flex; align-items:flex-end; animation:fadeUp 0.2s ease both; }
 .modal-backdrop.hidden { display:none; }
 .modal-sheet,.confirm-sheet,.newhab-sheet { width:100%; background:#1c1a17; border-top:1px solid var(--border); border-radius:16px 16px 0 0; padding:24px 22px 40px; }
 .modal-title,.confirm-title,.newhab-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; margin-bottom:16px; color:var(--text); }
 .confirm-title { margin-bottom:8px; }
-.confirm-sub { font-size:11px; color:var(--muted); margin-bottom:20px; letter-spacing:0.05em; }
-.modal-input,.newhab-input { width:100%; background:var(--card); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:'DM Mono',monospace; font-size:15px; padding:13px 16px; outline:none; margin-bottom:12px; transition:border-color 0.2s; }
+.confirm-sub { font-size:13px; color:var(--muted); margin-bottom:20px; letter-spacing:0.05em; }
+.modal-input,.newhab-input { width:100%; background:var(--card); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:'DM Mono',monospace; font-size:16px; padding:13px 16px; outline:none; margin-bottom:12px; transition:border-color 0.2s; }
 .modal-input:focus,.newhab-input:focus { border-color:var(--gold); }
-.modal-save,.newhab-save { width:100%; background:var(--gold); color:#0f0e0c; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.15em; text-transform:uppercase; padding:14px; cursor:pointer; margin-bottom:8px; transition:background 0.2s; }
+.modal-save,.newhab-save { width:100%; background:var(--gold); color:#0f0e0c; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:13px; font-weight:500; letter-spacing:0.15em; text-transform:uppercase; padding:14px; cursor:pointer; margin-bottom:8px; transition:background 0.2s; }
 .modal-save:hover,.newhab-save:hover { background:var(--gold-light); }
-.modal-delete,.confirm-ok { width:100%; background:none; border:1px solid #5a2020; border-radius:4px; color:#e06060; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:12px; cursor:pointer; margin-bottom:8px; transition:all 0.2s; }
+.modal-delete,.confirm-ok { width:100%; background:none; border:1px solid #5a2020; border-radius:4px; color:#e06060; font-family:'DM Mono',monospace; font-size:13px; letter-spacing:0.1em; padding:12px; cursor:pointer; margin-bottom:8px; transition:all 0.2s; }
 .confirm-ok { padding:13px; }
 .modal-delete:hover,.confirm-ok:hover { background:#2a1414; }
-.modal-cancel,.confirm-cancel,.newhab-cancel { width:100%; background:none; border:none; color:var(--muted); font-family:'DM Mono',monospace; font-size:11px; padding:10px; cursor:pointer; }
+.modal-cancel,.confirm-cancel,.newhab-cancel { width:100%; background:none; border:none; color:var(--muted); font-family:'DM Mono',monospace; font-size:13px; padding:10px; cursor:pointer; }
+.fd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.fd-m{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:12px}
+.fd-m span{display:block;color:var(--muted);margin-bottom:2px}.fd-m b{font-weight:500;font-size:14px}
+.fd-h{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin:22px 0 8px}
+.fd-n{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px}
+.fd-ph{border-left:3px solid var(--border);background:var(--card);padding:8px 10px;margin-top:6px;border-radius:0 6px 6px 0;font-size:13px}
+.fd-ph.act{background:#22303f}.fd-ph span{color:var(--muted);display:block;font-size:12px;margin-top:2px}
+.fd-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.fd-row small{display:block;color:var(--muted);font-size:11px}
 @media (max-width:420px) { .panel{padding:0 14px;} .weight-stats{gap:8px;} }
 </style>
 </head>
 <body>
-
-<div id="splash">
-  <div class="splash-icon">&#128077;&#127996;</div>
-  <div class="splash-title">Ich mach' das!</div>
-  <div class="splash-sub">Jeden Tag ein Schritt</div>
-  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
-</div>
 
 <div id="setup-overlay">
   <div class="setup-box">
@@ -197,14 +212,14 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     </div>
     <div class="setup-step active" id="step0">
       <h1 class="setup-headline">Was nimmst du<br>dir vor?</h1>
-      <p class="setup-sub">Dein erster Vorsatz &mdash; z.B. kein Alkohol</p>
-      <div class="input-group"><label>Vorsatz 1</label><input type="text" id="inp-habit1" placeholder="z.B. keinen Alkohol trinken" maxlength="60"/></div>
+      <p class="setup-sub">Dein erster Vorsatz &mdash; z.B. kein Alkohol. Optional, geht auch sp&auml;ter.</p>
+      <div class="input-group"><label>Vorsatz 1 (optional)</label><input type="text" id="inp-habit1" placeholder="z.B. keinen Alkohol trinken" maxlength="60"/></div>
       <button class="btn-next" onclick="nextStep(0)">Weiter &rarr;</button>
     </div>
     <div class="setup-step" id="step1">
       <h1 class="setup-headline">Noch ein<br>Vorsatz?</h1>
-      <p class="setup-sub">Dein zweiter Vorsatz &mdash; z.B. t&auml;glich spazieren</p>
-      <div class="input-group"><label>Vorsatz 2</label><input type="text" id="inp-habit2" placeholder="z.B. t&auml;glich spazieren gehen" maxlength="60"/></div>
+      <p class="setup-sub">Dein zweiter Vorsatz &mdash; z.B. t&auml;glich spazieren. Optional, geht auch sp&auml;ter.</p>
+      <div class="input-group"><label>Vorsatz 2 (optional)</label><input type="text" id="inp-habit2" placeholder="z.B. t&auml;glich spazieren gehen" maxlength="60"/></div>
       <button class="btn-next" onclick="nextStep(1)">Weiter &rarr;</button>
     </div>
     <div class="setup-step" id="step2">
@@ -225,7 +240,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
       <span class="panel-tag tag-gold">Vorsatz 1</span>
       <div style="display:flex;gap:6px;align-items:center;">
         <button class="edit-btn" onclick="openEditModal(1)" title="Bearbeiten">&#9998;</button>
-        <button class="reset-btn" onclick="openResetConfirm()">Neu starten</button>
       </div>
     </div>
     <div class="habit-layout">
@@ -265,8 +279,28 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
       </div>
     </div>
   </div>
+  <div class="panel" id="panel-fast">
+    <div class="panel-header">
+      <span class="panel-tag tag-sky">Essen</span>
+      <div style="display:flex;gap:6px;align-items:center"><button class="reset-btn" id="add-habit" onclick="addHabit()" style="display:none">+ Vorsatz</button><button class="reset-btn" onclick="openDetail()">Details</button><button class="edit-btn" id="f-edit" onclick="openMealModal()" title="Zeit ändern" style="display:none">&#9998;</button></div>
+    </div>
+    <div class="habit-layout">
+      <div class="habit-left">
+        <div class="lamps" role="img" aria-label="Ampel"><i class="lamp r" id="fl-r"></i><i class="lamp y" id="fl-y"></i><i class="lamp g" id="fl-g"></i></div>
+        <div class="f-text" id="f-text"></div>
+        <div class="today-badge" id="f-since" style="margin-top:3px"></div>
+      </div>
+      <div class="habit-right">
+        <button class="eat-btn" onclick="logMeal()">Gegessen</button>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="panel-body">
+    <div class="panel-header"><span class="panel-tag tag-sky">Im K&ouml;rper</span></div>
+    <div id="body-info"></div>
+  </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.7.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetConfirm()">Neu starten</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -297,13 +331,27 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
   </div>
 </div>
 
+<div id="fast-detail" style="display:none;position:fixed;inset:0;z-index:140;background:var(--bg);overflow-y:auto;padding:max(env(safe-area-inset-top),16px) 18px 40px">
+  <div class="panel-header" style="margin-bottom:14px"><span class="panel-tag tag-sky">Essen im Detail</span><button class="reset-btn" onclick="closeDetail()">Schließen</button></div>
+  <div id="fd-body"></div>
+</div>
 <div id="edit-modal" class="modal-backdrop hidden">
   <div class="modal-sheet">
     <div class="modal-title" id="edit-modal-title">Vorsatz bearbeiten</div>
     <input type="text" class="modal-input" id="edit-modal-input" maxlength="60"/>
     <button class="modal-save" onclick="saveHabitName()">Speichern</button>
-    <button class="modal-delete" onclick="openDeleteConfirm()">&#10005; Vorsatz l&ouml;schen &amp; neu starten</button>
+    <button class="modal-delete" id="edit-delete" onclick="openDeleteConfirm()">&#10005; Vorsatz l&ouml;schen &amp; neu starten</button>
     <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
+  </div>
+</div>
+<div id="meal-modal" class="modal-backdrop hidden">
+  <div class="modal-sheet">
+    <div class="modal-title">Zeit der Mahlzeit &auml;ndern</div>
+    <input type="datetime-local" class="modal-input" id="meal-input"/>
+    <div class="meal-err" id="meal-err" role="alert"></div>
+    <button class="modal-save" onclick="saveMealTime()">Speichern</button>
+    <button class="modal-delete" onclick="deleteMeal()">&#10005; Eintrag l&ouml;schen</button>
+    <button class="modal-cancel" onclick="closeMealModal()">Abbrechen</button>
   </div>
 </div>
 <div id="confirm-modal" class="modal-backdrop hidden">
@@ -325,17 +373,16 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 
 <script>
 const K={h1:'v_habit1',h2:'v_habit2',log1:'v_log1',log2:'v_log2',startW:'v_startW',goalW:'v_goalW',wLog:'v_wLog'};
+const MK='metaboflow_meals_v2', MIN_H=4;
 function realToday(){return localDateStr(new Date());}
 function today(){const now=new Date();if(now.getHours()<12){const y=new Date(now);y.setDate(now.getDate()-1);return localDateStr(y);}return localDateStr(now);}
 function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function fmt(d){const[y,m,dd]=d.split('-');return`${dd}.${m}.${y}`;}
 function parseDate(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d,12,0,0);}
 function load(k){try{return JSON.parse(localStorage.getItem(k));}catch{return null;}}
-function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}
 
 function nextStep(from){
-  if(from===0&&!document.getElementById('inp-habit1').value.trim()){document.getElementById('inp-habit1').focus();return;}
-  if(from===1&&!document.getElementById('inp-habit2').value.trim()){document.getElementById('inp-habit2').focus();return;}
   document.getElementById('step'+from).classList.remove('active');
   document.getElementById('dot'+from).classList.remove('active');
   document.getElementById('step'+(from+1)).classList.add('active');
@@ -357,8 +404,6 @@ function showMain(){
   document.getElementById('setup-overlay').classList.add('hidden');
   document.getElementById('main').classList.add('visible');
   const t=today();
-  document.getElementById('h1-name').textContent=load(K.h1)||'—';
-  document.getElementById('h2-name').textContent=load(K.h2)||'—';
   document.getElementById('h1-date').textContent='Heute — '+fmt(t);
   document.getElementById('h2-date').textContent='Heute — '+fmt(t);
   const log1=load(K.log1)||{};const log2=load(K.log2)||{};
@@ -366,9 +411,14 @@ function showMain(){
   if(!(t in log2)){log2[t]=false;save(K.log2,log2);}
   renderAll();
 }
-function renderAll(){renderHabit(1);renderHabit(2);renderWeight();requestAnimationFrame(()=>requestAnimationFrame(drawChart));}
+function renderAll(){renderHabit(1);renderHabit(2);renderFast();renderWeight();applyChart();requestAnimationFrame(()=>requestAnimationFrame(drawChart));}
 
 function renderHabit(n){
+  const has=!!load(n===1?K.h1:K.h2);
+  document.getElementById(n===1?'panel-habit':'panel-habit2').style.display=has?'':'none';
+  document.getElementById('add-habit').style.display=(!load(K.h1)||!load(K.h2))?'':'none';
+  if(!has)return;
+  document.getElementById('h'+n+'-name').textContent=load(n===1?K.h1:K.h2);
   const log=load(n===1?K.log1:K.log2)||{};
   const t=today();
   document.getElementById('h'+n+'-check').classList.toggle('done',log[t]===true);
@@ -399,6 +449,113 @@ function toggleHabit(n){
   renderHabit(n);
 }
 
+/* ===== Essen: Gegessen-Button + Ampel (aus MetaboFlow) ===== */
+function addHabit(){openEditModal(!load(K.h1)?1:2);}
+function loadMeals(){const a=load(MK);return Array.isArray(a)?a.filter(Number.isFinite).sort((x,y)=>y-x):[];}
+function fmtDur(h){const m=Math.max(0,Math.round(h*60));return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min';}
+function renderFast(){
+  const meals=loadMeals(),last=meals[0];
+  let c='',t='Noch nichts eingetragen',s='',col='var(--muted)';
+  if(last){
+    const h=(Date.now()-last)/36e5,left=MIN_H-h,at=new Date(last).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
+    if(left>1){c='r';t='Noch nicht essen';s='noch '+fmtDur(left)+' · gegessen '+at;col='#f87171';}
+    else if(left>0){c='y';t='Gleich so weit';s='noch '+fmtDur(left)+' · gegessen '+at;col='#fbbf24';}
+    else{c='g';t='Essen ist okay';s='seit '+fmtDur(h)+' · gegessen '+at;col='#4ade80';}
+  }
+  ['r','y','g'].forEach(k=>document.getElementById('fl-'+k).classList.toggle('on',k===c));
+  const ft=document.getElementById('f-text');ft.textContent=t;ft.style.color=col;
+  document.getElementById('f-since').textContent=s;
+  document.getElementById('f-edit').style.display=last?'':'none';
+  renderBody();
+  if(detailOpen)renderDetail();
+}
+function logMeal(){
+  const meals=loadMeals(),now=Date.now();
+  if(meals.length&&now-meals[0]<12e4)return;
+  meals.unshift(now);save(MK,meals);renderFast();
+}
+let _mealEdit=null;
+function localInputVal(ts){return new Date(ts-new Date(ts).getTimezoneOffset()*6e4).toISOString().slice(0,16);}
+function openMealModal(t){
+  _mealEdit=(typeof t==='number')?t:loadMeals()[0];if(_mealEdit===undefined)return;
+  document.getElementById('meal-input').value=localInputVal(_mealEdit);
+  document.getElementById('meal-err').textContent='';
+  document.getElementById('meal-modal').classList.remove('hidden');
+}
+function closeMealModal(){document.getElementById('meal-modal').classList.add('hidden');}
+function saveMealTime(){
+  const v=document.getElementById('meal-input').value,err=document.getElementById('meal-err');
+  if(!v){err.textContent='Bitte Datum und Uhrzeit wählen.';return;}
+  let t=new Date(v).getTime();
+  if(t>Date.now()+6e4){err.textContent='Die Mahlzeit darf nicht in der Zukunft liegen.';return;}
+  t=Math.min(t,Date.now());
+  let meals=loadMeals();
+  if(t!==_mealEdit&&meals.includes(t)){err.textContent='Für diese Zeit gibt es schon einen Eintrag.';return;}
+  meals=meals.map(m=>m===_mealEdit?t:m).sort((a,b)=>b-a);
+  if(!save(MK,meals)){err.textContent='Speichern im Browser nicht möglich.';return;}
+  closeMealModal();renderFast();
+}
+function deleteMeal(){save(MK,loadMeals().filter(m=>m!==_mealEdit));closeMealModal();renderFast();}
+
+const STAGES=[
+ {max:2,name:'Verdauung und Aufnahme',col:'#6aabcf',desc:'Nährstoffe gelangen ins Blut, der Blutzucker steigt (Peak meist nach 30–60 Min), Insulin wird ausgeschüttet. Fettverbrennung ist gedrosselt, aber nicht null.',m:['Steigt, dann Peak','Erhöht','Gedrosselt','Kaum erhöht','Unklar']},
+ {max:4,name:'Blutzucker normalisiert sich',col:'#c9a84c',desc:'Blutzucker und Insulin sinken Richtung Ausgangswert. Meist nach 2–3 Std erreicht, je nach Mahlzeit.',m:['Fällt zum Ausgangswert','Sinkend','Steigt langsam','Kaum erhöht','Unklar']},
+ {max:12,name:'Postabsorptiv',col:'#6dbf8a',desc:'Die Aufnahme ist abgeschlossen. Der Körper nutzt Leberglykogen und zunehmend Fett, immer als Mischung.',m:['Stabil, nüchtern','Niedrig','Mittel bis hoch','Niedrig (< 0,5 mmol/l)','Unklar']},
+ {max:24,name:'Spätes Fasten',col:'#a5b4fc',desc:'Glykogenspeicher werden knapp, Fettoxidation ist hoch. Ketonkörper steigen langsam an, nennenswerte Ketose beginnt meist erst danach.',m:['Stabil, leicht niedriger','Niedrig','Hoch','Beginnt zu steigen','Beim Menschen kaum messbar']},
+ {max:1e9,name:'Ketose-Bereich',col:'#f87171',desc:'Ab etwa 24–48 Std sind Ketone typischerweise deutlich erhöht. Längeres Fasten nur mit ärztlicher Begleitung.',m:['Stabil niedrig','Sehr niedrig','Hoch','Erhöht (typ. ab 24–48 Std)','Beim Menschen kaum messbar']}
+];
+const FLAB=['Blutzucker','Insulin','Fettverbrennung','Ketone','Autophagie'];
+const stageOf=h=>STAGES.find(s=>h<s.max);
+const SUGAR=[[0,90],[.5,125],[1,125],[2,105],[3,92],[4,88],[8,85],[16,80],[36,76]];
+const FAT=[[0,20],[1,15],[2,20],[4,38],[8,58],[12,70],[16,80],[24,90],[36,95]];
+function interp(p,h){
+  if(h<=p[0][0])return p[0][1];
+  for(let i=1;i<p.length;i++){if(h<=p[i][0]){const a=p[i-1],b=p[i],t=(h-a[0])/(b[0]-a[0]),q=t*t*(3-2*t);return a[1]+(b[1]-a[1])*q;}}
+  return p[p.length-1][1];
+}
+function fastChart(h){
+  const W=600,H=240,L=40,R=40,T=10,B=26,X=v=>L+(v/36)*(W-L-R),YS=v=>T+(1-(v-60)/80)*(H-T-B),YF=v=>T+(1-v/100)*(H-T-B);
+  let g='';
+  for(let x=0;x<=36;x+=6)g+=`<line x1="${X(x)}" x2="${X(x)}" y1="${T}" y2="${H-B}" stroke="#2a2824"/><text x="${X(x)}" y="${H-8}" fill="#a39c90" font-size="13" text-anchor="middle">${x}h</text>`;
+  for(let v=60;v<=140;v+=20)g+=`<text x="${L-5}" y="${YS(v)+4}" fill="#6aabcf" font-size="12" text-anchor="end">${v}</text>`;
+  for(let v=0;v<=100;v+=25)g+=`<text x="${W-R+5}" y="${YF(v)+4}" fill="#6dbf8a" font-size="12">${v}</text>`;
+  const path=(p,Y)=>{let d='';for(let x=0;x<=36;x+=.25)d+=(x?'L':'M')+X(x).toFixed(1)+' '+Y(interp(p,x)).toFixed(1);return d;};
+  g+=`<path d="${path(SUGAR,YS)}" fill="none" stroke="#6aabcf" stroke-width="3"/><path d="${path(FAT,YF)}" fill="none" stroke="#6dbf8a" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+  if(h!==null){const x=X(Math.min(h,36));g+=`<line x1="${x}" x2="${x}" y1="${T}" y2="${H-B}" stroke="#f0ebe0" stroke-width="2"/><circle cx="${x}" cy="${YS(interp(SUGAR,h))}" r="5" fill="#6aabcf"/><circle cx="${x}" cy="${YF(interp(FAT,h))}" r="5" fill="#6dbf8a"/><text x="${Math.min(x+6,W-R-34)}" y="${T+12}" fill="#f0ebe0" font-size="14" font-weight="700">Jetzt</text>`;}
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Schematischer Verlauf von Blutzucker und Fettverbrennung über 36 Stunden">${g}</svg>`;
+}
+let detailOpen=false;
+function openDetail(){detailOpen=true;document.getElementById('fast-detail').style.display='block';renderDetail();}
+function closeDetail(){detailOpen=false;document.getElementById('fast-detail').style.display='none';}
+function delMeal(t){_mealEdit=t;deleteMeal();}
+function renderDetail(){
+  const meals=loadMeals(),last=meals[0],h=last?Math.max(0,(Date.now()-last)/36e5):null;
+  const dt=t=>new Date(t).toLocaleString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  let o='';
+  if(h!==null){
+    const s=stageOf(h);
+    o+=`<div style="color:${s.col};font-size:11px;font-weight:500">${s.name}</div><div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;line-height:1.2">${fmtDur(h)}</div><p class="f-text" style="margin:6px 0 14px;color:var(--muted)">${s.desc}</p><div class="fd-grid">${FLAB.map((l,i)=>`<div class="fd-m"><span>${l}</span><b>${s.m[i]}</b></div>`).join('')}</div>`;
+  }else o+='<p class="f-text">Noch keine Mahlzeit eingetragen.</p>';
+  o+=`<div class="fd-h">Typischer Verlauf (schematisch)</div>${fastChart(h)}<div class="fd-n"><span style="color:#6aabcf">▬ Blutzucker (mg/dL, links)</span> &nbsp; <span style="color:#6dbf8a">▬ Fettverbrennung, relativ (%, rechts)</span><br>Gesunde Person, gemischte Mahlzeit. Stark abhängig von Mahlzeit, Bewegung und Person. Keine Messwerte.</div>`;
+  o+='<div class="fd-h">Phasen</div>'+STAGES.map((s,i)=>{const from=i?STAGES[i-1].max:0,act=h!==null&&stageOf(h)===s;return `<div class="fd-ph${act?' act':''}" style="border-left-color:${s.col}"><b>${s.max>1e8?'ab '+from:from+'–'+s.max} Std: ${s.name}${act?' (aktuell)':''}</b><span>${s.desc}</span></div>`;}).join('');
+  o+='<div class="fd-h">Verlauf</div>'+(meals.length?meals.slice(0,10).map((t,i)=>`<div class="fd-row"><div>${dt(t)} Uhr<small>${meals[i+1]?'Pause davor: '+fmtDur((t-meals[i+1])/36e5):'Erster Eintrag'}</small></div><div style="display:flex;gap:6px"><button class="reset-btn" onclick="openMealModal(${t})">Ändern</button><button class="reset-btn" onclick="delMeal(${t})">Löschen</button></div></div>`).join(''):'<div class="fd-n">Noch keine Einträge.</div>');
+  o+='<div class="fd-n" style="margin-top:20px">Schematisches Modell für Stoffwechselgesunde, kein medizinischer Rat. Nicht geeignet bei Diabetes, Insulin- oder anderer Medikation, Schwangerschaft oder Essstörungen. Dann Fasten nur nach ärztlicher Rücksprache.</div>';
+  document.getElementById('fd-body').innerHTML=o;
+}
+
+function renderBody(){
+  const last=loadMeals()[0],el=document.getElementById('body-info');
+  if(!last){el.innerHTML='<p class="f-text" style="color:var(--muted)">Tippe auf „Gegessen“, dann siehst du hier, was gerade im Körper passiert.</p>';return;}
+  const h=Math.max(0,(Date.now()-last)/36e5),s=stageOf(h);
+  el.innerHTML=`<div style="color:${s.col};font-size:14px;font-weight:500">${s.name} <span style="color:var(--muted)">· seit ${fmtDur(h)}</span></div><p class="f-text" style="margin:6px 0 10px;color:var(--muted)">${s.desc}</p><div class="fd-grid">${FLAB.map((l,i)=>`<div class="fd-m"><span>${l}</span><b>${s.m[i]}</b></div>`).join('')}</div><div class="fd-n">Schematisch, stark individuell. Mehr unter Essen › Details.</div>`;
+}
+function applyChart(){
+  const on=load('v_chartOn')===true;
+  document.getElementById('panel-weight').classList.toggle('chart-on',on);
+  document.getElementById('chart-toggle').textContent=on?'Chart aus':'Chart';
+  if(on)requestAnimationFrame(()=>requestAnimationFrame(drawChart));
+}
+function toggleChart(){save('v_chartOn',load('v_chartOn')!==true);applyChart();}
 function renderWeight(){
   const sw=load(K.startW),gw=load(K.goalW),wLog=load(K.wLog)||[];
   document.getElementById('w-start').textContent=sw?sw.toFixed(1):'—';
@@ -472,12 +629,12 @@ function drawChart(){
   for(let i=0;i<=4;i++){
     const v=minV+(rangeV/4)*i,y=toY(v);
     ctx.strokeStyle='#2a282422';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(W-pad.right,y);ctx.stroke();
-    ctx.fillStyle='#6a6560';ctx.font='9px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(v.toFixed(1),pad.left-4,y+3);
+    ctx.fillStyle='#a39c90';ctx.font='11px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(v.toFixed(1),pad.left-4,y+3);
   }
   if(gw>=minV&&gw<=maxV){
     const gy=toY(gw);ctx.setLineDash([4,4]);ctx.strokeStyle='#c9a84c66';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(W-pad.right,gy);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#c9a84c99';ctx.font='8px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('Ziel',W-pad.right+2,gy+3);
+    ctx.fillStyle='#c9a84c99';ctx.font='10px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('Ziel',W-pad.right+2,gy+3);
   }
   if(wLog.length>=1){
     const totalDays=Math.max(1,(parseDate(wLog[wLog.length-1].date)-parseDate(wLog[0].date))/86400000);
@@ -501,7 +658,7 @@ function drawChart(){
     ctx.fillStyle=isSat?'#c9a84c':'#6dbf8a';ctx.fill();
     if(isSat){ctx.strokeStyle='#0b1610';ctx.lineWidth=1.5;ctx.stroke();}
   });
-  ctx.fillStyle='#6a6560';ctx.font='8px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillStyle='#a39c90';ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
   const step=Math.max(1,Math.floor(wLog.length/Math.floor(cw/40)));
   for(let i=0;i<wLog.length;i+=step){const d=parseDate(wLog[i].date);ctx.fillText(d.getDate()+'.'+months[d.getMonth()],toX(i),H-pad.bottom+12);}
   canvas._wLog=wLog;canvas._toX=toX;canvas._toY=toY;canvas._months=months;
@@ -517,16 +674,16 @@ function logWeight(){
 }
 
 let _editN=0;
-function openEditModal(n){_editN=n;document.getElementById('edit-modal-title').textContent='Vorsatz '+n+' bearbeiten';const inp=document.getElementById('edit-modal-input');inp.value=load(n===1?K.h1:K.h2)||'';document.getElementById('edit-modal').classList.remove('hidden');setTimeout(()=>{inp.focus();inp.select();},80);}
+function openEditModal(n){_editN=n;const cur=load(n===1?K.h1:K.h2)||'';document.getElementById('edit-modal-title').textContent='Vorsatz '+n+(cur?' bearbeiten':' hinzufügen');document.getElementById('edit-delete').style.display=cur?'':'none';const inp=document.getElementById('edit-modal-input');inp.value=cur;document.getElementById('edit-modal').classList.remove('hidden');setTimeout(()=>{inp.focus();inp.select();},80);}
 function closeEditModal(){document.getElementById('edit-modal').classList.add('hidden');}
-function saveHabitName(){const val=document.getElementById('edit-modal-input').value.trim();if(!val)return;save(_editN===1?K.h1:K.h2,val);document.getElementById('h'+_editN+'-name').textContent=val;closeEditModal();}
+function saveHabitName(){const val=document.getElementById('edit-modal-input').value.trim();if(!val)return;save(_editN===1?K.h1:K.h2,val);const lk=_editN===1?K.log1:K.log2,log=load(lk)||{},t=today();if(!(t in log)){log[t]=false;save(lk,log);}closeEditModal();renderHabit(_editN);}
 function openDeleteConfirm(){closeEditModal();document.getElementById('confirm-title').textContent='Vorsatz '+_editN+' löschen?';document.getElementById('confirm-sub').textContent='Der gesamte Verlauf wird gelöscht. Danach kannst du einen neuen Vorsatz eingeben.';document.getElementById('confirm-ok-btn').onclick=doDeleteHabit;document.getElementById('confirm-modal').classList.remove('hidden');}
 function closeConfirmModal(){document.getElementById('confirm-modal').classList.add('hidden');}
 function doDeleteHabit(){closeConfirmModal();const t=today();const newLog={};newLog[t]=false;save(_editN===1?K.log1:K.log2,newLog);document.getElementById('newhab-title').textContent='Neuer Vorsatz '+_editN;document.getElementById('newhab-input').value='';document.getElementById('newhab-modal').classList.remove('hidden');setTimeout(()=>document.getElementById('newhab-input').focus(),80);}
 function closeNewHabModal(){document.getElementById('newhab-modal').classList.add('hidden');renderHabit(_editN);}
 function saveNewHabit(){const val=document.getElementById('newhab-input').value.trim();if(!val)return;save(_editN===1?K.h1:K.h2,val);document.getElementById('h'+_editN+'-name').textContent=val;document.getElementById('newhab-modal').classList.add('hidden');renderHabit(_editN);}
-function openResetConfirm(){document.getElementById('confirm-title').textContent='Alles zurücksetzen?';document.getElementById('confirm-sub').textContent='Alle Daten (beide Vorsätze + Gewicht) werden gelöscht.';document.getElementById('confirm-ok-btn').onclick=doResetApp;document.getElementById('confirm-modal').classList.remove('hidden');}
-function doResetApp(){Object.values(K).forEach(k=>localStorage.removeItem(k));location.reload();}
+function openResetConfirm(){document.getElementById('confirm-title').textContent='Alles zurücksetzen?';document.getElementById('confirm-sub').textContent='Alle Daten (beide Vorsätze, Gewicht und Essenszeiten) werden gelöscht.';document.getElementById('confirm-ok-btn').onclick=doResetApp;document.getElementById('confirm-modal').classList.remove('hidden');}
+function doResetApp(){Object.values(K).forEach(k=>localStorage.removeItem(k));localStorage.removeItem(MK);location.reload();}
 
 document.getElementById('inp-habit1').addEventListener('keydown',e=>{if(e.key==='Enter')nextStep(0);});
 document.getElementById('inp-habit2').addEventListener('keydown',e=>{if(e.key==='Enter')nextStep(1);});
@@ -536,6 +693,7 @@ document.getElementById('w-input').addEventListener('keydown',e=>{if(e.key==='En
 document.getElementById('edit-modal-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveHabitName();if(e.key==='Escape')closeEditModal();});
 document.getElementById('newhab-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveNewHabit();});
 document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+document.getElementById('meal-modal').addEventListener('click',function(e){if(e.target===this)closeMealModal();});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)closeConfirmModal();});
 document.getElementById('newhab-modal').addEventListener('click',function(e){if(e.target===this)closeNewHabModal();});
 
@@ -550,8 +708,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 window.addEventListener('resize',drawChart);
 const chartCanvas=document.getElementById('w-chart');
 if(chartCanvas&&window.ResizeObserver){new ResizeObserver(entries=>{for(const e of entries)if(e.contentRect.width>0&&e.contentRect.height>0)drawChart();}).observe(chartCanvas);}
-window.addEventListener('load',()=>{setTimeout(()=>{const s=document.getElementById('splash');s.classList.add('fade-out');setTimeout(()=>s.classList.add('gone'),650);},2200);});
-if(load(K.h1)&&load(K.startW))showMain();
+setInterval(()=>{if(document.getElementById('main').classList.contains('visible'))renderFast();},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.getElementById('main').classList.contains('visible'))renderFast();});
+if(load(K.startW))showMain();
 </script>
 </body>
 </html>
