@@ -303,7 +303,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div id="body-info"></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.12.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.13.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -509,11 +509,11 @@ function saveMealTime(){
 function deleteMeal(){save(MK,loadMeals().filter(m=>m!==_mealEdit));closeMealModal();renderFast();}
 
 const STAGES=[
- {max:2,name:'Verdauung und Aufnahme',col:'#6aabcf',desc:'Nährstoffe gelangen ins Blut, der Blutzucker steigt (Peak meist nach 30–60 Min), Insulin wird ausgeschüttet. Fettverbrennung ist gedrosselt, aber nicht null.',m:['Steigt, dann Peak','Erhöht','Gedrosselt','Kaum erhöht','Unklar']},
- {max:4,name:'Blutzucker normalisiert sich',col:'#c9a84c',desc:'Blutzucker und Insulin sinken Richtung Ausgangswert. Meist nach 2–3 Std erreicht, je nach Mahlzeit.',m:['Fällt zum Ausgangswert','Sinkend','Steigt langsam','Kaum erhöht','Unklar']},
+ {max:2,name:'Verdauung und Aufnahme',col:'#6aabcf',desc:'Nährstoffe gelangen ins Blut, der Blutzucker steigt (Peak meist nach 30–90 Min), Insulin wird ausgeschüttet. Fettverbrennung ist gedrosselt, aber nicht null.',m:['Steigt, dann Peak','Erhöht','Gedrosselt','Kaum erhöht','Unklar']},
+ {max:4,name:'Blutzucker normalisiert sich',col:'#c9a84c',desc:'Blutzucker und Insulin sinken Richtung Ausgangswert. Meist nach 2–3 Std erreicht, bei großen oder kohlenhydratreichen Mahlzeiten bis ca. 4 Std.',m:['Fällt zum Ausgangswert','Sinkend','Steigt langsam','Kaum erhöht','Unklar']},
  {max:12,name:'Postabsorptiv',col:'#6dbf8a',desc:'Die Aufnahme ist abgeschlossen. Der Körper nutzt Leberglykogen und zunehmend Fett, immer als Mischung.',m:['Stabil, nüchtern','Niedrig','Mittel bis hoch','Niedrig (< 0,5 mmol/l)','Unklar']},
- {max:24,name:'Spätes Fasten',col:'#a5b4fc',desc:'Glykogenspeicher werden knapp, Fettoxidation ist hoch. Ketonkörper steigen langsam an, nennenswerte Ketose beginnt meist erst danach.',m:['Stabil, leicht niedriger','Niedrig','Hoch','Beginnt zu steigen','Beim Menschen kaum messbar']},
- {max:1e9,name:'Ketose-Bereich',col:'#f87171',desc:'Ab etwa 24–48 Std sind Ketone typischerweise deutlich erhöht. Längeres Fasten nur mit ärztlicher Begleitung.',m:['Stabil niedrig','Sehr niedrig','Hoch','Erhöht (typ. ab 24–48 Std)','Beim Menschen kaum messbar']}
+ {max:24,name:'Spätes Fasten',col:'#a5b4fc',desc:'Glykogenspeicher werden knapp, Fettoxidation ist hoch. Ketonkörper steigen ab ca. 12–16 Std langsam an. Werte ab 0,5 mmol/l erreichen viele erst nach ca. 20–28 Std, nach kohlenhydratarmer letzter Mahlzeit früher.',m:['Stabil, leicht niedriger','Niedrig','Hoch','Beginnt zu steigen','Beim Menschen kaum messbar']},
+ {max:1e9,name:'Ketose-Bereich',col:'#f87171',desc:'Ab etwa 24 Std (individuell 20–30 Std) liegen Ketone bei vielen über 0,5 mmol/l, nach ca. 2 Tagen bei 1–2 mmol/l. Längeres Fasten nur mit ärztlicher Begleitung.',m:['Stabil niedrig','Sehr niedrig','Hoch','Erhöht (≥ 0,5 mmol/l)','Beim Menschen kaum messbar']}
 ];
 const FLAB=['Blutzucker','Insulin','Fettverbrennung','Ketone','Autophagie'];
 const stageOf=h=>STAGES.find(s=>h<s.max);
@@ -550,7 +550,7 @@ function renderDetail(){
   o+=`<div class="fd-h">Typischer Verlauf (schematisch)</div>${fastChart(h)}<div class="fd-n"><span style="color:#6aabcf">▬ Blutzucker (mg/dL, links)</span> &nbsp; <span style="color:#6dbf8a">▬ Fettverbrennung, relativ (%, rechts)</span><br>Gesunde Person, gemischte Mahlzeit. Stark abhängig von Mahlzeit, Bewegung und Person. Keine Messwerte.</div>`;
   o+='<div class="fd-h">Phasen</div>'+STAGES.map((s,i)=>{const from=i?STAGES[i-1].max:0,act=h!==null&&stageOf(h)===s;return `<div class="fd-ph${act?' act':''}" style="border-left-color:${s.col}"><b>${s.max>1e8?'ab '+from:from+'–'+s.max} Std: ${s.name}${act?' (aktuell)':''}</b><span>${s.desc}</span></div>`;}).join('');
   o+='<div class="fd-h">Verlauf</div>'+(meals.length?meals.slice(0,10).map((t,i)=>`<div class="fd-row"><div>${dt(t)} Uhr<small>${meals[i+1]?'Pause davor: '+fmtDur((t-meals[i+1])/36e5):'Erster Eintrag'}</small></div><div style="display:flex;gap:6px"><button class="reset-btn" onclick="openMealModal(${t})">Ändern</button><button class="reset-btn" onclick="delMeal(${t})">Löschen</button></div></div>`).join(''):'<div class="fd-n">Noch keine Einträge.</div>');
-  o+='<div class="fd-n" style="margin-top:20px">Schematisches Modell für Stoffwechselgesunde, kein medizinischer Rat. Nicht geeignet bei Diabetes, Insulin- oder anderer Medikation, Schwangerschaft oder Essstörungen. Dann Fasten nur nach ärztlicher Rücksprache.</div>';
+  o+='<div class="fd-n" style="margin-top:20px">Alle Zeiten sind Näherungswerte aus Studien und Übersichtsarbeiten und individuell sehr verschieden. Autophagie ist beim Menschen kaum untersucht. Schematisches Modell für Stoffwechselgesunde, kein medizinischer Rat. Nicht geeignet bei Diabetes, Insulin- oder anderer Medikation, Schwangerschaft oder Essstörungen. Dann Fasten nur nach ärztlicher Rücksprache.</div>';
   document.getElementById('fd-body').innerHTML=o;
 }
 
