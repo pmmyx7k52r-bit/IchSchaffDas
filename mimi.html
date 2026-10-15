@@ -77,7 +77,8 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 #panel-body::before { background:linear-gradient(180deg,transparent,var(--sky),transparent); }
 #body-info .f-text { font-size:11px; }
 #body-info .fd-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; }
-#body-info .fd-m { padding:4px 5px; font-size:9px; hyphens:auto; overflow-wrap:anywhere; }
+#body-info .fd-m { padding:4px 2px 0; background:transparent; border:none; border-top:1px solid #ffffff18; border-radius:0; font-size:9px; hyphens:auto; overflow-wrap:anywhere; }
+#body-info .fd-n { font-size:10px; opacity:.7; }
 #body-info .fd-m span { font-size:9px; margin-bottom:1px; }
 #body-info .fd-m b { font-size:10px; font-weight:500; line-height:1.25; }
 .panel::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; }
@@ -129,7 +130,8 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 .eat-btn { background:var(--sky); color:#06202e; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:14px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; padding:16px 20px; cursor:pointer; transition:transform 0.1s,opacity 0.2s; }
 .eat-btn:active { transform:scale(0.96); }
 #f-text { font-size:19px; font-weight:700; line-height:1.2; }
-#f-since { font-size:12px; letter-spacing:0; color:var(--muted); margin:2px 0 0 !important; }
+#f-since b { color:var(--text); font-weight:600; }
+#f-since { font-size:13px; letter-spacing:0; color:var(--muted); margin:2px 0 0 !important; }
 .meal-err { color:#e06060; font-size:13px; min-height:16px; margin-bottom:8px; }
 .weight-layout { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
 .weight-stats { display:flex; gap:12px; align-items:center; flex:1; }
@@ -303,7 +305,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div id="body-info"></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.13.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.14.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -468,14 +470,14 @@ function renderFast(){
   const meals=loadMeals(),last=meals[0];
   let c='',t='Noch nichts eingetragen',s='',col='var(--muted)';
   if(last){
-    const h=(Date.now()-last)/36e5,left=MIN_H-h,at=new Date(last).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';
-    if(left>1){c='r';t='Noch nicht essen';s='noch '+fmtDur(left)+' · gegessen '+at;col='#f87171';}
-    else if(left>0){c='y';t='Gleich so weit';s='noch '+fmtDur(left)+' · gegessen '+at;col='#fbbf24';}
-    else{c='g';t='Essen ist okay';s='seit '+fmtDur(h)+' · gegessen '+at;col='#4ade80';}
+    const h=(Date.now()-last)/36e5,left=MIN_H-h,al=new Date(last+MIN_H*36e5),tm=al.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr'+(al.toDateString()!==new Date().toDateString()?' (morgen)':'');
+    if(left>1){c='r';t='Noch nicht essen';s='<b>ab '+tm+'</b> · noch '+fmtDur(left);col='#f87171';}
+    else if(left>0){c='y';t='Gleich so weit';s='<b>ab '+tm+'</b> · noch '+fmtDur(left);col='#fbbf24';}
+    else{c='g';t='Essen ist okay';s='<b>seit '+tm+'</b> erlaubt';col='#4ade80';}
   }
   ['r','y','g'].forEach(k=>document.getElementById('fl-'+k).classList.toggle('on',k===c));
   const ft=document.getElementById('f-text');ft.textContent=t;ft.style.color=col;
-  document.getElementById('f-since').textContent=s;
+  document.getElementById('f-since').innerHTML=s;
   document.getElementById('f-edit').style.display=last?'':'none';
   renderBody();
   if(detailOpen)renderDetail();
@@ -557,8 +559,8 @@ function renderDetail(){
 function renderBody(){
   const last=loadMeals()[0],el=document.getElementById('body-info');
   if(!last){el.innerHTML='<p class="f-text" style="color:var(--muted)">Tippe auf „Gegessen“, dann siehst du hier, was gerade im Körper passiert.</p>';return;}
-  const h=Math.max(0,(Date.now()-last)/36e5),s=stageOf(h);
-  el.innerHTML=`<div style="color:${s.col};font-size:14px;font-weight:500">${s.name} <span style="color:var(--muted)">· seit ${fmtDur(h)}</span></div><p class="f-text" style="margin:6px 0 10px;color:var(--muted)">${s.desc}</p><div class="fd-grid">${['Zucker','Insulin','Fett','Ketone','Autophagie'].map((l,i)=>`<div class="fd-m"><span>${l}</span><b>${s.m[i].replace('Beim Menschen kaum messbar','Kaum messbar')}</b></div>`).join('')}</div><div class="fd-n">Schematisch, stark individuell. Mehr unter Essen › Details.</div>`;
+  const h=Math.max(0,(Date.now()-last)/36e5),s=stageOf(h),gt=new Date(last).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  el.innerHTML=`<div style="color:${s.col};font-size:14px;font-weight:500">${s.name} <span style="color:var(--muted)">· gegessen ${gt} Uhr (seit ${fmtDur(h)})</span></div><p class="f-text" style="margin:6px 0 10px;color:var(--muted)">${s.desc}</p><div class="fd-grid">${['Zucker','Insulin','Fett','Ketone','Autophagie'].map((l,i)=>`<div class="fd-m"><span>${l}</span><b>${s.m[i].replace('Beim Menschen kaum messbar','Kaum messbar')}</b></div>`).join('')}</div><div class="fd-n">Schematisch, stark individuell. Mehr unter Essen › Details.</div>`;
 }
 function applyChart(){
   const on=load('v_chartOn')===true;
