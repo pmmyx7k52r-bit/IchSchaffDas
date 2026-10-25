@@ -305,7 +305,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div id="body-info"></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.14.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.15.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -352,7 +352,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 <div id="meal-modal" class="modal-backdrop hidden">
   <div class="modal-sheet">
     <div class="modal-title">Zeit der Mahlzeit &auml;ndern</div>
-    <input type="datetime-local" class="modal-input" id="meal-input"/>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px"><input type="time" class="modal-input" id="meal-input" style="margin:0;flex:1;width:auto;min-width:0;font-size:30px;text-align:center"/><select class="modal-input" id="meal-day" style="margin:0;flex:0 0 36%;width:auto;font-size:14px"></select></div>
     <div class="meal-err" id="meal-err" role="alert"></div>
     <button class="modal-save" onclick="saveMealTime()">Speichern</button>
     <button class="modal-delete" onclick="deleteMeal()">&#10005; Eintrag l&ouml;schen</button>
@@ -488,19 +488,24 @@ function logMeal(){
   meals.unshift(now);save(MK,meals);renderFast();
 }
 let _mealEdit=null;
+function dayOff(ts){const a=new Date(ts),b=new Date();a.setHours(0,0,0,0);b.setHours(0,0,0,0);return Math.round((b-a)/864e5);}
 function localInputVal(ts){return new Date(ts-new Date(ts).getTimezoneOffset()*6e4).toISOString().slice(0,16);}
 function openMealModal(t){
   _mealEdit=(typeof t==='number')?t:loadMeals()[0];if(_mealEdit===undefined)return;
-  document.getElementById('meal-input').value=localInputVal(_mealEdit);
+  const sel=document.getElementById('meal-day'),off=dayOff(_mealEdit),opts=[[0,'Heute'],[1,'Gestern'],[2,'Vorgestern']];
+  if(off>2)opts.push([off,new Date(_mealEdit).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})]);
+  sel.innerHTML=opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('');sel.value=String(off);
+  document.getElementById('meal-input').value=new Date(_mealEdit).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',hour12:false});
   document.getElementById('meal-err').textContent='';
   document.getElementById('meal-modal').classList.remove('hidden');
 }
 function closeMealModal(){document.getElementById('meal-modal').classList.add('hidden');}
 function saveMealTime(){
   const v=document.getElementById('meal-input').value,err=document.getElementById('meal-err');
-  if(!v){err.textContent='Bitte Datum und Uhrzeit wählen.';return;}
-  let t=new Date(v).getTime();
-  if(t>Date.now()+6e4){err.textContent='Die Mahlzeit darf nicht in der Zukunft liegen.';return;}
+  if(!v){err.textContent='Bitte Uhrzeit wählen.';return;}
+  const hm=v.split(':').map(Number),d=new Date();d.setDate(d.getDate()-Number(document.getElementById('meal-day').value));d.setHours(hm[0],hm[1],0,0);
+  let t=d.getTime();
+  if(t>Date.now()+6e4){err.textContent='Diese Zeit liegt in der Zukunft. Tag auf „Gestern“ stellen?';return;}
   t=Math.min(t,Date.now());
   let meals=loadMeals();
   if(t!==_mealEdit&&meals.includes(t)){err.textContent='Für diese Zeit gibt es schon einen Eintrag.';return;}
@@ -710,6 +715,7 @@ document.getElementById('w-input').addEventListener('keydown',e=>{if(e.key==='En
 document.getElementById('edit-modal-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveHabitName();if(e.key==='Escape')closeEditModal();});
 document.getElementById('newhab-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveNewHabit();});
 document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+document.getElementById('meal-input').addEventListener('change',function(){const sel=document.getElementById('meal-day');if(sel.value!=='0'||!this.value)return;const hm=this.value.split(':').map(Number),d=new Date();d.setHours(hm[0],hm[1],0,0);if(d.getTime()>Date.now()+6e4)sel.value='1';});
 document.getElementById('reset-modal').addEventListener('click',function(e){if(e.target===this)closeResetMenu();});
 document.getElementById('meal-modal').addEventListener('click',function(e){if(e.target===this)closeMealModal();});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)closeConfirmModal();});
