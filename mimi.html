@@ -68,8 +68,8 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 #main.visible { display:flex; }
 .panel { position:relative; display:flex; flex-direction:column; padding:0 22px; justify-content:center; overflow:hidden; }
 .panel:not(:last-child) { border-bottom:1px solid var(--border); }
-#panel-habit,#panel-habit2,#panel-fast { flex:0 0 17%; min-height:0; }
-#panel-habit,#panel-habit2 { flex-basis:18%; }
+#panel-habit,#panel-habit2,#panel-fast { flex:0 0 16%; min-height:0; }
+#panel-habit,#panel-habit2 { flex-basis:17%; }
 #panel-habit .habit-layout,#panel-habit2 .habit-layout { margin-top:8px; }
 #panel-weight { flex:1 0 auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; }
 #panel-weight.chart-on { flex:1 1 0; min-height:0; }
@@ -193,7 +193,12 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 .fd-ph.act{background:#22303f}.fd-ph span{color:var(--muted);display:block;font-size:12px;margin-top:2px}
 .fd-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
 .fd-row small{display:block;color:var(--muted);font-size:11px}
-#panel-todo { flex:0 0 auto; padding-top:10px; padding-bottom:10px; background:#000; }
+#panel-body { flex:0 0 auto; padding-top:8px; padding-bottom:8px; justify-content:flex-start; background:#000; }
+#panel-body::before { background:linear-gradient(180deg,transparent,var(--sky),transparent); }
+#panel-body { animation-delay:0.21s; }
+#body-info .f-text { font-size:11px; }
+#main.visible { overflow-y:auto; }
+#panel-todo { flex:0 0 auto; padding-top:10px; padding-bottom:10px; background:linear-gradient(135deg,#2a2540 0%,#201c33 100%); }
 #panel-todo::before { background:linear-gradient(180deg,transparent,#a78bfa,transparent); }
 #panel-todo { animation-delay:0.22s; }
 .tag-vio { color:#a78bfa; border:1px solid #3a2f66; background:#14102a; }
@@ -307,12 +312,16 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
       </div>
     </div>
   </div>
+  <div class="panel" id="panel-body">
+    <div class="panel-header"><span class="panel-tag tag-sky">Im K&ouml;rper</span></div>
+    <div id="body-info"></div>
+  </div>
   <div class="panel" id="panel-todo">
     <div class="panel-header"><span class="panel-tag tag-vio">Heute</span><button class="reset-btn" onclick="openTodoPage()">Liste</button></div>
     <div class="habit-layout"><div class="habit-left" id="td-main"></div><div class="habit-right" id="td-act"></div></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.16.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.17.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -501,6 +510,7 @@ function renderFast(){
   const ft=document.getElementById('f-text');ft.textContent=t;ft.style.color=col;
   document.getElementById('f-since').innerHTML=s;
   document.getElementById('f-edit').style.display=last?'':'none';
+  renderBody();
   if(detailOpen)renderDetail();
 }
 function logMeal(){
@@ -582,6 +592,12 @@ function renderDetail(){
   document.getElementById('fd-body').innerHTML=o;
 }
 
+function renderBody(){
+  const last=loadMeals()[0],el=document.getElementById('body-info');
+  if(!last){el.innerHTML='<p class="f-text" style="color:var(--muted)">Tippe auf „Gegessen“, dann siehst du hier, was gerade im Körper passiert.</p>';return;}
+  const h=Math.max(0,(Date.now()-last)/36e5),s=stageOf(h),gt=new Date(last).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  el.innerHTML=`<div style="color:${s.col};font-size:12px;font-weight:600">${s.name} <span style="color:var(--muted);font-weight:400">· gegessen ${gt} Uhr (seit ${fmtDur(h)})</span></div><p class="f-text" style="margin-top:4px;color:var(--muted)">${s.desc}</p>`;
+}
 function applyChart(){
   const on=load('v_chartOn')===true;
   document.getElementById('panel-weight').classList.toggle('chart-on',on);
