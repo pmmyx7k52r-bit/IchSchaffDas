@@ -73,14 +73,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 #panel-habit .habit-layout,#panel-habit2 .habit-layout { margin-top:8px; }
 #panel-weight { flex:1 0 auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; }
 #panel-weight.chart-on { flex:1 1 0; min-height:0; }
-#panel-body { flex:0 1 auto; min-height:0; overflow-y:auto; justify-content:flex-start; padding-top:10px; padding-bottom:10px; background:linear-gradient(135deg,#000000 0%,#000000 100%); }
-#panel-body::before { background:linear-gradient(180deg,transparent,var(--sky),transparent); }
-#body-info .f-text { font-size:11px; }
-#body-info .fd-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; }
-#body-info .fd-m { padding:4px 2px 0; background:transparent; border:none; border-top:1px solid #ffffff18; border-radius:0; font-size:9px; hyphens:auto; overflow-wrap:anywhere; }
-#body-info .fd-n { font-size:10px; opacity:.7; }
-#body-info .fd-m span { font-size:9px; margin-bottom:1px; }
-#body-info .fd-m b { font-size:10px; font-weight:500; line-height:1.25; }
 .panel::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; }
 #panel-habit::before  { background:linear-gradient(180deg,transparent,var(--gold),transparent); }
 #panel-habit2::before { background:linear-gradient(180deg,transparent,var(--blue),transparent); }
@@ -158,7 +150,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 #panel-habit  { animation-delay:0.05s; }
 #panel-habit2 { animation-delay:0.15s; }
 #panel-fast   { animation-delay:0.2s; }
-#panel-body   { animation-delay:0.22s; }
 #panel-weight { animation-delay:0.25s; }
 .w-forecast { font-size:10px; letter-spacing:0.12em; color:var(--muted); margin-top:7px; min-height:14px; transition:color 0.3s; }
 .w-forecast span { color:var(--gold); font-weight:500; }
@@ -202,6 +193,22 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 .fd-ph.act{background:#22303f}.fd-ph span{color:var(--muted);display:block;font-size:12px;margin-top:2px}
 .fd-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
 .fd-row small{display:block;color:var(--muted);font-size:11px}
+#panel-todo { flex:0 0 auto; padding-top:10px; padding-bottom:10px; background:#000; }
+#panel-todo::before { background:linear-gradient(180deg,transparent,#a78bfa,transparent); }
+#panel-todo { animation-delay:0.22s; }
+.tag-vio { color:#a78bfa; border:1px solid #3a2f66; background:#14102a; }
+.td-sub { font-size:11px; color:var(--muted); }
+.td-text { font-size:17px; font-weight:700; line-height:1.25; margin:2px 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word; }
+.td-ok { background:var(--success); color:#0a1e10; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:13px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; padding:14px 16px; cursor:pointer; }
+.td-row { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border); }
+.td-h { flex:0 0 46px; font-size:13px; color:var(--muted); }
+.td-in { flex:1; min-width:0; background:var(--card); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:'DM Mono',monospace; font-size:16px; padding:10px 12px; outline:none; }
+.td-in:focus { border-color:#a78bfa; }
+.td-b { flex:0 0 40px; height:40px; border-radius:6px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-size:18px; cursor:pointer; }
+.td-b:disabled { opacity:0.3; }
+.td-b.rc.on { border-color:#a78bfa; color:#a78bfa; }
+.td-b.dn.on { border-color:var(--success); background:var(--success); color:#0a1e10; }
+.td-row.done .td-in { text-decoration:line-through; color:var(--muted); }
 @media (max-width:420px) { .panel{padding:0 14px;} .weight-stats{gap:8px;} }
 </style>
 </head>
@@ -300,12 +307,12 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
       </div>
     </div>
   </div>
-  <div class="panel" id="panel-body">
-    <div class="panel-header"><span class="panel-tag tag-sky">Im K&ouml;rper</span></div>
-    <div id="body-info"></div>
+  <div class="panel" id="panel-todo">
+    <div class="panel-header"><span class="panel-tag tag-vio">Heute</span><button class="reset-btn" onclick="openTodoPage()">Liste</button></div>
+    <div class="habit-layout"><div class="habit-left" id="td-main"></div><div class="habit-right" id="td-act"></div></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.15.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.16.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -336,6 +343,20 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
   </div>
 </div>
 
+<div id="todo-page" style="display:none;position:fixed;inset:0;z-index:140;background:var(--bg);overflow-y:auto;padding:max(env(safe-area-inset-top),16px) 18px 40px">
+  <div class="panel-header" style="margin-bottom:6px"><span class="panel-tag tag-vio" id="td-title">Heute</span><button class="reset-btn" onclick="closeTodoPage()">Schlie&szlig;en</button></div>
+  <div class="fd-n" style="margin:0 0 10px">Pro volle Stunde ein Eintrag. &#8635; macht daraus einen Dauertermin, der jeden Tag erscheint. &#10003; = erledigt. Zum Entfernen den Text l&ouml;schen.</div>
+  <div id="td-body"></div>
+</div>
+<div id="todo-ask" class="modal-backdrop hidden">
+  <div class="modal-sheet">
+    <div class="modal-title" id="todo-ask-title">Guten Morgen</div>
+    <div class="confirm-sub" id="todo-ask-sub">Gibt es heute etwas zu tun?</div>
+    <button class="modal-save" onclick="todoAnswer(true)">Ja, Termine erfassen</button>
+    <button class="modal-delete" style="color:var(--muted);border-color:var(--border)" onclick="todoAnswer(false)">Nein, heute nichts</button>
+    <button class="modal-cancel" onclick="todoLater()">Sp&auml;ter fragen</button>
+  </div>
+</div>
 <div id="fast-detail" style="display:none;position:fixed;inset:0;z-index:140;background:var(--bg);overflow-y:auto;padding:max(env(safe-area-inset-top),16px) 18px 40px">
   <div class="panel-header" style="margin-bottom:14px"><span class="panel-tag tag-sky">Essen im Detail</span><button class="reset-btn" onclick="closeDetail()">Schließen</button></div>
   <div id="fd-body"></div>
@@ -363,7 +384,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
   <div class="modal-sheet">
     <div class="modal-title">Zur&uuml;cksetzen</div>
     <button class="modal-delete" onclick="askClearMeals()">Essenszeiten l&ouml;schen</button>
-    <button class="modal-delete" onclick="openResetConfirm()">Alles zur&uuml;cksetzen (Vors&auml;tze, Gewicht, Essenszeiten)</button>
+    <button class="modal-delete" onclick="openResetConfirm()">Alles zur&uuml;cksetzen (Vors&auml;tze, Gewicht, Essenszeiten, Termine)</button>
     <button class="modal-cancel" onclick="closeResetMenu()">Abbrechen</button>
   </div>
 </div>
@@ -423,8 +444,9 @@ function showMain(){
   if(!(t in log1)){log1[t]=false;save(K.log1,log1);}
   if(!(t in log2)){log2[t]=false;save(K.log2,log2);}
   renderAll();
+  todoCheck();
 }
-function renderAll(){renderHabit(1);renderHabit(2);renderFast();renderWeight();applyChart();requestAnimationFrame(()=>requestAnimationFrame(drawChart));}
+function renderAll(){renderHabit(1);renderHabit(2);renderFast();renderTodo();renderWeight();applyChart();requestAnimationFrame(()=>requestAnimationFrame(drawChart));}
 
 function renderHabit(n){
   const has=!!load(n===1?K.h1:K.h2);
@@ -479,7 +501,6 @@ function renderFast(){
   const ft=document.getElementById('f-text');ft.textContent=t;ft.style.color=col;
   document.getElementById('f-since').innerHTML=s;
   document.getElementById('f-edit').style.display=last?'':'none';
-  renderBody();
   if(detailOpen)renderDetail();
 }
 function logMeal(){
@@ -561,12 +582,6 @@ function renderDetail(){
   document.getElementById('fd-body').innerHTML=o;
 }
 
-function renderBody(){
-  const last=loadMeals()[0],el=document.getElementById('body-info');
-  if(!last){el.innerHTML='<p class="f-text" style="color:var(--muted)">Tippe auf „Gegessen“, dann siehst du hier, was gerade im Körper passiert.</p>';return;}
-  const h=Math.max(0,(Date.now()-last)/36e5),s=stageOf(h),gt=new Date(last).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
-  el.innerHTML=`<div style="color:${s.col};font-size:14px;font-weight:500">${s.name} <span style="color:var(--muted)">· gegessen ${gt} Uhr (seit ${fmtDur(h)})</span></div><p class="f-text" style="margin:6px 0 10px;color:var(--muted)">${s.desc}</p><div class="fd-grid">${['Zucker','Insulin','Fett','Ketone','Autophagie'].map((l,i)=>`<div class="fd-m"><span>${l}</span><b>${s.m[i].replace('Beim Menschen kaum messbar','Kaum messbar')}</b></div>`).join('')}</div><div class="fd-n">Schematisch, stark individuell. Mehr unter Essen › Details.</div>`;
-}
 function applyChart(){
   const on=load('v_chartOn')===true;
   document.getElementById('panel-weight').classList.toggle('chart-on',on);
@@ -574,6 +589,64 @@ function applyChart(){
   if(on)requestAnimationFrame(()=>requestAnimationFrame(drawChart));
 }
 function toggleChart(){save('v_chartOn',load('v_chartOn')!==true);applyChart();}
+const TK='v_todos', TR='v_todoRec', TA='v_todoAsked';
+let _tdSnooze=false;
+function esc(x){return String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function tdDay(){
+  const t=realToday(),all=load(TK)||{},rec=load(TR)||{};let ch=false;
+  if(!all[t]){all[t]={};ch=true;}
+  Object.keys(rec).forEach(h=>{if(!all[t][h]){all[t][h]={text:rec[h],rec:true,done:false};ch=true;}});
+  const cut=localDateStr(new Date(Date.now()-14*864e5));
+  Object.keys(all).forEach(k=>{if(k<cut){delete all[k];ch=true;}});
+  if(ch)save(TK,all);
+  return all;
+}
+function renderTodo(){
+  const day=tdDay()[realToday()],hs=Object.keys(day).map(Number).sort((a,b)=>a-b),open=hs.filter(h=>!day[h].done);
+  const m=document.getElementById('td-main'),a=document.getElementById('td-act');
+  if(!hs.length){m.innerHTML='<div class="f-text" style="color:var(--muted)">Nichts eingetragen</div>';a.innerHTML='<button class="reset-btn" style="padding:10px 14px" onclick="openTodoPage()">Eintragen</button>';return;}
+  if(!open.length){m.innerHTML='<div class="f-text" style="color:var(--success);font-weight:600">✓ Alles erledigt</div><div class="td-sub">'+hs.length+' von '+hs.length+' Terminen</div>';a.innerHTML='';return;}
+  const h=open[0];
+  m.innerHTML=`<div class="td-sub">Als Nächstes · ${String(h).padStart(2,'0')}:00 Uhr</div><div class="td-text">${esc(day[h].text)}</div><div class="td-sub">${open.length>1?(open.length-1)+' weitere offen · ':''}${hs.length-open.length} von ${hs.length} erledigt</div>`;
+  a.innerHTML=`<button class="td-ok" onclick="tdFinish(${h})">Erledigt</button>`;
+}
+function tdFinish(h){const all=tdDay(),e=all[realToday()][h];if(e){e.done=true;save(TK,all);}renderTodo();}
+function tdRowUpd(h){
+  const r=document.querySelector('.td-row[data-h="'+h+'"]');if(!r)return;
+  const e=tdDay()[realToday()][h],rc=r.querySelector('.rc'),dn=r.querySelector('.dn');
+  rc.disabled=dn.disabled=!e;rc.classList.toggle('on',!!(e&&e.rec));dn.classList.toggle('on',!!(e&&e.done));r.classList.toggle('done',!!(e&&e.done));
+}
+function tdSave(h,val){
+  const t=realToday(),all=tdDay(),rec=load(TR)||{};val=val.trim();const e=all[t][h];
+  if(!val){if(e&&e.rec){delete rec[h];save(TR,rec);}delete all[t][h];}
+  else{const n=e||{done:false,rec:false};n.text=val;if(n.rec){rec[h]=val;save(TR,rec);}all[t][h]=n;}
+  save(TK,all);tdRowUpd(h);renderTodo();
+}
+function tdRec(h){
+  const t=realToday(),all=tdDay(),rec=load(TR)||{},e=all[t][h];if(!e)return;
+  if(e.rec){delete rec[h];e.rec=false;}else{rec[h]=e.text;e.rec=true;}
+  save(TR,rec);save(TK,all);tdRowUpd(h);renderTodo();
+}
+function tdDone(h){const all=tdDay(),e=all[realToday()][h];if(!e)return;e.done=!e.done;save(TK,all);tdRowUpd(h);renderTodo();}
+function openTodoPage(){
+  const day=tdDay()[realToday()];let o='';
+  for(let h=7;h<=22;h++){const e=day[h];o+=`<div class="td-row" data-h="${h}"><span class="td-h">${String(h).padStart(2,'0')}:00</span><input class="td-in" type="text" maxlength="80" placeholder="—" value="${e?esc(e.text):''}" onchange="tdSave(${h},this.value)"><button class="td-b rc" title="Dauertermin (jeden Tag)" onclick="tdRec(${h})">&#8635;</button><button class="td-b dn" title="Erledigt" onclick="tdDone(${h})">&#10003;</button></div>`;}
+  document.getElementById('td-body').innerHTML=o;
+  for(let h=7;h<=22;h++)tdRowUpd(h);
+  document.getElementById('td-title').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('todo-page').style.display='block';
+  const r=document.querySelector('.td-row[data-h="'+Math.min(22,Math.max(7,new Date().getHours()))+'"]');if(r)r.scrollIntoView({block:'center'});
+}
+function closeTodoPage(){if(document.activeElement)document.activeElement.blur();document.getElementById('todo-page').style.display='none';renderTodo();}
+function todoCheck(){
+  if(!document.getElementById('main').classList.contains('visible')||_tdSnooze||load(TA)===realToday())return;
+  const hr=new Date().getHours(),n=Object.keys(load(TR)||{}).length;
+  document.getElementById('todo-ask-title').textContent=hr<11?'Guten Morgen':hr<18?'Guten Tag':'Guten Abend';
+  document.getElementById('todo-ask-sub').textContent='Gibt es heute etwas zu tun?'+(n?' ('+n+(n>1?' Dauertermine sind':' Dauertermin ist')+' schon eingetragen.)':'');
+  document.getElementById('todo-ask').classList.remove('hidden');
+}
+function todoAnswer(yes){save(TA,realToday());document.getElementById('todo-ask').classList.add('hidden');if(yes)openTodoPage();}
+function todoLater(){_tdSnooze=true;document.getElementById('todo-ask').classList.add('hidden');}
 function renderWeight(){
   const sw=load(K.startW),gw=load(K.goalW),wLog=load(K.wLog)||[];
   document.getElementById('w-start').textContent=sw?sw.toFixed(1):'—';
@@ -704,8 +777,8 @@ function openResetMenu(){document.getElementById('reset-modal').classList.remove
 function closeResetMenu(){document.getElementById('reset-modal').classList.add('hidden');}
 function askClearMeals(){closeResetMenu();document.getElementById('confirm-title').textContent='Essenszeiten löschen?';document.getElementById('confirm-sub').textContent='Alle Mahlzeiten-Einträge werden gelöscht. Vorsätze und Gewicht bleiben.';document.getElementById('confirm-ok-btn').onclick=doClearMeals;document.getElementById('confirm-modal').classList.remove('hidden');}
 function doClearMeals(){closeConfirmModal();localStorage.removeItem(MK);renderFast();}
-function openResetConfirm(){closeResetMenu();document.getElementById('confirm-title').textContent='Alles zurücksetzen?';document.getElementById('confirm-sub').textContent='Alle Daten (beide Vorsätze, Gewicht und Essenszeiten) werden gelöscht.';document.getElementById('confirm-ok-btn').onclick=doResetApp;document.getElementById('confirm-modal').classList.remove('hidden');}
-function doResetApp(){Object.values(K).forEach(k=>localStorage.removeItem(k));localStorage.removeItem(MK);location.reload();}
+function openResetConfirm(){closeResetMenu();document.getElementById('confirm-title').textContent='Alles zurücksetzen?';document.getElementById('confirm-sub').textContent='Alle Daten (beide Vorsätze, Gewicht, Essenszeiten und Termine) werden gelöscht.';document.getElementById('confirm-ok-btn').onclick=doResetApp;document.getElementById('confirm-modal').classList.remove('hidden');}
+function doResetApp(){Object.values(K).forEach(k=>localStorage.removeItem(k));localStorage.removeItem(MK);[TK,TR,TA].forEach(k=>localStorage.removeItem(k));location.reload();}
 
 document.getElementById('inp-habit1').addEventListener('keydown',e=>{if(e.key==='Enter')nextStep(0);});
 document.getElementById('inp-habit2').addEventListener('keydown',e=>{if(e.key==='Enter')nextStep(1);});
@@ -732,8 +805,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 window.addEventListener('resize',drawChart);
 const chartCanvas=document.getElementById('w-chart');
 if(chartCanvas&&window.ResizeObserver){new ResizeObserver(entries=>{for(const e of entries)if(e.contentRect.width>0&&e.contentRect.height>0)drawChart();}).observe(chartCanvas);}
-setInterval(()=>{if(document.getElementById('main').classList.contains('visible'))renderFast();},30000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.getElementById('main').classList.contains('visible'))renderFast();});
+setInterval(()=>{if(document.getElementById('main').classList.contains('visible')){renderFast();renderTodo();todoCheck();}},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.getElementById('main').classList.contains('visible')){renderFast();renderTodo();todoCheck();}});
 if(load(K.startW))showMain();
 </script>
 </body>
