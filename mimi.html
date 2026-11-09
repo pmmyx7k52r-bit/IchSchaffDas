@@ -321,7 +321,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div class="habit-layout"><div class="habit-left" id="td-main"></div><div class="habit-right" id="td-act"></div></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.18.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.19.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -356,11 +356,6 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
   <div class="panel-header" style="margin-bottom:6px"><span class="panel-tag tag-vio" id="td-title">Heute</span><button class="reset-btn" onclick="closeTodoPage()">Schlie&szlig;en</button></div>
   <div class="fd-n" style="margin:0 0 10px">Pro volle Stunde ein Eintrag. &#8635; macht daraus einen Dauertermin, der jeden Tag erscheint. &#10003; = erledigt. Zum Entfernen den Text l&ouml;schen.</div>
   <div id="td-body"></div>
-  <div style="margin-top:18px">
-    <button class="reset-btn" style="width:100%;min-height:48px;font-size:12px" onclick="exportICS()">Als Kalender-Erinnerungen exportieren</button>
-    <div class="fd-n" id="td-exp" style="margin-top:8px;min-height:1em"></div>
-    <div class="fd-n" style="margin-top:6px">Erstellt eine .ics-Datei: offene Termine von heute (Erinnerung 5 Min vorher) und alle Dauertermine als tägliche Wiederholung. Beim Öffnen auf dem iPhone wird die Datei in die Kalender-App importiert.</div>
-  </div>
 </div>
 <div id="todo-ask" class="modal-backdrop hidden">
   <div class="modal-sheet">
@@ -668,38 +663,6 @@ function todoCheck(){
 }
 function todoAnswer(yes){save(TA,realToday());document.getElementById('todo-ask').classList.add('hidden');if(yes)openTodoPage();}
 function todoLater(){_tdSnooze=true;document.getElementById('todo-ask').classList.add('hidden');}
-function icsPad(n){return String(n).padStart(2,'0');}
-function icsEsc(x){return String(x).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
-function icsFold(l){const c=Array.from(l);if(c.length<=73)return l;let o=c.slice(0,73).join('');for(let i=73;i<c.length;i+=72)o+='\r\n '+c.slice(i,i+72).join('');return o;}
-function buildICS(){
-  const t=realToday(),day=tdDay()[t]||{},rec=load(TR)||{};
-  const nowH=new Date().getHours(),ymd=t.replace(/-/g,'');
-  const u=new Date(),stamp=u.getUTCFullYear()+icsPad(u.getUTCMonth()+1)+icsPad(u.getUTCDate())+'T'+icsPad(u.getUTCHours())+icsPad(u.getUTCMinutes())+icsPad(u.getUTCSeconds())+'Z';
-  const hs=[...new Set([...Object.keys(rec),...Object.keys(day)].map(Number))].sort((a,b)=>a-b);
-  const ev=[];
-  hs.forEach(h=>{
-    const isRec=!!rec[h],e=day[h],text=isRec?rec[h]:(e&&e.text);
-    if(!text)return;
-    const done=!!(e&&e.done);
-    if(!isRec&&(done||h<nowH))return;
-    const hh=icsPad(h);
-    const L=['BEGIN:VEVENT','UID:imd-'+(isRec?'rec':ymd)+'-'+h+'@ichmachdas','DTSTAMP:'+stamp,'DTSTART:'+ymd+'T'+hh+'0000','DTEND:'+ymd+'T'+hh+'1500','SUMMARY:'+icsEsc(text)];
-    if(isRec){L.push('RRULE:FREQ=DAILY');if(done)L.push('EXDATE:'+ymd+'T'+hh+'0000');}
-    L.push('BEGIN:VALARM','TRIGGER:-PT5M','ACTION:DISPLAY','DESCRIPTION:'+icsEsc(text),'END:VALARM','END:VEVENT');
-    ev.push(...L);
-  });
-  if(!ev.length)return null;
-  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//IchMachDas//DE','CALSCALE:GREGORIAN',...ev,'END:VCALENDAR'].map(icsFold).join('\r\n')+'\r\n';
-}
-function exportICS(){
-  const msg=document.getElementById('td-exp'),ics=buildICS();
-  if(!ics){msg.textContent='Keine offenen Termine für heute und keine Dauertermine.';return;}
-  const url=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
-  const a=document.createElement('a');a.href=url;a.download='IchMachDas_'+realToday()+'.ics';
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),4000);
-  msg.textContent='Datei erstellt: IchMachDas_'+realToday()+'.ics';
-}
 function renderWeight(){
   const sw=load(K.startW),gw=load(K.goalW),wLog=load(K.wLog)||[];
   document.getElementById('w-start').textContent=sw?sw.toFixed(1):'—';
