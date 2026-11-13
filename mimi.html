@@ -321,7 +321,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div class="habit-layout"><div class="habit-left" id="td-main"></div><div class="habit-right" id="td-act"></div></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.21.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.23.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -512,7 +512,7 @@ function addHabit(){openEditModal(!load(K.h1)?1:2);}
 function loadMeals(){const a=load(MK);return Array.isArray(a)?a.filter(Number.isFinite).sort((x,y)=>y-x):[];}
 function fmtDur(h){const m=Math.max(0,Math.round(h*60));return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min';}
 const FK='v_fen';
-function loadFen(){const f=load(FK)||{};return{on:f.on!==false,start:f.start||'07:00',end:f.end||'18:00',note:f.note!=null?f.note:'Gemüse ok: Tomate, Gurke'};}
+function loadFen(){const f=load(FK)||{};return{on:f.on!==false,start:f.start||'07:00',end:f.end||'18:00',note:(f.note==null||f.note==='Gemüse ok: Tomate, Gurke')?'Nur noch Gurken oder Tomaten':f.note};}
 function hmToMin(x){const p=String(x).split(':').map(Number);return p[0]*60+(p[1]||0);}
 function atMin(d,m){const x=new Date(d);x.setHours(Math.floor(m/60),m%60,0,0);return x;}
 function hmTxt(d){return d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';}
@@ -525,16 +525,16 @@ function fenInfo(){
 function renderFast(){
   const meals=loadMeals(),last=meals[0],fi=fenInfo();
   let c='',t='Noch nichts eingetragen',s='',col='var(--muted)';
-  if(last){
+  if(fi.f.on&&!fi.inWin){c='r';t='Essensfenster geschlossen';s='<b>ab '+hmTxt(fi.nextStart)+'</b>'+(fi.f.note?' · '+esc(fi.f.note):'');col='#f87171';}
+  else if(last){
     const h=(Date.now()-last)/36e5,left=MIN_H-h,free=new Date(last+MIN_H*36e5);
     const freeTxt=hmTxt(free)+(free.toDateString()!==new Date().toDateString()?' (morgen)':'');
-    const note=fi.f.note?' · '+esc(fi.f.note):'';
-    if(fi.f.on&&!fi.inWin){c='r';t='Essensfenster geschlossen';s='<b>ab '+hmTxt(fi.nextStart)+'</b>'+note;col='#f87171';}
-    else if(fi.f.on&&left>0&&free>fi.endToday){c='r';t='Heute kein Essen mehr';s='<b>nächstes Fenster ab '+hmTxt(fi.nextStart)+'</b>'+note;col='#f87171';}
-    else if(left>1){c='r';t='Noch nicht essen';s='<b>ab '+freeTxt+'</b> · noch '+fmtDur(left);col='#f87171';}
-    else if(left>0){c='y';t='Gleich so weit';s='<b>ab '+freeTxt+'</b> · noch '+fmtDur(left);col='#fbbf24';}
-    else{c='g';t='Essen ist okay';s='<b>seit '+freeTxt+'</b> erlaubt';col='#4ade80';}
+    const endNote=fi.f.on?(free>fi.endToday?' · Fenster endet '+hmTxt(fi.endToday):' · Fenster bis '+hmTxt(fi.endToday)):'';
+    if(left>1){c='r';t='Noch nicht essen';s='<b>ab '+freeTxt+'</b> · noch '+fmtDur(left)+endNote;col='#f87171';}
+    else if(left>0){c='y';t='Gleich so weit';s='<b>ab '+freeTxt+'</b> · noch '+fmtDur(left)+endNote;col='#fbbf24';}
+    else{c='g';t='Essen ist okay';s='<b>seit '+freeTxt+'</b> erlaubt'+endNote;col='#4ade80';}
   }
+  else if(fi.f.on){c='g';t='Essen erlaubt';s='<b>bis '+hmTxt(fi.endToday)+'</b>';col='#4ade80';}
   ['r','y','g'].forEach(k=>document.getElementById('fl-'+k).classList.toggle('on',k===c));
   const ft=document.getElementById('f-text');ft.textContent=t;ft.style.color=col;
   document.getElementById('f-since').innerHTML=s;
