@@ -321,7 +321,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div class="habit-layout"><div class="habit-left" id="td-main"></div><div class="habit-right" id="td-act"></div></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.20.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.21.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -539,6 +539,7 @@ function renderFast(){
   const ft=document.getElementById('f-text');ft.textContent=t;ft.style.color=col;
   document.getElementById('f-since').innerHTML=s;
   document.getElementById('f-edit').style.display=last?'':'none';
+  renderBody();
   if(detailOpen)renderDetail();
 }
 function logMeal(){
@@ -634,8 +635,11 @@ function renderDetail(){
 function renderBody(){
   const last=loadMeals()[0],el=document.getElementById('body-info');
   if(!last){el.innerHTML='<p class="f-text" style="color:var(--muted)">Tippe auf „Gegessen“, dann siehst du hier, was gerade im Körper passiert.</p>';return;}
-  const h=Math.max(0,(Date.now()-last)/36e5),s=stageOf(h),gt=new Date(last).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
-  el.innerHTML=`<div style="color:${s.col};font-size:12px;font-weight:600">${s.name} <span style="color:var(--muted);font-weight:400">· gegessen ${gt} Uhr (seit ${fmtDur(h)})</span></div><p class="f-text" style="margin-top:4px;color:var(--muted)">${s.desc}</p>`;
+  const h=Math.max(0,(Date.now()-last)/36e5),idx=STAGES.indexOf(stageOf(h)),s=STAGES[idx],gt=new Date(last).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  let nxt='';
+  if(STAGES[idx+1]){const at=new Date(last+s.max*36e5),mins=Math.max(0,Math.round((at-Date.now())/6e4));
+    nxt='<div style="font-size:12px;margin-top:6px"><span style="color:var(--muted)">Nächste Phase ab</span> <b>'+at.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr</b> <span style="color:var(--muted)">(in '+fmtDur(mins/60)+'): '+STAGES[idx+1].name+'</span></div>';}
+  el.innerHTML=`<div style="color:${s.col};font-size:12px;font-weight:600">${s.name} <span style="color:var(--muted);font-weight:400">· gegessen ${gt} Uhr (seit ${fmtDur(h)})</span></div><p class="f-text" style="margin-top:4px;color:var(--muted)">${s.desc}</p>${nxt}`;
 }
 function applyChart(){
   const on=load('v_chartOn')===true;
