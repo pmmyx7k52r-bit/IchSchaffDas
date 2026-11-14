@@ -321,7 +321,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div class="habit-layout"><div class="habit-left" id="td-main"></div><div class="habit-right" id="td-act"></div></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.23.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.24.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -512,7 +512,7 @@ function addHabit(){openEditModal(!load(K.h1)?1:2);}
 function loadMeals(){const a=load(MK);return Array.isArray(a)?a.filter(Number.isFinite).sort((x,y)=>y-x):[];}
 function fmtDur(h){const m=Math.max(0,Math.round(h*60));return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min';}
 const FK='v_fen';
-function loadFen(){const f=load(FK)||{};return{on:f.on!==false,start:f.start||'07:00',end:f.end||'18:00',note:(f.note==null||f.note==='Gemüse ok: Tomate, Gurke')?'Nur noch Gurken oder Tomaten':f.note};}
+function loadFen(){const f=load(FK)||{};return{on:f.on!==false,start:f.start||'07:00',end:f.end||'18:00',note:(f.note==null||f.note==='Gemüse ok: Tomate, Gurke'||f.note==='Nur noch Gurken oder Tomaten')?'Nur nicht Gurke oder Tomate':f.note};}
 function hmToMin(x){const p=String(x).split(':').map(Number);return p[0]*60+(p[1]||0);}
 function atMin(d,m){const x=new Date(d);x.setHours(Math.floor(m/60),m%60,0,0);return x;}
 function hmTxt(d){return d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr';}
@@ -525,7 +525,7 @@ function fenInfo(){
 function renderFast(){
   const meals=loadMeals(),last=meals[0],fi=fenInfo();
   let c='',t='Noch nichts eingetragen',s='',col='var(--muted)';
-  if(fi.f.on&&!fi.inWin){c='r';t='Essensfenster geschlossen';s='<b>ab '+hmTxt(fi.nextStart)+'</b>'+(fi.f.note?' · '+esc(fi.f.note):'');col='#f87171';}
+  if(fi.f.on&&!fi.inWin){c='r';t='Jetzt durchhalten!';s='<b>ab '+hmTxt(fi.nextStart)+'</b>'+(fi.f.note?' · '+esc(fi.f.note):'');col='#f87171';}
   else if(last){
     const h=(Date.now()-last)/36e5,left=MIN_H-h,free=new Date(last+MIN_H*36e5);
     const freeTxt=hmTxt(free)+(free.toDateString()!==new Date().toDateString()?' (morgen)':'');
