@@ -122,6 +122,9 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
 .eat-btn { background:var(--sky); color:#06202e; border:none; border-radius:4px; font-family:'DM Mono',monospace; font-size:14px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; padding:16px 20px; cursor:pointer; transition:transform 0.1s,opacity 0.2s; }
 .eat-btn:active { transform:scale(0.96); }
 #f-text { font-size:19px; font-weight:700; line-height:1.2; }
+.sm{font-size:10px;white-space:nowrap}
+#f-since{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#f-since b{font-size:12px}
 .one{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;max-width:100%}
 #f-since b { color:var(--text); font-weight:600; }
 #f-since { font-size:13px; letter-spacing:0; color:var(--muted); margin:2px 0 0 !important; }
@@ -322,7 +325,7 @@ body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace;
     <div class="habit-layout"><div class="habit-left" id="td-main"></div><div class="habit-right" id="td-act"></div></div>
   </div>
   <div class="panel" id="panel-weight">
-    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.26.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
+    <div class="panel-header"><span class="panel-tag tag-green">Gewicht</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:10px;color:var(--muted)">v1.27.0</span><button class="reset-btn" id="chart-toggle" onclick="toggleChart()">Chart</button><button class="reset-btn" onclick="openResetMenu()">Zurücksetzen</button></div></div>
     <div class="weight-layout">
       <div class="weight-stats">
         <div class="wstat start"><div class="wstat-val" id="w-start">&mdash;</div><div class="wstat-label">Start</div></div>
@@ -532,10 +535,10 @@ function renderFast(){
     const h=(Date.now()-last)/36e5,left=MIN_H-h,free=new Date(last+MIN_H*36e5);
     const freeTxt=hmTxt(free)+(free.toDateString()!==new Date().toDateString()?' (morgen)':'');
     const endNote=fi.f.on?' · '+grenze():'';
-    if(fi.f.on&&free>fi.endToday){c='r';t='Noch nicht essen';s='<b>ab '+hmTxt(fi.nextStart)+' (morgen)</b>'+endNote;col='#f87171';}
-    else if(left>1){c='r';t='Noch nicht essen';s='<b>ab '+freeTxt+'</b> · noch '+fmtDur(left)+endNote;col='#f87171';}
-    else if(left>0){c='y';t='Gleich so weit';s='<b>ab '+freeTxt+'</b> · noch '+fmtDur(left)+endNote;col='#fbbf24';}
-    else{c='g';t='Essen ist okay';s='<b>seit '+freeTxt+'</b> erlaubt'+endNote;col='#4ade80';}
+    if(fi.f.on&&free>fi.endToday){c='r';t='Noch nicht essen';s='<b>ab '+hmTxt(fi.nextStart)+' (morgen)</b><span class="sm">'+endNote+'</span>';col='#f87171';}
+    else if(left>1){c='r';t='Noch nicht essen';s='<b>ab '+freeTxt+'</b><span class="sm"> · noch '+fmtDur(left)+endNote+'</span>';col='#f87171';}
+    else if(left>0){c='y';t='Gleich so weit';s='<b>ab '+freeTxt+'</b><span class="sm"> · noch '+fmtDur(left)+endNote+'</span>';col='#fbbf24';}
+    else{c='g';t='Essen ist okay';s='<b>seit '+freeTxt+'</b><span class="sm"> erlaubt'+endNote+'</span>';col='#4ade80';}
   }
   else if(fi.f.on){c='g';t='Essen erlaubt';s='<b>bis '+hmTxt(fi.endToday)+'</b>';col='#4ade80';}
   ['r','y','g'].forEach(k=>document.getElementById('fl-'+k).classList.toggle('on',k===c));
